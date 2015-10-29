@@ -7,6 +7,15 @@
 //
 
 import UIKit
+import Firebase
+
+// Firebase url
+let ref = Firebase(url: "https://questionproject.firebaseio.com/")
+
+// Global currentuser variable
+var currentUser = ""
+var name = ""
+var userid = ""
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
