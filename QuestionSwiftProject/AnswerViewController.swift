@@ -16,9 +16,11 @@ class AnswerViewController: UIViewController, UITableViewDataSource, UITableView
     
     var content = ""
     var id = ""
+    var creatorname = ""
     
     var contentArray = [String]()
     var idArray = [String]()
+    var creatorNameArray = [String]()
     
     func loadAnswers(){
         let url = "http://localhost:3000/api/questionanswers"
@@ -34,6 +36,16 @@ class AnswerViewController: UIViewController, UITableViewDataSource, UITableView
                     //Do something you want
                     let content = subJson["content"].string
                     let id = subJson["_id"].string
+                    var creatorname = subJson["creatorname"].string
+                    let anonymous = subJson["anonymous"].string
+                    
+                    if creatorname == nil {
+                        creatorname = "Anonymous"
+                    } else if anonymous == "true" {
+                        creatorname = "Anonymous"
+                    }
+                    
+                    self.creatorNameArray.append(creatorname!)
                     self.contentArray.append(content!)
                     self.idArray.append(id!)
                     self.tableView.reloadData()
@@ -49,6 +61,7 @@ class AnswerViewController: UIViewController, UITableViewDataSource, UITableView
         
         self.contentArray.removeAll(keepCapacity: true)
         self.idArray.removeAll(keepCapacity: true)
+        self.creatorNameArray.removeAll(keepCapacity: true)
         
         self.loadAnswers()
         self.tableView.reloadData()
@@ -70,6 +83,14 @@ class AnswerViewController: UIViewController, UITableViewDataSource, UITableView
         return 2
     }
     
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return nil
+        } else {
+            return "Answers"
+        }
+    }
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return 1
@@ -83,11 +104,14 @@ class AnswerViewController: UIViewController, UITableViewDataSource, UITableView
             let cell: QuestionDetailTableViewCell = tableView.dequeueReusableCellWithIdentifier("TopCell", forIndexPath: indexPath) as! QuestionDetailTableViewCell
             
             cell.contentLabel.text = self.content
+            cell.nameLabel.text = self.creatorname
+            
             return cell
         } else {
             let cell: AnswerDetailTableViewCell = tableView.dequeueReusableCellWithIdentifier("AnswerCell", forIndexPath: indexPath) as! AnswerDetailTableViewCell
             
             cell.contentLabel.text = contentArray[indexPath.row]
+            cell.nameLabel.text = creatorNameArray[indexPath.row]
             
             return cell
         }

@@ -17,20 +17,27 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="sYX-4S-80X">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="80" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="sYX-4S-80X">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="QuestionCell" id="yvX-JU-t40" customClass="QuestionTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="92" width="600" height="60"/>
+                                        <rect key="frame" x="0.0" y="92" width="600" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yvX-JU-t40" id="qL7-yB-6C7">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="79.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7jQ-7w-ea2">
-                                                    <rect key="frame" x="8" y="19" width="473" height="21"/>
+                                                    <rect key="frame" x="8" y="38" width="473" height="21"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oa7-wC-eTu">
+                                                    <rect key="frame" x="8" y="8" width="335" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -42,6 +49,7 @@
                                         <animations/>
                                         <connections>
                                             <outlet property="contentLabel" destination="7jQ-7w-ea2" id="WxU-Eu-fPU"/>
+                                            <outlet property="nameLabel" destination="oa7-wC-eTu" id="8xR-uy-4Ff"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -88,6 +96,9 @@
                                 <rect key="frame" x="93" y="80" width="81" height="30"/>
                                 <animations/>
                                 <state key="normal" title="Anonymous"/>
+                                <connections>
+                                    <action selector="anonymousButtonPressed:" destination="ven-gB-br4" eventType="touchUpInside" id="N0m-rA-TTb"/>
+                                </connections>
                             </button>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="xDp-g6-aSc">
                                 <rect key="frame" x="13" y="118" width="240" height="128"/>
@@ -108,6 +119,9 @@
                                 <rect key="frame" x="13" y="80" width="41" height="30"/>
                                 <animations/>
                                 <state key="normal" title="Name"/>
+                                <connections>
+                                    <action selector="nameButtonPressed:" destination="ven-gB-br4" eventType="touchUpInside" id="jFt-3O-dxe"/>
+                                </connections>
                             </button>
                         </subviews>
                         <animations/>
@@ -135,20 +149,27 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="x6W-R7-lbl">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="x6W-R7-lbl">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TopCell" id="SBA-Ce-X0g" customClass="QuestionDetailTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="92" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="92" width="600" height="60"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SBA-Ce-X0g" id="hdE-Bc-w6b">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7mP-pb-vIc">
-                                                    <rect key="frame" x="17" y="11" width="482" height="21"/>
+                                                    <rect key="frame" x="14" y="30" width="482" height="21"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JFC-CY-Z8y">
+                                                    <rect key="frame" x="14" y="1" width="367" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -160,17 +181,25 @@
                                         <animations/>
                                         <connections>
                                             <outlet property="contentLabel" destination="7mP-pb-vIc" id="GyI-y4-A3u"/>
+                                            <outlet property="nameLabel" destination="JFC-CY-Z8y" id="LzB-Uh-71D"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AnswerCell" rowHeight="70" id="CLD-UB-Dfp" customClass="AnswerDetailTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="136" width="600" height="70"/>
+                                        <rect key="frame" x="0.0" y="152" width="600" height="70"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="CLD-UB-Dfp" id="3Vk-pC-PSa">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="69.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h9F-IK-A3t">
-                                                    <rect key="frame" x="24" y="24" width="470" height="21"/>
+                                                    <rect key="frame" x="17" y="40" width="470" height="21"/>
+                                                    <animations/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gJd-ZY-YWO">
+                                                    <rect key="frame" x="17" y="11" width="328" height="21"/>
                                                     <animations/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -182,6 +211,7 @@
                                         <animations/>
                                         <connections>
                                             <outlet property="contentLabel" destination="h9F-IK-A3t" id="QOv-d1-aF5"/>
+                                            <outlet property="nameLabel" destination="gJd-ZY-YWO" id="f1Y-kV-WVm"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -226,11 +256,27 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aU7-dO-Sx6">
-                                <rect key="frame" x="20" y="275" width="49" height="30"/>
+                                <rect key="frame" x="20" y="318" width="49" height="30"/>
                                 <animations/>
                                 <state key="normal" title="Submit"/>
                                 <connections>
                                     <action selector="submitButtonPressed:" destination="eCN-aM-FtS" eventType="touchUpInside" id="zhK-UK-ds0"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7vd-wc-dJk">
+                                <rect key="frame" x="13" y="266" width="41" height="30"/>
+                                <animations/>
+                                <state key="normal" title="Name"/>
+                                <connections>
+                                    <action selector="nameButtonPressed:" destination="eCN-aM-FtS" eventType="touchUpInside" id="jCv-ve-fLW"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E6G-Ux-5Ko">
+                                <rect key="frame" x="105" y="266" width="81" height="30"/>
+                                <animations/>
+                                <state key="normal" title="Anonymous"/>
+                                <connections>
+                                    <action selector="anonymousButtonPressed:" destination="eCN-aM-FtS" eventType="touchUpInside" id="Gcy-eu-D4b"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -238,7 +284,9 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="anonymousButton" destination="E6G-Ux-5Ko" id="PIs-O8-iY8"/>
                         <outlet property="answerTextView" destination="6kx-04-XMl" id="4Ha-f0-DoS"/>
+                        <outlet property="nameButton" destination="7vd-wc-dJk" id="nCm-XE-mar"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dx6-FU-vHL" userLabel="First Responder" sceneMemberID="firstResponder"/>

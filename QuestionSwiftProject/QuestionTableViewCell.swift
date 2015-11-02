@@ -11,6 +11,7 @@ import UIKit
 class QuestionTableViewCell: UITableViewCell {
 
     @IBOutlet weak var contentLabel: UILabel!
+    @IBOutlet weak var nameLabel: UILabel!
     
     
     override func awakeFromNib() {

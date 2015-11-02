@@ -15,11 +15,13 @@ class AskQuestionViewController: UIViewController {
     @IBOutlet weak var anonymousButton: UIButton!
     @IBOutlet weak var contentTextView: UITextView!
     
+    var anonymous = "false"
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.nameButton.selected = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -33,13 +35,30 @@ class AskQuestionViewController: UIViewController {
         let text = self.contentTextView.text
         let url = "http://localhost:3000/api/questions"
         let parameters = [
-            "content": text
+            "content": text,
+            "creatorname": name,
+            "creator": userid,
+            "anonymous": anonymous,
+            "answercount": 0
         ]
         
-        Alamofire.request(.POST, url, parameters: parameters, encoding: .JSON)
+        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], encoding: .JSON)
         
         self.navigationController?.popViewControllerAnimated(true)
     }
+    
+    @IBAction func nameButtonPressed(sender: UIButton) {
+        self.anonymousButton.selected = false
+        self.nameButton.selected = true
+        self.anonymous = "false"
+    }
+    
+    @IBAction func anonymousButtonPressed(sender: UIButton) {
+        self.anonymousButton.selected = true
+        self.nameButton.selected = false
+        self.anonymous = "true"
+    }
+    
     
     
 

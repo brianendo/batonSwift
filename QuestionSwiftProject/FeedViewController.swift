@@ -18,9 +18,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var contentArray = [String]()
     var idArray = [String]()
+    var creatorNameArray = [String]()
     
     func loadData() {
-        let url = "http://localhost:3000/api/questions"
+        let url = "http://localhost:3000/api/questionsordered"
         
         Alamofire.request(.GET, url, parameters: nil)
             .responseJSON { response in
@@ -30,6 +31,17 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     //Do something you want
                     let content = subJson["content"].string
                     let id = subJson["_id"].string
+                    let anonymous = subJson["anonymous"].string
+                    
+                    var creatorname = subJson["creatorname"].string
+                    
+                    if creatorname == nil {
+                        creatorname = "Anonymous"
+                    } else if anonymous == "true" {
+                        creatorname = "Anonymous"
+                    }
+                    
+                    self.creatorNameArray.append(creatorname!)
                     self.contentArray.append(content!)
                     self.idArray.append(id!)
                     self.tableView.reloadData()
@@ -50,6 +62,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 let currentuserid = json["_id"].string
                 let firstname = json["firstname"].string
                 let lastname = json["lastname"].string
+                
                 name = firstname! + " " + lastname!
                 userid = currentuserid!
                 self.tableView.reloadData()
@@ -71,6 +84,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 
                 self.contentArray.removeAll(keepCapacity: true)
                 self.idArray.removeAll(keepCapacity: true)
+                self.creatorNameArray.removeAll(keepCapacity: true)
                 self.loadData()
                 
             } else {
@@ -101,6 +115,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
         
         cell.contentLabel.text = contentArray[indexPath.row]
+        cell.nameLabel.text = creatorNameArray[indexPath.row]
         
         return cell
     }
@@ -111,8 +126,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let indexPath = self.tableView.indexPathForSelectedRow
             let content = self.contentArray[indexPath!.row]
             let id = self.idArray[indexPath!.row]
+            let creatorname = self.creatorNameArray[indexPath!.row]
             answerVC.content = content
             answerVC.id = id
+            answerVC.creatorname = creatorname
         }
     }
     

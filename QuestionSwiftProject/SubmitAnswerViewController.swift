@@ -12,13 +12,19 @@ import Alamofire
 class SubmitAnswerViewController: UIViewController {
 
     @IBOutlet weak var answerTextView: UITextView!
+    @IBOutlet weak var nameButton: UIButton!
+    @IBOutlet weak var anonymousButton: UIButton!
+    
+    
     
     var id = ""
+    var anonymous = "false"
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.nameButton.selected = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -34,13 +40,28 @@ class SubmitAnswerViewController: UIViewController {
             "content": content,
             "question_id": self.id,
             "creatorname": name,
-            "creator": userid
+            "creator": userid,
+            "anonymous": anonymous
         ]
         
         Alamofire.request(.POST, url, parameters: parameters, encoding: .JSON)
         
         self.navigationController?.popViewControllerAnimated(true)
     }
+    
+    @IBAction func nameButtonPressed(sender: UIButton) {
+        self.nameButton.selected = true
+        self.anonymousButton.selected = false
+        anonymous = "false"
+    }
+    
+    
+    @IBAction func anonymousButtonPressed(sender: UIButton) {
+        self.nameButton.selected = false
+        self.anonymousButton.selected = true
+        anonymous = "true"
+    }
+    
     
     
 
