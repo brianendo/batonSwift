@@ -1,8 +1,8 @@
 //
-//  AnswerViewController.swift
+//  MyQuestionViewController.swift
 //  QuestionSwiftProject
 //
-//  Created by Brian Endo on 10/29/15.
+//  Created by Brian Endo on 11/2/15.
 //  Copyright © 2015 Brian Endo. All rights reserved.
 //
 
@@ -10,17 +10,17 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class AnswerViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MyQuestionViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     
     var content = ""
     var id = ""
-    var creatorname = ""
     
     var contentArray = [String]()
     var idArray = [String]()
     var creatorNameArray = [String]()
+    var thankedArray = [Bool]()
     
     func loadAnswers(){
         let url = globalurl + "api/questions/" + id + "/answers/"
@@ -35,6 +35,7 @@ class AnswerViewController: UIViewController, UITableViewDataSource, UITableView
                     let id = subJson["_id"].string
                     var creatorname = subJson["creatorname"].string
                     let anonymous = subJson["anonymous"].string
+                    var thanked = subJson["thanked"].bool
                     
                     if creatorname == nil {
                         creatorname = "Anonymous"
@@ -42,6 +43,11 @@ class AnswerViewController: UIViewController, UITableViewDataSource, UITableView
                         creatorname = "Anonymous"
                     }
                     
+                    if thanked == nil {
+                        thanked = false
+                    }
+                    
+                    self.thankedArray.append(thanked!)
                     self.creatorNameArray.append(creatorname!)
                     self.contentArray.append(content!)
                     self.idArray.append(id!)
@@ -52,23 +58,19 @@ class AnswerViewController: UIViewController, UITableViewDataSource, UITableView
         
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
         self.tableView.dataSource = self
         self.tableView.delegate = self
         
         self.contentArray.removeAll(keepCapacity: true)
         self.idArray.removeAll(keepCapacity: true)
         self.creatorNameArray.removeAll(keepCapacity: true)
+        self.thankedArray.removeAll(keepCapacity: true)
         
         self.loadAnswers()
-        self.tableView.reloadData()
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        
     }
 
     override func didReceiveMemoryWarning() {
@@ -80,50 +82,66 @@ class AnswerViewController: UIViewController, UITableViewDataSource, UITableView
         return 2
     }
     
-    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
-            return nil
-        } else {
-            return "Answers"
-        }
-    }
-    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return 1
-        } else {
+        } else  {
             return contentArray.count
         }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell: QuestionDetailTableViewCell = tableView.dequeueReusableCellWithIdentifier("TopCell", forIndexPath: indexPath) as! QuestionDetailTableViewCell
+            let cell: QuestionInfoTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionTitleCell", forIndexPath: indexPath) as! QuestionInfoTableViewCell
             
             cell.contentLabel.text = self.content
-            cell.nameLabel.text = self.creatorname
             
             return cell
         } else {
-            let cell: AnswerDetailTableViewCell = tableView.dequeueReusableCellWithIdentifier("AnswerCell", forIndexPath: indexPath) as! AnswerDetailTableViewCell
+            let cell: MyQuestionAnswerTableViewCell = tableView.dequeueReusableCellWithIdentifier("MyQuestionAnswerCell", forIndexPath: indexPath) as! MyQuestionAnswerTableViewCell
             
             cell.contentLabel.text = contentArray[indexPath.row]
             cell.nameLabel.text = creatorNameArray[indexPath.row]
             
+            let thanked = thankedArray[indexPath.row]
+            
+            if thanked == true {
+                cell.thankButton.selected = true
+            } else {
+                cell.thankButton.selected = false
+            }
+            
+            cell.thankButton.tag = indexPath.row
+            cell.thankButton.addTarget(self, action: "thankAnswer:", forControlEvents: .TouchUpInside)
+            cell.thankButton.setTitle("Thanked", forState: .Selected)
+            cell.thankButton.setTitle("Thank", forState: .Normal)
+            
+            
             return cell
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showSubmitAnswerVC" {
-            let submitAnswerVC: SubmitAnswerViewController = segue.destinationViewController as! SubmitAnswerViewController
-            submitAnswerVC.id = self.id
+    func thankAnswer(sender: UIButton) {
+        let answerId = idArray[sender.tag]
+        
+        if sender.selected == false {
+            sender.selected = true
+            
+            let url = globalurl + "api/answers/" + answerId + "/thanked/"
+            
+            Alamofire.request(.PUT, url, parameters: nil)
+                .responseJSON { response in
+            }
+            
+        } else {
+            sender.selected = false
+            
+            let url = globalurl + "api/answers/" + answerId + "/unthanked/"
+            
+            Alamofire.request(.PUT, url, parameters: nil)
+                .responseJSON { response in
+            }
         }
     }
-    
-    @IBAction func answerBarButtonPressed(sender: UIBarButtonItem) {
-        self.performSegueWithIdentifier("showSubmitAnswerVC", sender: self)
-    }
-    
 
 }

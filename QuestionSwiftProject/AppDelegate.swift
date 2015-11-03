@@ -16,6 +16,7 @@ let ref = Firebase(url: "https://questionproject.firebaseio.com/")
 var currentUser = ""
 var name = ""
 var userid = ""
+let globalurl = "http://localhost:3000/"
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

@@ -35,7 +35,7 @@ class SubmitAnswerViewController: UIViewController {
     
     @IBAction func submitButtonPressed(sender: UIButton) {
         let content = self.answerTextView.text
-        let url = "http://localhost:3000/api/answers"
+        let url = globalurl + "api/answers"
         let parameters = [
             "content": content,
             "question_id": self.id,

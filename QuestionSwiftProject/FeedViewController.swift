@@ -16,24 +16,36 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @IBOutlet weak var tableView: UITableView!
     
-    var contentArray = [String]()
-    var idArray = [String]()
-    var creatorNameArray = [String]()
+    var questionArray = [Question]()
+    var myQuestionArray = [Question]()
+    
+    
+    var refreshControl:UIRefreshControl!
     
     func loadData() {
-        let url = "http://localhost:3000/api/questionsordered"
+        let url = globalurl + "api/questions-ordered/" + userid
         
         Alamofire.request(.GET, url, parameters: nil)
             .responseJSON { response in
-                let json = JSON(response.result.value!)
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                
+                let json = JSON(value!)
                 print("JSON: \(json)")
                 for (_,subJson):(String, JSON) in json {
                     //Do something you want
                     let content = subJson["content"].string
                     let id = subJson["_id"].string
                     let anonymous = subJson["anonymous"].string
-                    
+                    var answercount = subJson["answercount"].number?.stringValue
                     var creatorname = subJson["creatorname"].string
+                    
+                    if answercount == nil {
+                        answercount = "0"
+                    }
                     
                     if creatorname == nil {
                         creatorname = "Anonymous"
@@ -41,16 +53,55 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         creatorname = "Anonymous"
                     }
                     
-                    self.creatorNameArray.append(creatorname!)
-                    self.contentArray.append(content!)
-                    self.idArray.append(id!)
+                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount)
+                    self.questionArray.append(question)
+                    
+                    self.tableView.reloadData()
+                }
+        }
+    }
+    
+    func loadMyQuestions() {
+        let url = globalurl + "api/myquestions/" + userid
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                
+                let json = JSON(value!)
+                print("JSON: \(json)")
+                for (_,subJson):(String, JSON) in json {
+                    //Do something you want
+                    let content = subJson["content"].string
+                    let id = subJson["_id"].string
+                    let anonymous = subJson["anonymous"].string
+                    var answercount = subJson["answercount"].number?.stringValue
+                    var creatorname = subJson["creatorname"].string
+                    
+                    if answercount == nil {
+                        answercount = "0"
+                    }
+                    
+                    if creatorname == nil {
+                        creatorname = "Anonymous"
+                    } else if anonymous == "true" {
+                        creatorname = "Anonymous"
+                    }
+                    
+                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount)
+                    self.myQuestionArray.append(question)
+
                     self.tableView.reloadData()
                 }
         }
     }
     
     func loadUserInfo() {
-        let url = "http://localhost:3000/api/currentuser"
+        let url = globalurl + "api/currentuser"
         let parameters = [
             "firebase_id": currentUser
         ]
@@ -66,26 +117,30 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 name = firstname! + " " + lastname!
                 userid = currentuserid!
                 self.tableView.reloadData()
+                self.loadData()
+                self.loadMyQuestions()
                 
         }
     }
     
     override func viewDidAppear(animated: Bool) {
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         ref.observeAuthEventWithBlock({ authData in
             if authData != nil {
                 // user authenticated
                 print(authData.uid)
                 currentUser = authData.uid
                 
-                self.loadUserInfo()
-                
                 self.tableView.dataSource = self
                 self.tableView.delegate = self
                 
-                self.contentArray.removeAll(keepCapacity: true)
-                self.idArray.removeAll(keepCapacity: true)
-                self.creatorNameArray.removeAll(keepCapacity: true)
-                self.loadData()
+                self.questionArray.removeAll(keepCapacity: true)
+                self.myQuestionArray.removeAll(keepCapacity: true)
+                
+                self.loadUserInfo()
                 
             } else {
                 // No user is signed in
@@ -94,12 +149,23 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 self.presentViewController(loginVC!, animated: true, completion: nil)
             }
         })
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.refreshControl = UIRefreshControl()
+//        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        self.tableView.addSubview(refreshControl)
+    }
+    
+    func refresh(sender:AnyObject)
+    {
+        // Code to refresh table view
+        self.questionArray.removeAll(keepCapacity: true)
+        self.myQuestionArray.removeAll(keepCapacity: true)
+        
+        self.loadUserInfo()
+        self.tableView.reloadData()
+        self.refreshControl.endRefreshing()
     }
 
     override func didReceiveMemoryWarning() {
@@ -107,34 +173,73 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Dispose of any resources that can be recreated.
     }
     
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "My Questions"
+        } else {
+            return "Open Questions"
+        }
+    }
+    
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return contentArray.count
+        if section == 0 {
+            return myQuestionArray.count
+        } else {
+            return questionArray.count
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
-        
-        cell.contentLabel.text = contentArray[indexPath.row]
-        cell.nameLabel.text = creatorNameArray[indexPath.row]
-        
-        return cell
+        if indexPath.section == 0 {
+            let cell: MyQuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("MyQuestionCell", forIndexPath: indexPath) as! MyQuestionTableViewCell
+            
+            cell.contentLabel.text = myQuestionArray[indexPath.row].content
+            cell.answercountLabel.text = myQuestionArray[indexPath.row].answercount
+            
+            return cell
+        } else {
+            let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+            
+            cell.contentLabel.text = questionArray[indexPath.row].content
+            cell.nameLabel.text = questionArray[indexPath.row].creatorname
+            cell.answercountLabel.text = questionArray[indexPath.row].answercount
+            
+            return cell
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showQuestionDetailVC" {
             let answerVC: AnswerViewController = segue.destinationViewController as! AnswerViewController
             let indexPath = self.tableView.indexPathForSelectedRow
-            let content = self.contentArray[indexPath!.row]
-            let id = self.idArray[indexPath!.row]
-            let creatorname = self.creatorNameArray[indexPath!.row]
+            let content = self.questionArray[indexPath!.row].content
+            let id = self.questionArray[indexPath!.row].id
+            let creatorname = self.questionArray[indexPath!.row].creatorname
             answerVC.content = content
             answerVC.id = id
             answerVC.creatorname = creatorname
+        } else if segue.identifier == "showMyQuestionVC" {
+            let myQuestionVC: MyQuestionViewController = segue.destinationViewController as! MyQuestionViewController
+            let indexPath = self.tableView.indexPathForSelectedRow
+            let content = self.myQuestionArray[indexPath!.row].content
+            let id = self.myQuestionArray[indexPath!.row].id
+            myQuestionVC.content = content
+            myQuestionVC.id = id
         }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        self.performSegueWithIdentifier("showQuestionDetailVC", sender: self)
+        if indexPath.section == 0 {
+            self.performSegueWithIdentifier("showMyQuestionVC", sender: self)
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        } else {
+            self.performSegueWithIdentifier("showQuestionDetailVC", sender: self)
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
     }
     
     @IBAction func askQuestionBarButtonPressed(sender: UIBarButtonItem) {

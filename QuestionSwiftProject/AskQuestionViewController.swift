@@ -8,6 +8,7 @@
 
 import UIKit
 import Alamofire
+import SwiftyJSON
 
 class AskQuestionViewController: UIViewController {
     
@@ -17,11 +18,39 @@ class AskQuestionViewController: UIViewController {
     
     var anonymous = "false"
     
+    func checkLastQuestion() {
+        let url = globalurl + "api/users/" + userid
+        
+        Alamofire.request(.GET, url, parameters: nil, encoding: .JSON).responseJSON { response in
+            
+            let json = JSON(response.result.value!)
+            print("JSON: \(json)")
+            let currentuserid = json["_id"].string
+            let firstname = json["firstname"].string
+            let lastname = json["lastname"].string
+            let updated_at = json["updated_at"].string
+            print(updated_at)
+            
+            var dateFor: NSDateFormatter = NSDateFormatter()
+            dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+            var yourDate: NSDate? = dateFor.dateFromString(updated_at!)
+            let time = yourDate?.timeIntervalSince1970
+            
+            print(time)
+            print(yourDate)
+            
+            name = firstname! + " " + lastname!
+            userid = currentuserid!
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         self.nameButton.selected = true
+        self.checkLastQuestion()
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -33,7 +62,7 @@ class AskQuestionViewController: UIViewController {
     
     @IBAction func sendButtonPressed(sender: UIButton) {
         let text = self.contentTextView.text
-        let url = "http://localhost:3000/api/questions"
+        let url = globalurl + "api/questions"
         let parameters = [
             "content": text,
             "creatorname": name,
@@ -41,8 +70,10 @@ class AskQuestionViewController: UIViewController {
             "anonymous": anonymous,
             "answercount": 0
         ]
-        
         Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], encoding: .JSON)
+        
+        let newUrl = globalurl + "api/users/" + userid + "/updated-at/"
+        Alamofire.request(.PUT, newUrl, parameters: nil, encoding: .JSON)
         
         self.navigationController?.popViewControllerAnimated(true)
     }
