@@ -53,7 +53,7 @@ class SignUpViewController: UIViewController {
                                 
                                 ref.childByAppendingPath("users").childByAppendingPath(authData.uid).setValue(newUser)
                                 
-                                let url = "http://localhost:3000/api/users"
+                                let url = globalurl + "api/users"
                                 
                                 let parameters = [
                                     "firstname": self.firstNameTextField.text!,

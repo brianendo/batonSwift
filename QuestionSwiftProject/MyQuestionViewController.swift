@@ -58,6 +58,21 @@ class MyQuestionViewController: UIViewController, UITableViewDataSource, UITable
         
     }
     
+    func loadQuestionContent(){
+        let url = globalurl + "api/questions/" + id
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                let json = JSON(response.result.value!)
+                print("JSON: \(json)")
+                
+                let questionContent = json["content"].string
+                
+                self.content = questionContent!
+                self.tableView.reloadData()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -65,11 +80,17 @@ class MyQuestionViewController: UIViewController, UITableViewDataSource, UITable
         self.tableView.dataSource = self
         self.tableView.delegate = self
         
+        self.tableView.allowsSelection = false
+        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.estimatedRowHeight = 70
+        
         self.contentArray.removeAll(keepCapacity: true)
         self.idArray.removeAll(keepCapacity: true)
         self.creatorNameArray.removeAll(keepCapacity: true)
         self.thankedArray.removeAll(keepCapacity: true)
         
+        
+        self.loadQuestionContent()
         self.loadAnswers()
     }
 
@@ -93,15 +114,17 @@ class MyQuestionViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell: QuestionInfoTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionTitleCell", forIndexPath: indexPath) as! QuestionInfoTableViewCell
-            
-            cell.contentLabel.text = self.content
+            cell.headerTextView.text = self.content
+            cell.headerTextView.userInteractionEnabled = false
             
             return cell
         } else {
             let cell: MyQuestionAnswerTableViewCell = tableView.dequeueReusableCellWithIdentifier("MyQuestionAnswerCell", forIndexPath: indexPath) as! MyQuestionAnswerTableViewCell
             
-            cell.contentLabel.text = contentArray[indexPath.row]
-            cell.nameLabel.text = creatorNameArray[indexPath.row]
+            cell.contentTextView.text = contentArray[indexPath.row]
+            cell.nameTextView.text = creatorNameArray[indexPath.row]
+            cell.contentTextView.userInteractionEnabled = false
+            cell.nameTextView.userInteractionEnabled = false
             
             let thanked = thankedArray[indexPath.row]
             
@@ -110,6 +133,8 @@ class MyQuestionViewController: UIViewController, UITableViewDataSource, UITable
             } else {
                 cell.thankButton.selected = false
             }
+            
+            cell.profileImageView.image = UIImage(named: "Placeholder")
             
             cell.thankButton.tag = indexPath.row
             cell.thankButton.addTarget(self, action: "thankAnswer:", forControlEvents: .TouchUpInside)

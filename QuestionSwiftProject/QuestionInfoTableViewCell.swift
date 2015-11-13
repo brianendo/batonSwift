@@ -11,7 +11,7 @@ import UIKit
 class QuestionInfoTableViewCell: UITableViewCell {
 
     
-    @IBOutlet weak var contentLabel: UILabel!
+    @IBOutlet weak var headerTextView: UITextView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

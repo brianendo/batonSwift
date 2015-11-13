@@ -8,6 +8,9 @@
 
 import UIKit
 import Firebase
+import AWSCore
+import AWSCognito
+import AWSS3
 
 // Firebase url
 let ref = Firebase(url: "https://questionproject.firebaseio.com/")
@@ -16,7 +19,15 @@ let ref = Firebase(url: "https://questionproject.firebaseio.com/")
 var currentUser = ""
 var name = ""
 var userid = ""
-let globalurl = "http://localhost:3000/"
+let globalurl = "http://localhost:5000/"
+
+// Constants for Amazon Web Services
+let CognitoRegionType = AWSRegionType.USEast1  // e.g. AWSRegionType.USEast1
+let DefaultServiceRegionType = AWSRegionType.USWest1 // e.g. AWSRegionType.USWest2
+let CognitoIdentityPoolId = "us-east-1:cd887d49-c047-4889-bf49-215cd886036d"
+let S3BucketName = "batonapp"
+
+var imageCache: Dictionary<String, NSData?> = Dictionary<String, NSData>()
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,6 +37,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        UINavigationBar.appearance().translucent = false
+        UINavigationBar.appearance().barTintColor = UIColor.whiteColor()
+        UINavigationBar.appearance().tintColor = UIColor.blackColor()
+        
+        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor.blackColor(), NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 20)!]
+        
+        
+        // Check credentials for AWS
+        let credentialsProvider = AWSCognitoCredentialsProvider(
+            regionType: AWSRegionType.USEast1, identityPoolId: CognitoIdentityPoolId)
+        let defaultServiceConfiguration = AWSServiceConfiguration(
+            region: AWSRegionType.USWest1, credentialsProvider: credentialsProvider)
+        AWSServiceManager.defaultServiceManager().defaultServiceConfiguration = defaultServiceConfiguration
+        
         return true
     }
 

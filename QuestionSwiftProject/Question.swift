@@ -12,15 +12,20 @@ class Question: NSObject {
     var content: String
     var creatorname: String
     var id: String
-    var answercount: String
+    var answercount: Int
+    var answered: Bool
+    var currentuser: Bool
+    var createdAt: NSDate
+    var creator: String
     
-    init(content: String?, creatorname: String?, id: String?, answercount: String?) {
+    init(content: String?, creatorname: String?, id: String?, answercount: Int?, answered: Bool?, currentuser: Bool?, createdAt: NSDate?, creator: String?) {
         self.content = content!
         self.creatorname = creatorname!
         self.id = id!
         self.answercount = answercount!
+        self.answered = answered!
+        self.currentuser = currentuser!
+        self.createdAt = createdAt!
+        self.creator = creator!
     }
-    
-    
-    
 }
