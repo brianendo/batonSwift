@@ -181,7 +181,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 
                 self.tableView.dataSource = self
                 self.tableView.delegate = self
-                self.tableView.separatorStyle = UITableViewCellSeparatorStyle.None
+                
+//                self.tableView.separatorStyle = UITableViewCellSeparatorStyle.None
                 self.tableView.rowHeight = UITableViewAutomaticDimension
                 self.tableView.estimatedRowHeight = 80
                 
@@ -347,7 +348,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //        }
         let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
         
-        cell.selectionStyle = UITableViewCellSelectionStyle.None
+//        cell.selectionStyle = UITableViewCellSelectionStyle.None
         
         cell.questionTextView.text = questionArray[indexPath.row].content
         cell.questionTextView.userInteractionEnabled = false

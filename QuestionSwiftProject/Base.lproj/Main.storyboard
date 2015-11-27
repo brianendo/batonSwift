@@ -24,11 +24,11 @@
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="QuestionCell" rowHeight="130" id="yvX-JU-t40" customClass="QuestionTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="92" width="600" height="130"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="QuestionCell" rowHeight="107" id="yvX-JU-t40" customClass="QuestionTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="92" width="600" height="107"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yvX-JU-t40" id="qL7-yB-6C7">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="129.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="106.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="LpP-Kd-m6B">
@@ -66,14 +66,6 @@
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dac-Dn-4sw">
-                                                    <rect key="frame" x="0.0" y="119" width="600" height="10"/>
-                                                    <animations/>
-                                                    <color key="backgroundColor" red="0.96470588235294119" green="0.96470588235294119" blue="0.96470588235294119" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="10" id="yqP-NT-suU"/>
-                                                    </constraints>
-                                                </view>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c5d-VG-59y">
                                                     <rect key="frame" x="467" y="65" width="122" height="45.5"/>
                                                     <animations/>
@@ -93,17 +85,14 @@
                                                 <constraint firstAttribute="topMargin" secondItem="5wb-aA-OfK" secondAttribute="top" id="A4J-gR-N40"/>
                                                 <constraint firstItem="vl9-wi-Yp4" firstAttribute="leading" secondItem="5wb-aA-OfK" secondAttribute="trailing" constant="-10" id="B3n-kZ-2dG"/>
                                                 <constraint firstItem="5wb-aA-OfK" firstAttribute="leading" secondItem="LpP-Kd-m6B" secondAttribute="trailing" constant="3" id="FbA-Pq-Dr2"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="c5d-VG-59y" secondAttribute="bottom" constant="5" id="Iwr-o7-bNA"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="5wb-aA-OfK" secondAttribute="trailing" constant="35" id="Jnq-ib-zgT"/>
                                                 <constraint firstItem="LpP-Kd-m6B" firstAttribute="top" secondItem="qL7-yB-6C7" secondAttribute="topMargin" constant="3" id="Lj5-Ex-itH"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="yPs-MG-pqS" secondAttribute="bottom" constant="2" id="OIM-Fu-euz"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="Dac-Dn-4sw" secondAttribute="bottom" constant="-7.5" id="PRe-rq-zSP"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="c5d-VG-59y" secondAttribute="bottom" constant="2" id="PtM-Hj-fZ3"/>
-                                                <constraint firstItem="Dac-Dn-4sw" firstAttribute="leading" secondItem="qL7-yB-6C7" secondAttribute="leadingMargin" constant="-8" id="Tvc-OJ-neT"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="c5d-VG-59y" secondAttribute="trailing" constant="3" id="WMD-vT-Yj6"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="vl9-wi-Yp4" secondAttribute="trailing" constant="3" id="WbD-Kb-LCa"/>
-                                                <constraint firstAttribute="trailingMargin" secondItem="Dac-Dn-4sw" secondAttribute="trailing" constant="-8" id="YZ7-ly-S9Z"/>
                                                 <constraint firstItem="LpP-Kd-m6B" firstAttribute="leading" secondItem="qL7-yB-6C7" secondAttribute="leadingMargin" constant="13" id="fQW-M6-U8K"/>
-                                                <constraint firstItem="Dac-Dn-4sw" firstAttribute="top" secondItem="c5d-VG-59y" secondAttribute="bottom" constant="5" id="lHf-uv-dxO"/>
                                                 <constraint firstItem="c5d-VG-59y" firstAttribute="top" secondItem="yPs-MG-pqS" secondAttribute="bottom" constant="-10" id="wqq-5t-oIX"/>
                                             </constraints>
                                             <variation key="default">
@@ -124,7 +113,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="MyQuestionCell" id="9Uh-fo-5y0" customClass="MyQuestionTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="222" width="600" height="80"/>
+                                        <rect key="frame" x="0.0" y="199" width="600" height="80"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="9Uh-fo-5y0" id="hlA-sO-9EV">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="79.5"/>
@@ -1003,7 +992,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="iwD-8K-fly"/>
-        <segue reference="nIy-AN-haF"/>
+        <segue reference="Ubp-zJ-Mmh"/>
+        <segue reference="dr7-Mc-fP5"/>
     </inferredMetricsTieBreakers>
 </document>
