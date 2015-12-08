@@ -12,14 +12,9 @@ import SwiftyJSON
 
 class AskQuestionViewController: UIViewController {
     
-    @IBOutlet weak var nameButton: UIButton!
-    @IBOutlet weak var anonymousButton: UIButton!
     @IBOutlet weak var contentTextView: UITextView!
     
     @IBOutlet weak var bottomSpaceToLayoutGuide: NSLayoutConstraint!
-    
-    
-    
     
     var anonymous = "false"
     
@@ -103,8 +98,6 @@ class AskQuestionViewController: UIViewController {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
         
         // Do any additional setup after loading the view.
-        self.nameButton.backgroundColor = UIColor.lightGrayColor()
-        self.anonymousButton.backgroundColor = UIColor.clearColor()
         
         self.checkLastQuestion()
         
@@ -136,18 +129,6 @@ class AskQuestionViewController: UIViewController {
         
         NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
         self.navigationController?.popViewControllerAnimated(true)
-    }
-    
-    @IBAction func nameButtonPressed(sender: UIButton) {
-        self.nameButton.backgroundColor = UIColor.lightGrayColor()
-        self.anonymousButton.backgroundColor = UIColor.clearColor()
-        self.anonymous = "false"
-    }
-    
-    @IBAction func anonymousButtonPressed(sender: UIButton) {
-        self.anonymousButton.backgroundColor = UIColor.lightGrayColor()
-        self.nameButton.backgroundColor = UIColor.clearColor()
-        self.anonymous = "true"
     }
     
     

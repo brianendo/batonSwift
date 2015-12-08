@@ -11,11 +11,12 @@ import Alamofire
 import SwiftyJSON
 import MobileCoreServices
 import AWSS3
+import AVFoundation
+import AVKit
 
 class ProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var tableView: UITableView!
-    
     
     var myQuestionArray = [Question]()
     var myAnswerArray = [Answer]()
@@ -69,12 +70,6 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                         answercount = 0
                     }
                     
-                    if creatorname == nil {
-                        creatorname = "Anonymous"
-                    } else if anonymous == "true" {
-                        creatorname = "Anonymous"
-                    }
-                    
                     let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator)
                     self.myQuestionArray.append(question)
                     
@@ -100,41 +95,46 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     //Do something you want
                     let content = subJson["content"].string
                     let id = subJson["_id"].string
-                    let anonymous = subJson["anonymous"].string
-                    var creatorname = subJson["creatorname"].string
+                    let creatorname = subJson["creatorname"].string
                     let question_id = subJson["question_id"].string
+                    let video_url = subJson["video_url"].string
+                    var likeCount = subJson["likeCount"].int
                     
-                    if creatorname == nil {
-                        creatorname = "Anonymous"
-                    } else if anonymous == "true" {
-                        creatorname = "Anonymous"
+                    if likeCount == nil {
+                        likeCount = 0
                     }
                     
-                    let newUrl = globalurl + "api/questions/" + question_id!
-                    
-                    Alamofire.request(.GET, newUrl, parameters: nil)
-                        .responseJSON { response in
-                            var value = response.result.value
-                            
-                            if value == nil {
-                                value = []
-                            }
-                            
-                            let json = JSON(value!)
-                            print("JSON: \(json)")
-                            
-                            let question_content = json["content"].string
-                            
-                            let answer = Answer(content: content, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content)
-                            self.myAnswerArray.append(answer)
-                            
-                            self.tableView.reloadData()
-                            
+                    if video_url != nil {
+                        
+                        let newUrl = globalurl + "api/questions/" + question_id!
+                        
+                        Alamofire.request(.GET, newUrl, parameters: nil)
+                            .responseJSON { response in
+                                var value = response.result.value
+                                
+                                if value == nil {
+                                    value = []
+                                }
+                                
+                                let json = JSON(value!)
+                                print("JSON: \(json)")
+                                
+                                let question_content = json["content"].string
+                                
+                                let answer = Answer(content: content, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount)
+                                self.myAnswerArray.append(answer)
+                                
+                                self.tableView.reloadData()
+                                
+                        }
                     }
-                    
                     
                 }
         }
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        self.tabBarController!.tabBar.hidden = false
     }
     
     override func viewDidLoad() {
@@ -282,20 +282,45 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.questionTextView.text = myQuestionArray[indexPath.row].content
             cell.questionTextView.userInteractionEnabled = false
             let answerCount = myQuestionArray[indexPath.row].answercount
-            cell.answercountLabel.text = "\(answerCount)/2"
+            cell.answercountLabel.text = "\(answerCount)"
             
             return cell
         } else {
-            let cell: ProfileAnswerTableViewCell = tableView.dequeueReusableCellWithIdentifier("profileAnswerCell", forIndexPath: indexPath) as! ProfileAnswerTableViewCell
+            let cell: ProfileRelayTableViewCell = tableView.dequeueReusableCellWithIdentifier("RelayCell", forIndexPath: indexPath) as! ProfileRelayTableViewCell
+            cell.selectionStyle = UITableViewCellSelectionStyle.None
             
-            cell.answerTextView.text = myAnswerArray[indexPath.row].content
-            cell.answerTextView.userInteractionEnabled = false
+            print(myAnswerArray[indexPath.row].question_content)
+            cell.contentTextView.text = myAnswerArray[indexPath.row].question_content
+            cell.contentTextView.userInteractionEnabled = false
+           
+            let videoUrl = myAnswerArray[indexPath.row].video_url
             
-            let question_content = myAnswerArray[indexPath.row].question_content
-            cell.questionTextView.text = "\"\(question_content)\""
-            cell.questionTextView.userInteractionEnabled = false
+            let newURL = NSURL(string: videoUrl)
+            cell.player = AVPlayer(URL: newURL!)
+            cell.playerController.player = cell.player
+            cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+            self.addChildViewController(cell.playerController)
+            cell.videoView.addSubview(cell.playerController.view)
+            cell.playerController.didMoveToParentViewController(self)
+            cell.player.pause()
+            
+            cell.selectionStyle = UITableViewCellSelectionStyle.None
+            
+            cell.playerController.view.userInteractionEnabled = true
+            
+            let view = UIView(frame: cell.playerController.view.frame)
+            cell.addSubview(view)
+            
+            print(CMTimeGetSeconds((cell.player.currentItem?.asset.duration)!))
+            print(CMTimeGetSeconds((cell.player.currentItem?.currentTime())!))
+            
+            
+//            let likeCount = self.likeCountArray[indexPath.row]
+//            cell.likeCountTextView.text = "\(likeCount)"
+//            cell.videoView.bringSubviewToFront(cell.likeCountTextView)
             
             return cell
+            
         }
         
         
@@ -315,10 +340,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             
         } else {
             if counter == 0 {
-                self.performSegueWithIdentifier("profileToMyQuestionVC", sender: self)
+                self.performSegueWithIdentifier("segueFromProfileToAnswers", sender: self)
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             } else {
-                self.performSegueWithIdentifier("showThankedAnswerVC", sender: self)
+//                self.performSegueWithIdentifier("showThankedAnswerVC", sender: self)
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }
         }
@@ -337,6 +362,16 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             let indexPath = self.tableView.indexPathForSelectedRow
             let id = self.myAnswerArray[indexPath!.row].question_id
             thankedAnswerVC.id = id
+        } else if segue.identifier == "segueFromProfileToAnswers" {
+            let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+            let indexPath = self.tableView.indexPathForSelectedRow
+            let content = self.myQuestionArray[indexPath!.row].content
+            let id = self.myQuestionArray[indexPath!.row].id
+            let creatorname = self.myQuestionArray[indexPath!.row].creatorname
+            answerVC.content = content
+            answerVC.id = id
+            answerVC.creatorname = creatorname
+            answerVC.fromProfile = true
         }
     }
     
@@ -423,6 +458,36 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     
+    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        print("Did end dragging")
+        self.scrollingfinished()
+    }
+    
+    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+        print("Did end decelerating")
+        self.scrollingfinished()
+    }
+    
+    func scrollingfinished() {
+        for cell in tableView.visibleCells {
+            if cell.isKindOfClass(ProfileRelayTableViewCell) {
+                let indexPath = tableView.indexPathForCell(cell)
+                let cellRect = tableView.rectForRowAtIndexPath(indexPath!)
+                let superView = tableView.superview
+                let convertedRect = tableView.convertRect(cellRect, toView: superView)
+                let intersect = CGRectIntersection(tableView.frame, convertedRect)
+                let visibleHeight = CGRectGetHeight(intersect)
+                let cellHeight = tableView.frame.height * 0.6
+                let cell = cell as! ProfileRelayTableViewCell
+                
+                if visibleHeight > cellHeight {
+                    cell.player.play()
+                } else {
+                    cell.player.pause()
+                }
+            }
+        }
+    }
     
     
     func RBSquareImage(image: UIImage) -> UIImage {

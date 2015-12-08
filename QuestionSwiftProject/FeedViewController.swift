@@ -169,6 +169,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     override func viewDidAppear(animated: Bool) {
+        self.tabBarController!.tabBar.hidden = false
     }
     
     override func viewDidLoad() {
@@ -312,40 +313,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        if section == 0 {
-//            return "My Questions"
-//        } else {
-//            return "Open Questions"
-//        }
         return nil
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        if section == 0 {
-//            return myQuestionArray.count
-//        } else {
-//            return questionArray.count
-//        }
         return questionArray.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-//        if indexPath.section == 0 {
-//            let cell: MyQuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("MyQuestionCell", forIndexPath: indexPath) as! MyQuestionTableViewCell
-//            
-//            cell.contentLabel.text = myQuestionArray[indexPath.row].content
-//            cell.answercountLabel.text = myQuestionArray[indexPath.row].answercount
-//            
-//            return cell
-//        } else {
-//            let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
-//            
-//            cell.contentLabel.text = questionArray[indexPath.row].content
-//            cell.nameLabel.text = questionArray[indexPath.row].creatorname
-//            cell.answercountLabel.text = questionArray[indexPath.row].answercount
-//            
-//            return cell
-//        }
         let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
         
 //        cell.selectionStyle = UITableViewCellSelectionStyle.None
@@ -354,8 +329,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         cell.questionTextView.userInteractionEnabled = false
         
         let creatorname = questionArray[indexPath.row].creatorname
-        cell.nameTextView.text = creatorname
-        cell.nameTextView.userInteractionEnabled = false
         let answercount = questionArray[indexPath.row].answercount
         
         let answered = questionArray[indexPath.row].answered
@@ -369,7 +342,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
             cell.backgroundColor = UIColor.whiteColor()
         }
         
-        cell.answercountLabel.text =  "\(answercount)/2"
+        cell.answercountLabel.text =  "\(answercount)"
         
         let date = questionArray[indexPath.row].createdAt
         let timeAgo = timeAgoSinceDate(date, numericDates: true)
@@ -378,49 +351,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         let creator = questionArray[indexPath.row].creator
         
-        cell.profileImageView.image = UIImage(named: "Placeholder")
-        if creatorname == "Anonymous" {
-            cell.profileImageView.image = UIImage(named: "Placeholder")
-        } else {
-            cell.profileImageView.image = UIImage(named: "Placeholder")
-            if let cachedImageResult = imageCache[creator] {
-                print("pull from cache")
-                cell.profileImageView.image = UIImage(data: cachedImageResult!)
-            } else {
-                // 3
-                cell.profileImageView.image = UIImage(named: "Placeholder")
-                
-                // 4
-                let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
-                let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
-                let transferManager = AWSS3TransferManager.defaultS3TransferManager()
-                
-                
-                let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
-                readRequest1.bucket = S3BucketName
-                readRequest1.key = creator
-                readRequest1.downloadingFileURL = downloadingFileURL1
-                
-                let task = transferManager.download(readRequest1)
-                task.continueWithBlock { (task) -> AnyObject! in
-                    if task.error != nil {
-                        print("No Profile Pic")
-                    } else {
-                        let image = UIImage(contentsOfFile: downloadingFilePath1)
-                        let imageData = UIImageJPEGRepresentation(image!, 1.0)
-                        imageCache[currentUser] = imageData
-                        dispatch_async(dispatch_get_main_queue()
-                            , { () -> Void in
-                                cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
-                                cell.setNeedsLayout()
-                                
-                        })
-                        print("Fetched image")
-                    }
-                    return nil
-                }
-            }
-        }
         return cell
         
     }
@@ -433,8 +363,31 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let id = self.questionArray[indexPath!.row].id
             myQuestionVC.content = content
             myQuestionVC.id = id
-        } else if segue.identifier == "showSubmitAnswerVC" {
-            let answerVC: SubmitAnswerViewController = segue.destinationViewController as! SubmitAnswerViewController
+        }
+//        else if segue.identifier == "showSubmitAnswerVC" {
+//            let answerVC: SubmitAnswerViewController = segue.destinationViewController as! SubmitAnswerViewController
+//            let indexPath = self.tableView.indexPathForSelectedRow
+//            let content = self.questionArray[indexPath!.row].content
+//            let id = self.questionArray[indexPath!.row].id
+//            let creatorname = self.questionArray[indexPath!.row].creatorname
+//            self.selectedIndexPath = indexPath!.row
+//            answerVC.content = content
+//            answerVC.id = id
+//            answerVC.creatorname = creatorname
+//        }
+        else if segue.identifier == "feedToThankedAnswerVC" {
+            let thankedAnswerVC: ThankedAnswerViewController = segue.destinationViewController as! ThankedAnswerViewController
+            let indexPath = self.tableView.indexPathForSelectedRow
+            let id = self.questionArray[indexPath!.row].id
+            thankedAnswerVC.id = id
+        } else if segue.identifier == "segueToTakeVideoVC" {
+            let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+            let content = self.questionArray[selectedIndexPath].content
+            let id = self.questionArray[selectedIndexPath].id
+            takeVideoVC.content = content
+            takeVideoVC.id = id
+        } else if segue.identifier == "segueToAnswerVC" {
+            let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
             let indexPath = self.tableView.indexPathForSelectedRow
             let content = self.questionArray[indexPath!.row].content
             let id = self.questionArray[indexPath!.row].id
@@ -443,34 +396,37 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
             answerVC.content = content
             answerVC.id = id
             answerVC.creatorname = creatorname
-        } else if segue.identifier == "feedToThankedAnswerVC" {
-            let thankedAnswerVC: ThankedAnswerViewController = segue.destinationViewController as! ThankedAnswerViewController
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let id = self.questionArray[indexPath!.row].id
-            thankedAnswerVC.id = id
         }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-//        if indexPath.section == 0 {
+//        if questionArray[indexPath.row].currentuser == true {
 //            self.performSegueWithIdentifier("showMyQuestionVC", sender: self)
 //            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//        } else if questionArray[indexPath.row].answered == true {
+//            self.performSegueWithIdentifier("feedToThankedAnswerVC", sender: self)
+//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
 //        } else {
-//            self.performSegueWithIdentifier("showQuestionDetailVC", sender: self)
+//            self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
 //            tableView.deselectRowAtIndexPath(indexPath, animated: true)
 //        }
+        self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         
-//        self.performSegueWithIdentifier("showQuestionDetailVC", sender: self)
-        if questionArray[indexPath.row].currentuser == true {
-            self.performSegueWithIdentifier("showMyQuestionVC", sender: self)
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        } else if questionArray[indexPath.row].answered == true {
-            self.performSegueWithIdentifier("feedToThankedAnswerVC", sender: self)
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        } else {
-            self.performSegueWithIdentifier("showSubmitAnswerVC", sender: self)
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
+    
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        let record = UITableViewRowAction(style: .Normal, title: "Record") { action, index in
+            print("Record button tapped")
+            self.selectedIndexPath = indexPath.row
+            self.performSegueWithIdentifier("segueToTakeVideoVC", sender: self)
         }
+        record.backgroundColor = UIColor.orangeColor()
+        
+        return [record]
     }
     
     @IBAction func askQuestionBarButtonPressed(sender: UIBarButtonItem) {

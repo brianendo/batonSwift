@@ -1,19 +1,16 @@
 //
-//  MyQuestionTableViewCell.swift
+//  MyQuestionTitleTableViewCell.swift
 //  QuestionSwiftProject
 //
-//  Created by Brian Endo on 11/2/15.
+//  Created by Brian Endo on 12/7/15.
 //  Copyright © 2015 Brian Endo. All rights reserved.
 //
 
 import UIKit
 
-class MyQuestionTableViewCell: UITableViewCell {
+class MyQuestionTitleTableViewCell: UITableViewCell {
 
-    
-    @IBOutlet weak var contentLabel: UILabel!
-    @IBOutlet weak var answercountLabel: UILabel!
-    
+    @IBOutlet weak var contentTextView: UITextView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

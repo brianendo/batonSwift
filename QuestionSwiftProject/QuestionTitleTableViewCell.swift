@@ -1,18 +1,16 @@
 //
-//  ProfileAnswerTableViewCell.swift
+//  QuestionTitleTableViewCell.swift
 //  QuestionSwiftProject
 //
-//  Created by Brian Endo on 11/4/15.
+//  Created by Brian Endo on 12/4/15.
 //  Copyright © 2015 Brian Endo. All rights reserved.
 //
 
 import UIKit
 
-class ProfileAnswerTableViewCell: UITableViewCell {
+class QuestionTitleTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var answerTextView: UITextView!
-    @IBOutlet weak var questionTextView: UITextView!
-    
+    @IBOutlet weak var contentTextView: UITextView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

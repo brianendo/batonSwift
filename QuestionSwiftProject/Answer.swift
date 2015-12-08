@@ -14,12 +14,16 @@ class Answer: NSObject {
     var id: String
     var question_id: String
     var question_content: String
+    var video_url: String
+    var likeCount: Int
     
-    init(content: String?, creatorname: String?, id: String?, question_id: String?, question_content: String?) {
+    init(content: String?, creatorname: String?, id: String?, question_id: String?, question_content: String?, video_url: String?, likeCount: Int?) {
         self.content = content!
         self.creatorname = creatorname!
         self.id = id!
         self.question_id = question_id!
         self.question_content = question_content!
+        self.video_url = video_url!
+        self.likeCount = likeCount!
     }
 }

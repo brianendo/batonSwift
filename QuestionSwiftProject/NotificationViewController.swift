@@ -11,7 +11,6 @@ import Alamofire
 import SwiftyJSON
 
 class NotificationViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -75,13 +74,13 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                                 print("JSON: \(json)")
                                 
                                 let content = json["content"].string
-                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate)
+                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate, answer_id: answer_id)
                                 self.notificationArray.append(notification)
                                 self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                                 
                                 self.tableView.reloadData()
                         }
-                    } else if type == "thank"{
+                    } else if type == "like"{
                         let newUrl = globalurl + "api/answers/" + answer_id!
                         
                         Alamofire.request(.GET, newUrl, parameters: nil)
@@ -96,7 +95,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                                 print("JSON: \(json)")
                                 
                                 let content = json["content"].string
-                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate)
+                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate, answer_id: answer_id)
                                 self.notificationArray.append(notification)
                                 self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                                 
@@ -173,8 +172,8 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         
         if type == "answer" {
             cell.headerTextView.text = "\(sendername) answered your question:"
-        } else if type == "thank" {
-            cell.headerTextView.text = "\(sendername) thanked your answer:"
+        } else if type == "like" {
+            cell.headerTextView.text = "\(sendername) liked your answer:"
         }
         
         let answerContent = notificationArray[indexPath.row].content
@@ -195,8 +194,14 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             Alamofire.request(.PUT, url, parameters: nil)
                 .responseJSON { response in
             }
-            
-            self.performSegueWithIdentifier("notificationToMyQuestion", sender: self)
+            self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        } else if type == "like" {
+            let url = globalurl + "api/notifications/" + id + "/read/"
+            Alamofire.request(.PUT, url, parameters: nil)
+                .responseJSON { response in
+            }
+            self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
         } else {
             let url = globalurl + "api/notifications/" + id + "/read/"
@@ -224,7 +229,16 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             thankedAnswerVC.id = id
             notificationArray[indexPath!.row].read = true
             self.tableView.reloadData()
-        }
+        } else if segue.identifier == "segueToAnsweredQuestionVC" {
+            let answeredQuestionVC: AnsweredQuestionViewController = segue.destinationViewController as! AnsweredQuestionViewController
+            let indexPath = self.tableView.indexPathForSelectedRow
+            let questionId = self.notificationArray[indexPath!.row].question_id
+            let answerId = self.notificationArray[indexPath!.row].answer_id
+            answeredQuestionVC.questionId = questionId
+            answeredQuestionVC.answerId = answerId
+            notificationArray[indexPath!.row].read = true
+            self.tableView.reloadData()
+        } 
     }
     
 

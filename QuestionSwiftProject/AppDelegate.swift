@@ -19,7 +19,11 @@ let ref = Firebase(url: "https://questionproject.firebaseio.com/")
 var currentUser = ""
 var name = ""
 var userid = ""
-let globalurl = "http://localhost:5000/"
+
+let herokuUrl = "https://arcane-savannah-8802.herokuapp.com/"
+let localUrl = "http://localhost:5000/"
+let globalurl = localUrl
+
 
 // Constants for Amazon Web Services
 let CognitoRegionType = AWSRegionType.USEast1  // e.g. AWSRegionType.USEast1
