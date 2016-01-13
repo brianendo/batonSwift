@@ -35,7 +35,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     var output: AVCaptureMovieFileOutput?
     var videoClips:[NSURL] = []
     var moviePlayer:MPMoviePlayerController!
-    var player: AVPlayer!
+    var player = AVPlayer()
     var playerController: AVPlayerViewController!
     
     var frontCamera: Bool = true
@@ -57,11 +57,16 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     }
     
     func beginSession() {
+        captureSession.beginConfiguration()
         try! captureSession.addInput(AVCaptureDeviceInput(device: audioCapture!))
         try! captureSession.addInput(AVCaptureDeviceInput(device: frontCameraVideoCapture!))
         
         output = AVCaptureMovieFileOutput()
-        let maxDuration = CMTimeMakeWithSeconds(40, 30)
+        
+        // Allow audio and movie to be longer than 10 seconds
+        output!.movieFragmentInterval = kCMTimeInvalid
+        
+        let maxDuration = CMTimeMakeWithSeconds(20, 30)
         output!.maxRecordedDuration = maxDuration
         captureSession.addOutput(output)
         let connection = output!.connectionWithMediaType(AVMediaTypeVideo)
@@ -78,7 +83,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
 //        self.cameraView.clipsToBounds = true
 //        previewLayer?.frame = self.view.bounds
         cameraView.layer.addSublayer(previewLayer!)
-        
+        captureSession.commitConfiguration()
         captureSession.startRunning()
         
     }
@@ -122,6 +127,9 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     }
     
     @IBAction func closeButtonPressed(sender: UIButton) {
+        if (player.rate > 0) {
+            player.pause()
+        }
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -261,7 +269,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         videoComposition.frameDuration = CMTimeMake(1, 30)
         
         let instruction = AVMutableVideoCompositionInstruction()
-        instruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(40, 30))
+        instruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(20, 30))
         
         let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
         var transform1:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, -(clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height)/2)

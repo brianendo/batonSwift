@@ -14,6 +14,8 @@ class QuestionTableViewCell: UITableViewCell {
     @IBOutlet weak var questionTextView: UITextView!
     @IBOutlet weak var timeAgoLabel: UILabel!
     @IBOutlet weak var bottomMarginImageView: UIImageView!
+    @IBOutlet weak var likecountTextView: UITextView!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

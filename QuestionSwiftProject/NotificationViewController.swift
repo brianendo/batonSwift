@@ -18,6 +18,8 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
     
     var refreshControl:UIRefreshControl!
     
+    var counter = 0
+    
     func loadNotifications(){
         let url = globalurl + "api/users/" + userid + "/notifications/"
         
@@ -25,14 +27,32 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             .responseJSON { response in
                 var value = response.result.value
                 
+                print("Reached")
+                print(value)
                 if value == nil {
                     value = []
+                    print("No notifications")
+                    self.tableView.hidden = true
+                    let label = UILabel(frame: CGRectMake(0, 0, 400, 400))
+                    label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, 100)
+                    label.textAlignment = NSTextAlignment.Center
+                    label.text = "No Notifications"
+                    label.font = UIFont(name: "HelveticaNeue-Light", size: 35)
+                    label.numberOfLines = 0
+                    self.view.addSubview(label)
+                    
                 } else {
+                    self.tableView.hidden = false
                     let json = JSON(response.result.value!)
                 print("JSON: \(json)")
                 for (_,subJson):(String, JSON) in json {
                     //Do something you want
                     let type = subJson["type"].string
+                    
+                    if type == "follow" {
+                        
+                    } else {
+                    
                     let id = subJson["_id"].string
                     let sender = subJson["sender"].string
                     
@@ -54,53 +74,77 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                         sendername = "Anonymous"
                     }
                     
+                    if read == false {
+                        self.counter++
+                    }
+                    
                     if read == nil {
                         read = false
                     }
                     
                     if type == "answer" {
                         
-                        let newUrl = globalurl + "api/questions/" + question_id!
+                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: "", createdAt: yourDate, answer_id: answer_id)
+                        self.notificationArray.append(notification)
+                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         
-                        Alamofire.request(.GET, newUrl, parameters: nil)
-                            .responseJSON { response in
-                                var value = response.result.value
-                                
-                                if value == nil {
-                                    value = []
-                                }
-                                
-                                let json = JSON(value!)
-                                print("JSON: \(json)")
-                                
-                                let content = json["content"].string
-                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate, answer_id: answer_id)
-                                self.notificationArray.append(notification)
-                                self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-                                
-                                self.tableView.reloadData()
-                        }
+                        self.tableView.reloadData()
+                        
+//                        let newUrl = globalurl + "api/questions/" + question_id!
+//                        
+//                        Alamofire.request(.GET, newUrl, parameters: nil)
+//                            .responseJSON { response in
+//                                var value = response.result.value
+//                                
+//                                if value == nil {
+//                                    value = []
+//                                }
+//                                
+//                                let json = JSON(value!)
+//                                print("JSON: \(json)")
+//                                
+//                                var content = json["content"].string
+//                                if content == nil {
+//                                    content = ""
+//                                }
+//                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate, answer_id: answer_id)
+//                                self.notificationArray.append(notification)
+//                                self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+//                                
+//                                self.tableView.reloadData()
+//                        }
                     } else if type == "like"{
-                        let newUrl = globalurl + "api/answers/" + answer_id!
+                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: "", createdAt: yourDate, answer_id: answer_id)
+                        self.notificationArray.append(notification)
+                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         
-                        Alamofire.request(.GET, newUrl, parameters: nil)
-                            .responseJSON { response in
-                                var value = response.result.value
-                                
-                                if value == nil {
-                                    value = []
-                                }
-                                
-                                let json = JSON(value!)
-                                print("JSON: \(json)")
-                                
-                                let content = json["content"].string
-                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate, answer_id: answer_id)
-                                self.notificationArray.append(notification)
-                                self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-                                
-                                self.tableView.reloadData()
-                        }
+                        self.tableView.reloadData()
+                        
+//                        let newUrl = globalurl + "api/answers/" + answer_id!
+//                        
+//                        Alamofire.request(.GET, newUrl, parameters: nil)
+//                            .responseJSON { response in
+//                                var value = response.result.value
+//                                
+//                                if value == nil {
+//                                    value = []
+//                                }
+//                                
+//                                let json = JSON(value!)
+//                                print("JSON: \(json)")
+//                                
+//                                var content = json["content"].string
+//                                if content == nil {
+//                                    content = ""
+//                                }
+//                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate, answer_id: answer_id)
+//                                self.notificationArray.append(notification)
+//                                self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+//                                
+//                                self.tableView.reloadData()
+//                        }
+                    }
+                    // type follow bracket
                     }
                 }
 
@@ -114,9 +158,32 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         
     }
     
+    func readAll() {
+        let url = globalurl + "api/notifications/" + userid + "/readall"
+        
+        Alamofire.request(.PUT, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                
+                self.tableView.reloadData()
+        }
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        if counter > 0 {
+            self.readAll()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        print("Loaded")
+        
         // Do any additional setup after loading the view.
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -165,7 +232,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         let read = notificationArray[indexPath.row].read
         
         if read == false {
-            cell.backgroundColor = UIColor.grayColor()
+            cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
         } else if read == true {
             cell.backgroundColor = UIColor.whiteColor()
         }
@@ -215,21 +282,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "notificationToMyQuestion" {
-            let myQuestionVC: MyQuestionViewController = segue.destinationViewController as! MyQuestionViewController
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let id = self.notificationArray[indexPath!.row].question_id
-            myQuestionVC.id = id
-            notificationArray[indexPath!.row].read = true
-            self.tableView.reloadData()
-        } else if segue.identifier == "notificationToThankedAnswer" {
-            let thankedAnswerVC: ThankedAnswerViewController = segue.destinationViewController as! ThankedAnswerViewController
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let id = self.notificationArray[indexPath!.row].question_id
-            thankedAnswerVC.id = id
-            notificationArray[indexPath!.row].read = true
-            self.tableView.reloadData()
-        } else if segue.identifier == "segueToAnsweredQuestionVC" {
+        if segue.identifier == "segueToAnsweredQuestionVC" {
             let answeredQuestionVC: AnsweredQuestionViewController = segue.destinationViewController as! AnsweredQuestionViewController
             let indexPath = self.tableView.indexPathForSelectedRow
             let questionId = self.notificationArray[indexPath!.row].question_id

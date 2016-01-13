@@ -1,17 +1,17 @@
 //
-//  QuestionInfoTableViewCell.swift
+//  ProfileSegmentedTableViewCell.swift
 //  QuestionSwiftProject
 //
-//  Created by Brian Endo on 11/2/15.
+//  Created by Brian Endo on 12/10/15.
 //  Copyright © 2015 Brian Endo. All rights reserved.
 //
 
 import UIKit
 
-class QuestionInfoTableViewCell: UITableViewCell {
+class ProfileSegmentedTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var profileSegmentedControl: UISegmentedControl!
     
-    @IBOutlet weak var headerTextView: UITextView!
     
     override func awakeFromNib() {
         super.awakeFromNib()

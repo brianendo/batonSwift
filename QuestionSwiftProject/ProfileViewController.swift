@@ -20,10 +20,44 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     
     var myQuestionArray = [Question]()
     var myAnswerArray = [Answer]()
+    var myLikedAnswerArray = [Answer]()
+    var followerCount = 0
+    var followingCount = 0
     
     var counter = 0
     
     var refreshControl:UIRefreshControl!
+    
+    func loadFollowInfo() {
+        let url = globalurl + "api/users/" + userid
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                } else {
+                    let json = JSON(value!)
+                    print("JSON: \(json)")
+                    var followerCount = json["followerCount"].number?.integerValue
+                    var followingCount = json["followingCount"].number?.integerValue
+                    
+                    if followerCount == nil {
+                        followerCount = 0
+                    }
+                    
+                    if followingCount == nil {
+                        followingCount = 0
+                    }
+                    
+                    self.followerCount = followerCount!
+                    self.followingCount = followingCount!
+                    
+                    self.tableView.reloadData()
+                }
+        }
+    }
     
     func loadMyQuestions() {
         let url = globalurl + "api/myquestions/" + userid
@@ -50,6 +84,11 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     var answered = false
                     var user = false
                     let createdAt = subJson["created_at"].string
+                    var likecount = subJson["likes"].number?.integerValue
+                    
+                    if likecount == nil {
+                        likecount = 0
+                    }
                     
                     let dateFor: NSDateFormatter = NSDateFormatter()
                     dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -70,7 +109,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                         answercount = 0
                     }
                     
-                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator)
+                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
                     self.myQuestionArray.append(question)
                     
                     self.tableView.reloadData()
@@ -93,12 +132,17 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 print("JSON: \(json)")
                 for (_,subJson):(String, JSON) in json {
                     //Do something you want
-                    let content = subJson["content"].string
+                    var content = subJson["content"].string
                     let id = subJson["_id"].string
+                    let creator = subJson["creator"].string
                     let creatorname = subJson["creatorname"].string
                     let question_id = subJson["question_id"].string
                     let video_url = subJson["video_url"].string
                     var likeCount = subJson["likeCount"].int
+                    
+                    if content == nil {
+                        content = ""
+                    }
                     
                     if likeCount == nil {
                         likeCount = 0
@@ -119,9 +163,13 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                                 let json = JSON(value!)
                                 print("JSON: \(json)")
                                 
-                                let question_content = json["content"].string
+                                var question_content = json["content"].string
                                 
-                                let answer = Answer(content: content, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount)
+                                if question_content == nil {
+                                    question_content = ""
+                                }
+                                
+                                let answer = Answer(content: content, creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: false)
                                 self.myAnswerArray.append(answer)
                                 
                                 self.tableView.reloadData()
@@ -130,6 +178,79 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                     
                 }
+        }
+    }
+    
+    func loadMyLikedAnswers() {
+        let url = globalurl + "api/users/" + userid + "/mylikedanswers/"
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                print("myLikedAnswer")
+                if value == nil {
+                    value = []
+                }
+                
+                let json = JSON(value!)
+                print("JSON: \(json)")
+                for (_,subJson):(String, JSON) in json {
+                    //Do something you want
+                    var content = subJson["content"].string
+                    let id = subJson["_id"].string
+                    let creator = subJson["creator"].string
+                    let creatorname = subJson["creatorname"].string
+                    let question_id = subJson["question_id"].string
+                    let video_url = subJson["video_url"].string
+                    var likeCount = subJson["likeCount"].int
+                    
+                    if content == nil {
+                        content = ""
+                    }
+                    
+                    if likeCount == nil {
+                        likeCount = 0
+                    }
+                    
+                    if video_url != nil {
+                        
+                        let newUrl = globalurl + "api/questions/" + question_id!
+                        
+                        Alamofire.request(.GET, newUrl, parameters: nil)
+                            .responseJSON { response in
+                                var value = response.result.value
+                                
+                                if value == nil {
+                                    value = []
+                                }
+                                
+                                let json = JSON(value!)
+                                print("JSON: \(json)")
+                                
+                                var question_content = json["content"].string
+                                
+                                if question_content == nil {
+                                    question_content = ""
+                                }
+                                
+                                let answer = Answer(content: content, creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: false)
+                                self.myLikedAnswerArray.append(answer)
+                                
+                                self.tableView.reloadData()
+                                
+                        }
+                    }
+                    
+                }
+        }
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        for cell in tableView.visibleCells {
+            if cell.isKindOfClass(ProfileRelayTableViewCell) {
+                let cell = cell as! ProfileRelayTableViewCell
+                cell.player.pause()
+            }
         }
     }
     
@@ -148,11 +269,16 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 70
         
+        self.loadFollowInfo()
+        
         self.myQuestionArray.removeAll(keepCapacity: true)
         self.loadMyQuestions()
         
         self.myAnswerArray.removeAll(keepCapacity: true)
         self.loadMyAnswers()
+        
+        self.myLikedAnswerArray.removeAll(keepCapacity: true)
+        self.loadMyLikedAnswers()
         
         self.refreshControl = UIRefreshControl()
         //        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
@@ -166,9 +292,12 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     func refreshFeed() {
         self.myQuestionArray.removeAll(keepCapacity: true)
         self.myAnswerArray.removeAll(keepCapacity: true)
+        self.myLikedAnswerArray.removeAll(keepCapacity: true)
         
+        self.loadFollowInfo()
         self.loadMyQuestions()
         self.loadMyAnswers()
+        self.loadMyLikedAnswers()
         
         self.tableView.reloadData()
         self.refreshControl.endRefreshing()
@@ -178,9 +307,12 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         // Code to refresh table view
         self.myQuestionArray.removeAll(keepCapacity: true)
         self.myAnswerArray.removeAll(keepCapacity: true)
+        self.myLikedAnswerArray.removeAll(keepCapacity: true)
         
+        self.loadFollowInfo()
         self.loadMyQuestions()
         self.loadMyAnswers()
+        self.loadMyLikedAnswers()
         
         self.tableView.reloadData()
         let delayInSeconds = 1.5;
@@ -197,17 +329,21 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return 1
+        } else if section == 1 {
+            return 1
         } else {
             if counter == 0 {
                 return myQuestionArray.count
-            } else {
+            } else if counter == 1 {
                 return myAnswerArray.count
+            } else {
+                return myLikedAnswerArray.count
             }
         }
         
@@ -218,10 +354,12 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         if sender.selectedSegmentIndex == 0 {
             print("Money")
             counter = 0
-        } else {
+        } else if sender.selectedSegmentIndex == 1 {
             print("Mayweather")
             counter = 1
             self.tableView.reloadData()
+        } else {
+            counter = 2
         }
         
         self.tableView.reloadData()
@@ -233,8 +371,12 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             let cell: ProfileTableViewCell = tableView.dequeueReusableCellWithIdentifier("profileCell", forIndexPath: indexPath) as! ProfileTableViewCell
             
             cell.selectionStyle = UITableViewCellSelectionStyle.None
-            cell.profileSegmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
             cell.nameLabel.text = name
+            cell.followersButton.setTitle("\(self.followerCount) followers", forState: .Normal)
+            cell.followingButton.setTitle("\(self.followingCount) following", forState: .Normal)
+            
+//            cell.followersButton.titleLabel?.text = "\(self.followerCount) followers"
+//            cell.followingButton.titleLabel?.text = "\(self.followingCount) following"
             
             cell.profileImageView.image = UIImage(named: "Placeholder")
             if let cachedImageResult = imageCache[currentUser] {
@@ -276,6 +418,13 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             }
             return cell
         }
+        else if indexPath.section == 1 {
+            let cell: ProfileSegmentedTableViewCell = tableView.dequeueReusableCellWithIdentifier("SegmentedCell", forIndexPath: indexPath) as! ProfileSegmentedTableViewCell
+            
+            cell.profileSegmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
+            
+            return cell
+        }
         if counter == 0 {
             let cell: ProfileQuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("profileQuestionCell", forIndexPath: indexPath) as! ProfileQuestionTableViewCell
             
@@ -285,7 +434,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.answercountLabel.text = "\(answerCount)"
             
             return cell
-        } else {
+        } else if counter == 1 {
             let cell: ProfileRelayTableViewCell = tableView.dequeueReusableCellWithIdentifier("RelayCell", forIndexPath: indexPath) as! ProfileRelayTableViewCell
             cell.selectionStyle = UITableViewCellSelectionStyle.None
             
@@ -304,6 +453,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.playerController.didMoveToParentViewController(self)
             cell.player.pause()
             
+            if indexPath.row == 0 {
+                cell.player.play()
+            }
+            
             cell.selectionStyle = UITableViewCellSelectionStyle.None
             
             cell.playerController.view.userInteractionEnabled = true
@@ -314,6 +467,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             print(CMTimeGetSeconds((cell.player.currentItem?.asset.duration)!))
             print(CMTimeGetSeconds((cell.player.currentItem?.currentTime())!))
             
+            let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
+            view.addGestureRecognizer(tapGesture)
+            view.tag = indexPath.row
             
 //            let likeCount = self.likeCountArray[indexPath.row]
 //            cell.likeCountTextView.text = "\(likeCount)"
@@ -321,9 +477,67 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             
             return cell
             
+        } else {
+            let cell: ProfileRelayTableViewCell = tableView.dequeueReusableCellWithIdentifier("RelayCell", forIndexPath: indexPath) as! ProfileRelayTableViewCell
+            cell.selectionStyle = UITableViewCellSelectionStyle.None
+            
+            cell.separatorInset = UIEdgeInsetsMake(0, 10000, 0, 0)
+            
+            print(myLikedAnswerArray[indexPath.row].question_content)
+            cell.contentTextView.text = myLikedAnswerArray[indexPath.row].question_content
+            cell.contentTextView.userInteractionEnabled = false
+            
+            let videoUrl = myLikedAnswerArray[indexPath.row].video_url
+            
+            let newURL = NSURL(string: videoUrl)
+            cell.player = AVPlayer(URL: newURL!)
+            cell.playerController.player = cell.player
+            cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+            self.addChildViewController(cell.playerController)
+            cell.videoView.addSubview(cell.playerController.view)
+            cell.playerController.didMoveToParentViewController(self)
+            cell.player.pause()
+            
+            if indexPath.row == 0 {
+                cell.player.play()
+            }
+            
+            cell.selectionStyle = UITableViewCellSelectionStyle.None
+            
+            cell.playerController.view.userInteractionEnabled = true
+            
+            let view = UIView(frame: cell.playerController.view.frame)
+            cell.addSubview(view)
+            
+            print(CMTimeGetSeconds((cell.player.currentItem?.asset.duration)!))
+            print(CMTimeGetSeconds((cell.player.currentItem?.currentTime())!))
+            
+            let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
+            view.addGestureRecognizer(tapGesture)
+            view.tag = indexPath.row
+            
+            //            let likeCount = self.likeCountArray[indexPath.row]
+            //            cell.likeCountTextView.text = "\(likeCount)"
+            //            cell.videoView.bringSubviewToFront(cell.likeCountTextView)
+            
+            return cell
+            
         }
         
         
+        
+    }
+    
+    func singleTapped(sender: UITapGestureRecognizer) {
+        print("Tapped")
+        let tag = sender.view?.tag
+        
+        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 2)) as! ProfileRelayTableViewCell
+        if (cell.player.rate > 0) {
+            cell.player.pause()
+        } else {
+            cell.player.play()
+        }
         
     }
     
@@ -350,19 +564,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "profileToMyQuestionVC" {
-            let myQuestionVC: MyQuestionViewController = segue.destinationViewController as! MyQuestionViewController
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let content = self.myQuestionArray[indexPath!.row].content
-            let id = self.myQuestionArray[indexPath!.row].id
-            myQuestionVC.content = content
-            myQuestionVC.id = id
-        } else if segue.identifier == "showThankedAnswerVC" {
-            let thankedAnswerVC: ThankedAnswerViewController = segue.destinationViewController as! ThankedAnswerViewController
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let id = self.myAnswerArray[indexPath!.row].question_id
-            thankedAnswerVC.id = id
-        } else if segue.identifier == "segueFromProfileToAnswers" {
+        if segue.identifier == "segueFromProfileToAnswers" {
             let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
             let indexPath = self.tableView.indexPathForSelectedRow
             let content = self.myQuestionArray[indexPath!.row].content
@@ -481,7 +683,16 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 let cell = cell as! ProfileRelayTableViewCell
                 
                 if visibleHeight > cellHeight {
-                    cell.player.play()
+                    if (cell.player.rate > 0) {
+                        
+                    } else {
+                        let seconds : Int64 = 0
+                        let preferredTimeScale : Int32 = 1
+                        let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
+                        
+                        cell.player.seekToTime(seekTime)
+                        cell.player.play()
+                    }
                 } else {
                     cell.player.pause()
                 }

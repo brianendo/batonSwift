@@ -20,6 +20,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var questionArray = [Question]()
     var myQuestionArray = [Question]()
     var selectedIndexPath = 0
+    var currentPage = 0
+    private var lastContentOffset: CGFloat = 0
+    var isLoading = false
     
     var refreshControl:UIRefreshControl!
     
@@ -48,6 +51,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     var answered = false
                     var user = false
                     let createdAt = subJson["created_at"].string
+                    var likecount = subJson["likes"].number?.integerValue
+                    
+                    if likecount == nil {
+                        likecount = 0
+                    }
                     
                     let dateFor: NSDateFormatter = NSDateFormatter()
                     dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -74,7 +82,66 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         creatorname = "Anonymous"
                     }
                     
-                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator)
+                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
+                    self.questionArray.append(question)
+                    
+                    self.tableView.reloadData()
+                }
+        }
+    }
+    
+    func loadPaginatedData() {
+        let url = globalurl + "api/questions/page/" + "\(self.currentPage)"
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                
+                let json = JSON(value!)
+                print("JSON: \(json)")
+                for (_,subJson):(String, JSON) in json {
+                    //Do something you want
+
+                    let id = subJson["_id"].string
+                    let content = subJson["content"].string
+                    var answercount = subJson["answercount"].number?.integerValue
+                    var creatorname = subJson["creatorname"].string
+                    let answeredBy = subJson["answered_by"]
+                    let creator = subJson["creator"].string
+                    var answered = false
+                    var user = false
+                    let createdAt = subJson["created_at"].string
+                    
+                    var likecount = subJson["likes"].number?.integerValue
+                    
+                    if likecount == nil {
+                        likecount = 0
+                    }
+                    
+                    let dateFor: NSDateFormatter = NSDateFormatter()
+                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+                    
+                    if creator == userid {
+                        user = true
+                    }
+                    
+                    for (_,subJson):(String, JSON) in answeredBy {
+                        let answerer = subJson.string
+                        if answerer == userid {
+                            answered = true
+                        }
+                    }
+                    
+                    if answercount == nil {
+                        answercount = 0
+                    }
+                    
+                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
                     self.questionArray.append(question)
                     
                     self.tableView.reloadData()
@@ -107,6 +174,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     var answered = false
                     var user = false
                     let createdAt = subJson["created_at"].string
+                    var likecount = subJson["likes"].number?.integerValue
+                    
+                    if likecount == nil {
+                        likecount = 0
+                    }
                     
                     let dateFor: NSDateFormatter = NSDateFormatter()
                     dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -133,7 +205,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         creatorname = "Anonymous"
                     }
                     
-                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator)
+                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
                     self.myQuestionArray.append(question)
 
                     self.tableView.reloadData()
@@ -162,6 +234,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     
                     name = firstname! + " " + lastname!
                     userid = currentuserid!
+                    
                     self.tableView.reloadData()
                     self.loadData()
                 }
@@ -218,7 +291,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func refreshFeed(){
         self.questionArray.removeAll(keepCapacity: true)
         self.myQuestionArray.removeAll(keepCapacity: true)
-        self.loadData()
+        self.currentPage = 0
+        self.loadPaginatedData()
         self.tableView.reloadData()
     }
     
@@ -227,7 +301,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         self.questionArray.removeAll(keepCapacity: true)
         self.myQuestionArray.removeAll(keepCapacity: true)
         
+//        self.currentPage = 0
         self.loadUserInfo()
+//        self.loadPaginatedData()
         self.tableView.reloadData()
         
         let delayInSeconds = 1.5;
@@ -248,26 +324,26 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         
         if (components.year >= 2) {
-            return "\(components.year) years ago"
+            return "\(components.year)y"
         } else if (components.year >= 1){
             if (numericDates){
-                return "1 year ago"
+                return "1y"
             } else {
                 return "Last year"
             }
         } else if (components.month >= 2) {
-            return "\(components.month) months ago"
+            return "\(components.month)mo"
         } else if (components.month >= 1){
             if (numericDates){
-                return "1 month ago"
+                return "1mo"
             } else {
                 return "Last month"
             }
         } else if (components.weekOfYear >= 2) {
-            return "\(components.weekOfYear) weeks ago"
+            return "\(components.weekOfYear)w"
         } else if (components.weekOfYear >= 1){
             if (numericDates){
-                return "1 week ago"
+                return "1w"
             } else {
                 return "Last week"
             }
@@ -323,7 +399,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
         
-//        cell.selectionStyle = UITableViewCellSelectionStyle.None
+        cell.preservesSuperviewLayoutMargins = false
+        cell.separatorInset = UIEdgeInsetsZero
+        cell.layoutMargins = UIEdgeInsetsZero
         
         cell.questionTextView.text = questionArray[indexPath.row].content
         cell.questionTextView.userInteractionEnabled = false
@@ -334,15 +412,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let answered = questionArray[indexPath.row].answered
         let userStatus = questionArray[indexPath.row].currentuser
         
-        if answered == true {
-            cell.backgroundColor = UIColor.grayColor()
-        } else if userStatus == true {
-            cell.backgroundColor = UIColor.lightGrayColor()
-        } else {
-            cell.backgroundColor = UIColor.whiteColor()
-        }
-        
         cell.answercountLabel.text =  "\(answercount)"
+        
+        let likecount = questionArray[indexPath.row].likecount
+        cell.likecountTextView.text = "\(likecount)"
         
         let date = questionArray[indexPath.row].createdAt
         let timeAgo = timeAgoSinceDate(date, numericDates: true)
@@ -356,31 +429,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showMyQuestionVC" {
-            let myQuestionVC: MyQuestionViewController = segue.destinationViewController as! MyQuestionViewController
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let content = self.questionArray[indexPath!.row].content
-            let id = self.questionArray[indexPath!.row].id
-            myQuestionVC.content = content
-            myQuestionVC.id = id
-        }
-//        else if segue.identifier == "showSubmitAnswerVC" {
-//            let answerVC: SubmitAnswerViewController = segue.destinationViewController as! SubmitAnswerViewController
-//            let indexPath = self.tableView.indexPathForSelectedRow
-//            let content = self.questionArray[indexPath!.row].content
-//            let id = self.questionArray[indexPath!.row].id
-//            let creatorname = self.questionArray[indexPath!.row].creatorname
-//            self.selectedIndexPath = indexPath!.row
-//            answerVC.content = content
-//            answerVC.id = id
-//            answerVC.creatorname = creatorname
-//        }
-        else if segue.identifier == "feedToThankedAnswerVC" {
-            let thankedAnswerVC: ThankedAnswerViewController = segue.destinationViewController as! ThankedAnswerViewController
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let id = self.questionArray[indexPath!.row].id
-            thankedAnswerVC.id = id
-        } else if segue.identifier == "segueToTakeVideoVC" {
+        if segue.identifier == "segueToTakeVideoVC" {
             let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
             let content = self.questionArray[selectedIndexPath].content
             let id = self.questionArray[selectedIndexPath].id
@@ -400,16 +449,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-//        if questionArray[indexPath.row].currentuser == true {
-//            self.performSegueWithIdentifier("showMyQuestionVC", sender: self)
-//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//        } else if questionArray[indexPath.row].answered == true {
-//            self.performSegueWithIdentifier("feedToThankedAnswerVC", sender: self)
-//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//        } else {
-//            self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
-//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//        }
         self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
     }
@@ -443,6 +482,55 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
     }
     
+//    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+//        let yOffset = tableView.contentOffset.y;
+//        let height = tableView.contentSize.height - tableView.frame.height
+//        let scrolledPercentage = yOffset / height;
+//        
+//        
+//        // Check if all the conditions are met to allow loading the next page
+//        //
+//        if (scrolledPercentage > 0.6 && !self.isLoading) {
+//            self.currentPage++
+//            self.loadNextPage()
+//        }
+//        
+//    }
+    
+//    func loadNextPage() {
+//        if self.isLoading {
+//            return
+//        }
+//        self.isLoading = true
+//        
+//        self.loadPaginatedData()
+//        
+//        self.isLoading = false
+//    }
+    
+//    func scrollViewDidScroll(scrollView: UIScrollView) {
+//        
+//        if (self.lastContentOffset > scrollView.contentOffset.y) {
+//            // move up
+//        }
+//        else if (self.lastContentOffset < scrollView.contentOffset.y) {
+//            // move down
+//            let offset = scrollView.contentOffset
+//            let bounds = scrollView.bounds
+//            let size = scrollView.contentSize
+//            let inset = scrollView.contentInset
+//            let y: CGFloat = offset.y + bounds.size.height - inset.bottom
+//            let h: CGFloat = size.height
+//            let reload_distance: CGFloat = 10
+//            if(y > h + reload_distance) {
+//                print("Load more rows")
+//                self.currentPage++
+//                self.loadPaginatedData()
+//            }
+//        }
+//        self.lastContentOffset = scrollView.contentOffset.y
+//        
+//    }
     
 
 }

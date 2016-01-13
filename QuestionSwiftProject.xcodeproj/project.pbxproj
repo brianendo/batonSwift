@@ -9,11 +9,12 @@
 /* Begin PBXBuildFile section */
 		737F801A87D842976BF544B6 /* Pods_QuestionSwiftProject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC64B4535E956C1D5A2CC75A /* Pods_QuestionSwiftProject.framework */; };
 		8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */; };
-		8E807C681BEC13A6006F4E53 /* QuestionThankedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E807C671BEC13A6006F4E53 /* QuestionThankedTableViewCell.swift */; };
 		8E9D70E31C164A280073CA17 /* AnsweredQuestionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */; };
 		8E9D70E51C164A920073CA17 /* AnsweredQuestionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */; };
 		8E9D70E71C167A960073CA17 /* MyQuestionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E61C167A960073CA17 /* MyQuestionTitleTableViewCell.swift */; };
 		8E9D70E91C1776860073CA17 /* ProfileRelayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E81C1776860073CA17 /* ProfileRelayTableViewCell.swift */; };
+		8E9D70EB1C17A0300073CA17 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */; };
+		8E9D70ED1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70EC1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift */; };
 		8EA960F61C110A3F00371C77 /* AnswersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F51C110A3F00371C77 /* AnswersViewController.swift */; };
 		8EA960F81C11185A00371C77 /* AnswerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */; };
 		8EA960FA1C12277900371C77 /* QuestionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */; };
@@ -30,13 +31,9 @@
 		8EE04B051BE2A77D0040D5A5 /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B041BE2A77D0040D5A5 /* StartViewController.swift */; };
 		8EE04B071BE2A7A30040D5A5 /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B061BE2A7A30040D5A5 /* LogInViewController.swift */; };
 		8EE04B091BE2A7AD0040D5A5 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B081BE2A7AD0040D5A5 /* SignUpViewController.swift */; };
-		8EE04B151BE857330040D5A5 /* MyQuestionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B141BE857330040D5A5 /* MyQuestionViewController.swift */; };
-		8EE04B171BE859200040D5A5 /* QuestionInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B161BE859200040D5A5 /* QuestionInfoTableViewCell.swift */; };
-		8EE04B191BE85CA40040D5A5 /* MyQuestionAnswerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B181BE85CA40040D5A5 /* MyQuestionAnswerTableViewCell.swift */; };
 		8EE04B1C1BE862160040D5A5 /* Question.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B1B1BE862160040D5A5 /* Question.swift */; };
 		8EE04B1E1BE95D7B0040D5A5 /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B1D1BE95D7B0040D5A5 /* NotificationViewController.swift */; };
 		8EE04B201BE95F140040D5A5 /* NotificationAnswerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B1F1BE95F140040D5A5 /* NotificationAnswerTableViewCell.swift */; };
-		8EE04B221BE96C790040D5A5 /* ThankedAnswerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B211BE96C790040D5A5 /* ThankedAnswerViewController.swift */; };
 		8EE04B241BE973500040D5A5 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B231BE973500040D5A5 /* ProfileViewController.swift */; };
 		8EE04B261BE974630040D5A5 /* ProfileQuestionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B251BE974630040D5A5 /* ProfileQuestionTableViewCell.swift */; };
 		8EE04B281BE97D6B0040D5A5 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04B271BE97D6B0040D5A5 /* Notification.swift */; };
@@ -64,11 +61,12 @@
 /* Begin PBXFileReference section */
 		78B84539228AC17ECF09216E /* Pods-QuestionSwiftProject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QuestionSwiftProject.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QuestionSwiftProject/Pods-QuestionSwiftProject.debug.xcconfig"; sourceTree = "<group>"; };
 		8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TakeVideoViewController.swift; sourceTree = "<group>"; };
-		8E807C671BEC13A6006F4E53 /* QuestionThankedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionThankedTableViewCell.swift; sourceTree = "<group>"; };
 		8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionViewController.swift; sourceTree = "<group>"; };
 		8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionTableViewCell.swift; sourceTree = "<group>"; };
 		8E9D70E61C167A960073CA17 /* MyQuestionTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyQuestionTitleTableViewCell.swift; sourceTree = "<group>"; };
 		8E9D70E81C1776860073CA17 /* ProfileRelayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileRelayTableViewCell.swift; sourceTree = "<group>"; };
+		8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
+		8E9D70EC1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileSegmentedTableViewCell.swift; sourceTree = "<group>"; };
 		8EA960F51C110A3F00371C77 /* AnswersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnswersViewController.swift; sourceTree = "<group>"; };
 		8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnswerTableViewCell.swift; sourceTree = "<group>"; };
 		8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionTitleTableViewCell.swift; sourceTree = "<group>"; };
@@ -91,13 +89,9 @@
 		8EE04B041BE2A77D0040D5A5 /* StartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
 		8EE04B061BE2A7A30040D5A5 /* LogInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		8EE04B081BE2A7AD0040D5A5 /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
-		8EE04B141BE857330040D5A5 /* MyQuestionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyQuestionViewController.swift; sourceTree = "<group>"; };
-		8EE04B161BE859200040D5A5 /* QuestionInfoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionInfoTableViewCell.swift; sourceTree = "<group>"; };
-		8EE04B181BE85CA40040D5A5 /* MyQuestionAnswerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyQuestionAnswerTableViewCell.swift; sourceTree = "<group>"; };
 		8EE04B1B1BE862160040D5A5 /* Question.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Question.swift; sourceTree = "<group>"; };
 		8EE04B1D1BE95D7B0040D5A5 /* NotificationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
 		8EE04B1F1BE95F140040D5A5 /* NotificationAnswerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationAnswerTableViewCell.swift; sourceTree = "<group>"; };
-		8EE04B211BE96C790040D5A5 /* ThankedAnswerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThankedAnswerViewController.swift; sourceTree = "<group>"; };
 		8EE04B231BE973500040D5A5 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		8EE04B251BE974630040D5A5 /* ProfileQuestionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileQuestionTableViewCell.swift; sourceTree = "<group>"; };
 		8EE04B271BE97D6B0040D5A5 /* Notification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
@@ -184,20 +178,17 @@
 				8EA960F51C110A3F00371C77 /* AnswersViewController.swift */,
 				8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */,
 				8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */,
-				8EE04B141BE857330040D5A5 /* MyQuestionViewController.swift */,
-				8EE04B161BE859200040D5A5 /* QuestionInfoTableViewCell.swift */,
-				8EE04B181BE85CA40040D5A5 /* MyQuestionAnswerTableViewCell.swift */,
 				8EE04B1D1BE95D7B0040D5A5 /* NotificationViewController.swift */,
+				8EE04B1F1BE95F140040D5A5 /* NotificationAnswerTableViewCell.swift */,
 				8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */,
 				8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */,
 				8E9D70E61C167A960073CA17 /* MyQuestionTitleTableViewCell.swift */,
-				8EE04B1F1BE95F140040D5A5 /* NotificationAnswerTableViewCell.swift */,
-				8EE04B211BE96C790040D5A5 /* ThankedAnswerViewController.swift */,
-				8E807C671BEC13A6006F4E53 /* QuestionThankedTableViewCell.swift */,
 				8EE04B231BE973500040D5A5 /* ProfileViewController.swift */,
 				8EE04B251BE974630040D5A5 /* ProfileQuestionTableViewCell.swift */,
 				8E9D70E81C1776860073CA17 /* ProfileRelayTableViewCell.swift */,
 				8EE04B2D1BEABBD10040D5A5 /* ProfileTableViewCell.swift */,
+				8E9D70EC1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift */,
+				8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */,
 				8EE04AD11BE2998A0040D5A5 /* Main.storyboard */,
 				8EE04B1A1BE861FE0040D5A5 /* Models */,
 				8EE04AD41BE2998A0040D5A5 /* Assets.xcassets */,
@@ -317,6 +308,7 @@
 				TargetAttributes = {
 					8EE04AC91BE299890040D5A5 = {
 						CreatedOnToolsVersion = 7.1;
+						DevelopmentTeam = L38XWG77QV;
 					};
 					8EE04ADD1BE2998A0040D5A5 = {
 						CreatedOnToolsVersion = 7.1;
@@ -435,28 +427,25 @@
 				8EE04B241BE973500040D5A5 /* ProfileViewController.swift in Sources */,
 				8EE04B201BE95F140040D5A5 /* NotificationAnswerTableViewCell.swift in Sources */,
 				8EE04B091BE2A7AD0040D5A5 /* SignUpViewController.swift in Sources */,
-				8EE04B221BE96C790040D5A5 /* ThankedAnswerViewController.swift in Sources */,
-				8EE04B191BE85CA40040D5A5 /* MyQuestionAnswerTableViewCell.swift in Sources */,
 				8EA960F81C11185A00371C77 /* AnswerTableViewCell.swift in Sources */,
 				8EE04B281BE97D6B0040D5A5 /* Notification.swift in Sources */,
 				8EE04B2A1BEAA92F0040D5A5 /* Answer.swift in Sources */,
 				8EA960F61C110A3F00371C77 /* AnswersViewController.swift in Sources */,
 				8EE04B001BE2A14F0040D5A5 /* AskQuestionViewController.swift in Sources */,
-				8EE04B171BE859200040D5A5 /* QuestionInfoTableViewCell.swift in Sources */,
 				8EA960FA1C12277900371C77 /* QuestionTitleTableViewCell.swift in Sources */,
 				8E9D70E71C167A960073CA17 /* MyQuestionTitleTableViewCell.swift in Sources */,
 				8EE04B071BE2A7A30040D5A5 /* LogInViewController.swift in Sources */,
 				8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */,
 				8EE04B261BE974630040D5A5 /* ProfileQuestionTableViewCell.swift in Sources */,
+				8E9D70EB1C17A0300073CA17 /* TabBarViewController.swift in Sources */,
 				8E9D70E91C1776860073CA17 /* ProfileRelayTableViewCell.swift in Sources */,
 				8EE04B1E1BE95D7B0040D5A5 /* NotificationViewController.swift in Sources */,
+				8E9D70ED1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift in Sources */,
 				8EE04AFE1BE29C3A0040D5A5 /* QuestionTableViewCell.swift in Sources */,
 				8EE04AFC1BE29A030040D5A5 /* FeedViewController.swift in Sources */,
 				8EE04ACE1BE2998A0040D5A5 /* AppDelegate.swift in Sources */,
 				8EE04B2E1BEABBD10040D5A5 /* ProfileTableViewCell.swift in Sources */,
 				8E9D70E31C164A280073CA17 /* AnsweredQuestionViewController.swift in Sources */,
-				8EE04B151BE857330040D5A5 /* MyQuestionViewController.swift in Sources */,
-				8E807C681BEC13A6006F4E53 /* QuestionThankedTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -599,6 +588,7 @@
 			baseConfigurationReference = 78B84539228AC17ECF09216E /* Pods-QuestionSwiftProject.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = QuestionSwiftProject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -612,6 +602,7 @@
 			baseConfigurationReference = E2D906B0E9B12C94101A45D8 /* Pods-QuestionSwiftProject.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = QuestionSwiftProject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

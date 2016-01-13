@@ -17,6 +17,9 @@ class AnswerTableViewCell: UITableViewCell {
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var likeImageView: UIImageView!
     @IBOutlet weak var likeCountTextView: UITextView!
+    @IBOutlet weak var heartImageView: UIImageView!
+    @IBOutlet weak var likeButton: UIButton!
+    @IBOutlet weak var followButton: UIButton!
     
     
     var player: AVPlayer!
@@ -25,6 +28,12 @@ class AnswerTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        likeCountTextView.layer.shadowColor = UIColor.blackColor().CGColor
+        likeCountTextView.layer.shadowOffset = CGSizeMake(0, 2.0)
+        likeCountTextView.layer.shadowOpacity = 1.0
+        likeCountTextView.layer.shadowRadius = 2.0
+        likeCountTextView.layer.backgroundColor = UIColor.clearColor().CGColor
         
         playerController = AVPlayerViewController()
         playerController.player = player

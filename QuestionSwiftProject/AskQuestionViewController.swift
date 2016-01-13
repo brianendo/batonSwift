@@ -10,13 +10,19 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class AskQuestionViewController: UIViewController {
+class AskQuestionViewController: UIViewController, UITextViewDelegate {
     
     @IBOutlet weak var contentTextView: UITextView!
     
+    @IBOutlet weak var charRemainingLabel: UILabel!
+    
     @IBOutlet weak var bottomSpaceToLayoutGuide: NSLayoutConstraint!
     
+    @IBOutlet weak var sendButton: UIButton!
+    
     var anonymous = "false"
+    
+    var placeholder = "What are your thoughts on fantasy sports?"
     
     func checkLastQuestion() {
         let url = globalurl + "api/users/" + userid
@@ -101,13 +107,93 @@ class AskQuestionViewController: UIViewController {
         
         self.checkLastQuestion()
         
+        contentTextView.delegate = self
+        
+        // Make the keyboard pop up
         contentTextView.becomeFirstResponder()
+        
+        // Placeholder text
+        contentTextView.text = placeholder
+        contentTextView.textColor = UIColor.lightGrayColor()
+        
+        contentTextView.selectedTextRange = contentTextView.textRangeFromPosition(contentTextView.beginningOfDocument, toPosition: contentTextView.beginningOfDocument)
+        
+        self.sendButton.enabled = false
+        self.sendButton.layer.masksToBounds = true
+        self.sendButton.layer.borderColor = UIColor(red:0.89, green:0.89, blue:0.89, alpha:1.0).CGColor
+        self.sendButton.layer.borderWidth = 0.7
         
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
+        // Combine the textView text and the replacement text to
+        // create the updated text string
+        let currentText:NSString = contentTextView.text
+        let updatedText = currentText.stringByReplacingCharactersInRange(range, withString:text)
+        
+        // If updated text view will be empty, add the placeholder
+        // and set the cursor to the beginning of the text view
+        if updatedText.isEmpty {
+            
+            contentTextView.text = placeholder
+            contentTextView.textColor = UIColor.lightGrayColor()
+            
+            self.charRemainingLabel.text = "100"
+            contentTextView.selectedTextRange = textView.textRangeFromPosition(textView.beginningOfDocument, toPosition: textView.beginningOfDocument)
+            
+            self.sendButton.enabled = false
+            return false
+        }
+            
+            // Else if the text view's placeholder is showing and the
+            // length of the replacement string is greater than 0, clear
+            // the text view and set its color to black to prepare for
+            // the user's entry
+        else if contentTextView.textColor == UIColor.lightGrayColor() && !text.isEmpty {
+            contentTextView.text = nil
+            contentTextView.textColor = UIColor.blackColor()
+            
+            
+        }
+        
+        // Limit character limit to 200
+        let newLength: Int = (contentTextView.text as NSString).length + (text as NSString).length - range.length
+        let remainingChar: Int = 200 - newLength
+        
+        if contentTextView.text == placeholder {
+            charRemainingLabel.text = "100"
+        } else {
+            // Make label show remaining characters
+            charRemainingLabel.text = "\(remainingChar)"
+        }
+        // Once text > 100 chars, stop ability to change text
+        return (newLength == 100) ? false : true
+        
+        
+        
+    }
+    
+    func textViewDidChange(textView: UITextView) {
+        let trimmedString = contentTextView.text.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        if trimmedString.characters.count == 0 {
+            self.sendButton.enabled = false
+        } else {
+            self.sendButton.enabled = true
+        }
+    }
+    
+    func textViewDidChangeSelection(textView: UITextView) {
+        if self.view.window != nil {
+            if contentTextView.textColor == UIColor.lightGrayColor() {
+                contentTextView.selectedTextRange = contentTextView.textRangeFromPosition(contentTextView.beginningOfDocument, toPosition: contentTextView.beginningOfDocument)
+            }
+        }
+        
     }
     
     
@@ -120,7 +206,8 @@ class AskQuestionViewController: UIViewController {
             "creatorname": name,
             "creator": userid,
             "anonymous": anonymous,
-            "answercount": 0
+            "answercount": 0,
+            "likes": 0
         ]
         Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], encoding: .JSON)
         

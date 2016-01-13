@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/ProfileViewController.swift"
-            timestampString = "471300834.262832"
+            timestampString = "474334468.846687"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "515"
-            endingLineNumber = "515">
+            startingLineNumber = "726"
+            endingLineNumber = "726">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -24,11 +24,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/TakeVideoViewController.swift"
-            timestampString = "470902712.898351"
+            timestampString = "473810874.3608"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "168"
-            endingLineNumber = "168"
+            startingLineNumber = "176"
+            endingLineNumber = "176"
             landmarkName = "recordVideo()"
             landmarkType = "5">
          </BreakpointContent>
@@ -40,11 +40,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/TakeVideoViewController.swift"
-            timestampString = "471217227.094336"
+            timestampString = "473810874.3608"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "238"
-            endingLineNumber = "238"
+            startingLineNumber = "246"
+            endingLineNumber = "246"
             landmarkName = "captureOutput(_:didFinishRecordingToOutputFileAtURL:fromConnections:error:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -56,13 +56,92 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/TakeVideoViewController.swift"
-            timestampString = "471217227.094336"
+            timestampString = "473810874.3608"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "246"
-            endingLineNumber = "246"
+            startingLineNumber = "254"
+            endingLineNumber = "254"
             landmarkName = "captureOutput(_:didStartRecordingToOutputFileAtURL:fromConnections:)"
             landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "QuestionSwiftProject/AnswersViewController.swift"
+            timestampString = "474330613.816324"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "93"
+            endingLineNumber = "93"
+            landmarkName = "loadAnswers()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "QuestionSwiftProject/AnswersViewController.swift"
+            timestampString = "474254838.881119"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "16"
+            endingLineNumber = "16"
+            landmarkName = "AnswersViewController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "QuestionSwiftProject.AnswersViewController.__deallocating_deinit"
+                  moduleName = "QuestionSwiftProject"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/brianendo/Desktop/QuestionSwiftProject/QuestionSwiftProject/AnswersViewController.swift"
+                  timestampString = "474254838.935755"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "12">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "QuestionSwiftProject.AnswersViewController.init (QuestionSwiftProject.AnswersViewController.Type)(nibName : Swift.Optional&lt;Swift.String&gt;, bundle : Swift.Optional&lt;__ObjC.NSBundle&gt;) -&gt; QuestionSwiftProject.AnswersViewController"
+                  moduleName = "QuestionSwiftProject"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/brianendo/Desktop/QuestionSwiftProject/QuestionSwiftProject/AnswersViewController.swift"
+                  timestampString = "474254838.936002"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "60">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "QuestionSwiftProject.AnswersViewController.init (QuestionSwiftProject.AnswersViewController.Type)(coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;QuestionSwiftProject.AnswersViewController&gt;"
+                  moduleName = "QuestionSwiftProject"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/brianendo/Desktop/QuestionSwiftProject/QuestionSwiftProject/AnswersViewController.swift"
+                  timestampString = "474254838.936148"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "19">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

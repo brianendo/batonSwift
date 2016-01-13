@@ -24,6 +24,8 @@ let herokuUrl = "https://arcane-savannah-8802.herokuapp.com/"
 let localUrl = "http://localhost:5000/"
 let globalurl = localUrl
 
+let cloudfrontUrl = "https://d1uji1hs8rdjoi.cloudfront.net/"
+
 
 // Constants for Amazon Web Services
 let CognitoRegionType = AWSRegionType.USEast1  // e.g. AWSRegionType.USEast1
@@ -43,11 +45,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         UINavigationBar.appearance().translucent = false
-        UINavigationBar.appearance().barTintColor = UIColor.whiteColor()
-        UINavigationBar.appearance().tintColor = UIColor.blackColor()
+        UINavigationBar.appearance().barTintColor = UIColor(red:0.17, green:0.18, blue:0.29, alpha:1.0)
+        UINavigationBar.appearance().tintColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
         
-        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor.blackColor(), NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 20)!]
+        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor(red:0.17, green:0.18, blue:0.29, alpha:1.0), NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 20)!]
         
+        UIApplication.sharedApplication().statusBarStyle = .LightContent
+        
+        UITabBar.appearance().barTintColor = UIColor(red:0.95, green:0.95, blue:0.95, alpha:1.0)
+        UITabBar.appearance().tintColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
         
         // Check credentials for AWS
         let credentialsProvider = AWSCognitoCredentialsProvider(
