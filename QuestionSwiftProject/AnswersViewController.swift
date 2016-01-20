@@ -25,11 +25,11 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     var creatorname = ""
     var fromProfile = false
     
-    var idArray = [String]()
-    var videoUrlArray = [String]()
-    var creatornameArray = [String]()
-    var likeCountArray = [Int]()
-    var frontCameraArray = [Bool]()
+//    var idArray = [String]()
+//    var videoUrlArray = [String]()
+//    var creatornameArray = [String]()
+//    var likeCountArray = [Int]()
+//    var frontCameraArray = [Bool]()
     var answerArray = [Answer]()
     
     override func viewDidLoad() {
@@ -40,11 +40,11 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         self.tableView.dataSource = self
         self.tableView.delegate = self
         
-        if fromProfile {
-            relayButton.removeFromSuperview()
-            bottomLayoutConstraint.constant = 0
-            self.view.layoutIfNeeded()
-        }
+//        if fromProfile {
+//            relayButton.removeFromSuperview()
+//            bottomLayoutConstraint.constant = 0
+//            self.view.layoutIfNeeded()
+//        }
         
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 300
@@ -90,14 +90,14 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     if video_url != nil {
                         print(video_url)
                         
-                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false)
+                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera)
                         self.answerArray.append(answer)
                         
-                        self.videoUrlArray.append(video_url!)
-                        self.creatornameArray.append(creatorname!)
-                        self.idArray.append(id!)
-                        self.likeCountArray.append(likeCount!)
-                        self.frontCameraArray.append(frontCamera!)
+//                        self.videoUrlArray.append(video_url!)
+//                        self.creatornameArray.append(creatorname!)
+//                        self.idArray.append(id!)
+//                        self.likeCountArray.append(likeCount!)
+//                        self.frontCameraArray.append(frontCamera!)
                     }
                     
                     self.tableView.reloadData()
@@ -122,20 +122,73 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         } else {
             let cell = tableView.dequeueReusableCellWithIdentifier("AnswerCell", forIndexPath: indexPath) as! AnswerTableViewCell
             
-            cell.nameTextView.text = creatornameArray[indexPath.row]
+            let creator = answerArray[indexPath.row].creator
+            
+            cell.profileImageView.image = UIImage(named: "Placeholder")
+            if let cachedImageResult = imageCache[creator] {
+                print("pull from cache")
+                cell.profileImageView.image = UIImage(data: cachedImageResult!)
+            } else {
+                // 3
+                cell.profileImageView.image = UIImage(named: "Placeholder")
+                
+                // 4
+                let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
+                let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
+                let transferManager = AWSS3TransferManager.defaultS3TransferManager()
+                
+                
+                let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
+                readRequest1.bucket = S3BucketName
+                readRequest1.key =  creator
+                readRequest1.downloadingFileURL = downloadingFileURL1
+                
+                let task = transferManager.download(readRequest1)
+                task.continueWithBlock { (task) -> AnyObject! in
+                    if task.error != nil {
+                        print("No Profile Pic")
+                    } else {
+                        let image = UIImage(contentsOfFile: downloadingFilePath1)
+                        let imageData = UIImageJPEGRepresentation(image!, 1.0)
+                        imageCache[creator] = imageData
+                        dispatch_async(dispatch_get_main_queue()
+                            , { () -> Void in
+                                cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
+                                cell.setNeedsLayout()
+                                
+                        })
+                        print("Fetched image")
+                    }
+                    return nil
+                }
+            }
+            
+            cell.nameTextView.text = answerArray[indexPath.row].creatorname
             cell.nameTextView.selectable = false
             
-            let videoUrl = videoUrlArray[indexPath.row]
+            let videoUrl = answerArray[indexPath.row].video_url
             let cloudUrl = cloudfrontUrl + "video.m3u8"
             
             let newURL = NSURL(string: videoUrl)
             cell.player = AVPlayer(URL: newURL!)
             cell.playerController.player = cell.player
             
-            let frontCamera = frontCameraArray[indexPath.row]
+            let frontCamera = answerArray[indexPath.row].frontCamera
             
             if frontCamera {
                 cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+            }
+            
+            if CGAffineTransformIsIdentity(cell.playerController.view.transform) {
+                if frontCamera {
+                    cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+                }
+            } else {
+                if frontCamera {
+                    
+                } else {
+                    cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+                }
             }
 //            self.addChildViewController(cell.playerController)
             cell.videoView.addSubview(cell.playerController.view)
@@ -145,7 +198,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             if indexPath.row == 0 {
                 cell.player.play()
                 
-                let url = globalurl + "api/answers/" + idArray[indexPath.row] + "/viewed/"
+                let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/viewed/"
                 
                 Alamofire.request(.PUT, url, parameters: nil)
                     .responseJSON { response in
@@ -186,7 +239,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             doubleTapGesture.addTarget(self, action: "doubleTapped:")
             view.addGestureRecognizer(doubleTapGesture)
             
-            let likeCount = self.likeCountArray[indexPath.row]
+            let likeCount = self.answerArray[indexPath.row].likeCount
             cell.likeCountTextView.text = "\(likeCount)"
             cell.videoView.bringSubviewToFront(cell.likeCountTextView)
             cell.videoView.bringSubviewToFront(cell.heartImageView)
@@ -195,8 +248,6 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.likeButton.tag = indexPath.row
             cell.likeButton.addTarget(self, action: "toggleLike:", forControlEvents: .TouchUpInside)
             cell.videoView.bringSubviewToFront(cell.likeButton)
-            
-            let creator = answerArray[indexPath.row].creator
             
             if creator == userid {
                 cell.followButton.hidden = true
@@ -232,7 +283,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
                 cell.heartImageView.image = UIImage(named: "RedHeart")
             } else {
-                let url = globalurl + "api/answers/" + idArray[indexPath.row] + "/likecheck/" + userid
+                let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/likecheck/" + userid
                 
                 Alamofire.request(.GET, url, parameters: nil)
                     .responseJSON { response in
@@ -299,7 +350,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         let currentLiked = self.answerArray[sender.tag].liked_by_user
         let tag = sender.tag
         let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 1)) as! AnswerTableViewCell
-        let answerId = self.idArray[sender.tag]
+        let answerId = self.answerArray[sender.tag].id
         
         if currentLiked == true {
             print("unliked")
@@ -314,9 +365,9 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                         print("Already liked")
                     } else {
                         print("Liked")
-                        self.likeCountArray[tag] -= 1
+                        self.answerArray[tag].likeCount -= 1
                         self.answerArray[tag].liked_by_user = false
-                        let likeCount = self.likeCountArray[tag]
+                        let likeCount = self.answerArray[tag].likeCount
                         cell.likeCountTextView.text = "\(likeCount)"
                         cell.likeCountTextView.textColor = UIColor(red: 0.776, green: 0.776, blue: 0.776, alpha: 1)
                         cell.heartImageView.image = UIImage(named: "GrayHeart")
@@ -336,9 +387,9 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                         
                     } else {
                         print("Liked")
-                        self.likeCountArray[tag] += 1
+                        self.answerArray[tag].likeCount += 1
                         self.answerArray[tag].liked_by_user = true
-                        let likeCount = self.likeCountArray[tag]
+                        let likeCount = self.answerArray[tag].likeCount
                         cell.likeCountTextView.text = "\(likeCount)"
                         cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
                         cell.heartImageView.image = UIImage(named: "RedHeart")
@@ -360,7 +411,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.likeImageView.alpha = 1
                 cell.likeImageView.hidden = true
                 
-                let answerId = self.idArray[tag!]
+                let answerId = self.answerArray[tag!].id
                 
                 let url = globalurl + "api/answers/" + answerId + "/likednotifs/" + userid
                 
@@ -373,9 +424,9 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                             
                         } else {
                             print("Liked")
-                            self.likeCountArray[tag!] += 1
+                            self.answerArray[tag!].likeCount += 1
                             self.answerArray[tag!].liked_by_user = true
-                            let likeCount = self.likeCountArray[tag!]
+                            let likeCount = self.answerArray[tag!].likeCount
                             cell.likeCountTextView.text = "\(likeCount)"
                             cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
                             cell.heartImageView.image = UIImage(named: "RedHeart")
@@ -407,7 +458,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         if section == 0 {
             return 1
         } else {
-            return idArray.count
+            return answerArray.count
         }
     }
     
@@ -438,7 +489,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     if (cell.player.rate > 0) {
                         print("Playing")
                         
-                        let url = globalurl + "api/answers/" + idArray[(indexPath?.row)!] + "/viewed/"
+                        let url = globalurl + "api/answers/" + answerArray[(indexPath?.row)!].id + "/viewed/"
                         
                         Alamofire.request(.PUT, url, parameters: nil)
                             .responseJSON { response in
@@ -453,7 +504,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                         }
                     } else {
                         print("Reached")
-                        let url = globalurl + "api/answers/" + idArray[(indexPath?.row)!] + "/viewed/"
+                        let url = globalurl + "api/answers/" + answerArray[(indexPath?.row)!].id + "/viewed/"
                         
                         Alamofire.request(.PUT, url, parameters: nil)
                             .responseJSON { response in

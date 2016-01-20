@@ -9,6 +9,7 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import AWSS3
 
 class NotificationViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -62,6 +63,11 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                     var read = subJson["read"].bool
                     let answer_id = subJson["answer_id"].string
                     let createdAt = subJson["created_at"].string
+//                    let thumbnailUrl = subJson["thumbnail_url"].string
+//                        
+//                    if thumbnailUrl == nil {
+//                        thumbnailUrl = ""
+//                    }
                     
                     let dateFor: NSDateFormatter = NSDateFormatter()
                     dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -84,7 +90,12 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                     
                     if type == "answer" {
                         
-                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: "", createdAt: yourDate, answer_id: answer_id)
+                        var question_content = subJson["question_content"].string
+                        if question_content == nil {
+                            question_content = ""
+                        }
+                        
+                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: question_content, createdAt: yourDate, answer_id: answer_id, thumbnail_url: "")
                         self.notificationArray.append(notification)
                         self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         
@@ -114,7 +125,13 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
 //                                self.tableView.reloadData()
 //                        }
                     } else if type == "like"{
-                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: "", createdAt: yourDate, answer_id: answer_id)
+                        var thumbnail_url = subJson["thumbnail_url"].string
+                        
+                        if thumbnail_url == nil {
+                            thumbnail_url = ""
+                        }
+                        
+                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: "", createdAt: yourDate, answer_id: answer_id, thumbnail_url: thumbnail_url)
                         self.notificationArray.append(notification)
                         self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         
@@ -168,7 +185,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 if value == nil {
                     value = []
                 }
-                
+                self.counter = 0
                 self.tableView.reloadData()
         }
     }
@@ -225,36 +242,80 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: NotificationAnswerTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationAnswerCell", forIndexPath: indexPath) as! NotificationAnswerTableViewCell
-        
         let type = notificationArray[indexPath.row].type
         let sendername = notificationArray[indexPath.row].sendername
         let read = notificationArray[indexPath.row].read
+        let id = notificationArray[indexPath.row].id
         
-        if read == false {
-            cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
-        } else if read == true {
-            cell.backgroundColor = UIColor.whiteColor()
-        }
         
         if type == "answer" {
+            let cell: NotificationAnswerTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationAnswerCell", forIndexPath: indexPath) as! NotificationAnswerTableViewCell
+            if read == false {
+                cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
+            } else if read == true {
+                cell.backgroundColor = UIColor.whiteColor()
+            }
             cell.headerTextView.text = "\(sendername) answered your question:"
-        } else if type == "like" {
-            cell.headerTextView.text = "\(sendername) liked your answer:"
+            let answerContent = notificationArray[indexPath.row].content
+            
+            cell.contentTextView.text = "\"\(answerContent)\""
+            
+            cell.headerTextView.userInteractionEnabled = false
+            cell.contentTextView.userInteractionEnabled = false
+            
+            return cell
+        } else {
+            let cell: NotificationLikedTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationLikedCell", forIndexPath: indexPath) as! NotificationLikedTableViewCell
+            if read == false {
+                cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
+            } else if read == true {
+                cell.backgroundColor = UIColor.whiteColor()
+            }
+            
+            let notificationId = notificationArray[indexPath.row].id
+            
+            cell.contentTextView.text = "\(sendername) liked your answer:"
+            cell.contentTextView.userInteractionEnabled = false
+            let thumbnail = notificationArray[indexPath.row].thumbnail_url
+            
+            cell.thumbnailImageView.image = UIImage(named: "Placeholder")
+            
+            if thumbnail == "" {
+                
+            } else {
+                if let cachedImageResult = imageCache[notificationId] {
+                    print("pull from cache")
+                    cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
+                } else {
+                    // 3
+                    cell.thumbnailImageView.image = UIImage(named: "Placeholder")
+                    let url = NSURL(string: thumbnail)
+                    let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+                    imageCache[notificationId] = data
+                    cell.thumbnailImageView.image = UIImage(data: data!)
+                }
+                
+            }
+            
+            
+            
+            
+            
+            return cell
         }
         
-        let answerContent = notificationArray[indexPath.row].content
-        
-        cell.contentTextView.text = "\"\(answerContent)\""
-        cell.headerTextView.userInteractionEnabled = false
-        cell.contentTextView.userInteractionEnabled = false
-        
-        return cell
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let type = notificationArray[indexPath.row].type
         let id = notificationArray[indexPath.row].id
+        let read = notificationArray[indexPath.row].read
+        
+        if read == false {
+            self.counter--
+            notificationArray[indexPath.row].read = true
+        }
+        
         
         if type == "answer" {
             let url = globalurl + "api/notifications/" + id + "/read/"
@@ -287,6 +348,14 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             let indexPath = self.tableView.indexPathForSelectedRow
             let questionId = self.notificationArray[indexPath!.row].question_id
             let answerId = self.notificationArray[indexPath!.row].answer_id
+//            let type = self.notificationArray[indexPath!.row].type
+//            
+//            if type == "like" {
+//                
+//            } else if type = "answer" {
+//                
+//            }
+            
             answeredQuestionVC.questionId = questionId
             answeredQuestionVC.answerId = answerId
             notificationArray[indexPath!.row].read = true

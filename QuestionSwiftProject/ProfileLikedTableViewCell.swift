@@ -1,25 +1,22 @@
 //
-//  AnsweredQuestionTableViewCell.swift
+//  ProfileLikedTableViewCell.swift
 //  QuestionSwiftProject
 //
-//  Created by Brian Endo on 12/7/15.
-//  Copyright © 2015 Brian Endo. All rights reserved.
+//  Created by Brian Endo on 1/18/16.
+//  Copyright © 2016 Brian Endo. All rights reserved.
 //
 
 import UIKit
 import AVKit
 import AVFoundation
 
-class AnsweredQuestionTableViewCell: UITableViewCell {
+class ProfileLikedTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var nameTextView: UITextView!
+    @IBOutlet weak var usernameButton: UIButton!
+    @IBOutlet weak var questionContentButton: UIButton!
     @IBOutlet weak var videoView: UIView!
-    @IBOutlet weak var likeCountTextView: UITextView!
-    @IBOutlet weak var heartImageView: UIImageView!
-    @IBOutlet weak var likeImageView: UIImageView!
-    @IBOutlet weak var likeButton: UIButton!
-    @IBOutlet weak var followButton: UIButton!
     @IBOutlet weak var profileImageView: UIImageView!
+    @IBOutlet weak var questionContentHeight: NSLayoutConstraint!
     
     
     var player: AVPlayer!
@@ -36,12 +33,6 @@ class AnsweredQuestionTableViewCell: UITableViewCell {
         self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2
         self.profileImageView.clipsToBounds = true
         
-        likeCountTextView.layer.shadowColor = UIColor.blackColor().CGColor
-        likeCountTextView.layer.shadowOffset = CGSizeMake(0, 2.0)
-        likeCountTextView.layer.shadowOpacity = 1.0
-        likeCountTextView.layer.shadowRadius = 2.0
-        likeCountTextView.layer.backgroundColor = UIColor.clearColor().CGColor
-        
         playerController = AVPlayerViewController()
         playerController.player = player
         
@@ -51,10 +42,10 @@ class AnsweredQuestionTableViewCell: UITableViewCell {
         playerController.videoGravity = AVLayerVideoGravityResizeAspectFill
         playerController.view.hidden = false
     }
-
+    
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
 

@@ -15,11 +15,33 @@ class LogInViewController: UIViewController {
     
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var bottomLayoutConstraint: NSLayoutConstraint!
+    
+    func registerForKeyboardNotifications ()-> Void   {
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardDidShowNotification, object: nil)
+        
+    }
+    
+    
+    func keyboardWillShow(notification: NSNotification) {
+        var info = notification.userInfo!
+        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
+        
+        self.bottomLayoutConstraint.constant = keyboardFrame.size.height
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(true)
+        self.registerForKeyboardNotifications()
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.emailTextField.becomeFirstResponder()
     }
 
     override func didReceiveMemoryWarning() {

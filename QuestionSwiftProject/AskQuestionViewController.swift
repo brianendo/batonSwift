@@ -105,7 +105,7 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
         
         // Do any additional setup after loading the view.
         
-        self.checkLastQuestion()
+//        self.checkLastQuestion()
         
         contentTextView.delegate = self
         

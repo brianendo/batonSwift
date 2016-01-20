@@ -18,8 +18,9 @@ class Notification: NSObject {
     var content: String
     var createdAt: NSDate
     var answer_id: String
+    var thumbnail_url: String
     
-    init(id: String?, type: String?, sender: String?, sendername: String?, question_id: String?, read: Bool?, content: String?, createdAt: NSDate?, answer_id: String?) {
+    init(id: String?, type: String?, sender: String?, sendername: String?, question_id: String?, read: Bool?, content: String?, createdAt: NSDate?, answer_id: String?, thumbnail_url: String?) {
         self.id = id!
         self.type = type!
         self.sender = sender!
@@ -29,6 +30,7 @@ class Notification: NSObject {
         self.content = content!
         self.createdAt = createdAt!
         self.answer_id = answer_id!
+        self.thumbnail_url = thumbnail_url!
     }
     
     

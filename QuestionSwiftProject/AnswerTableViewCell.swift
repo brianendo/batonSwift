@@ -20,6 +20,7 @@ class AnswerTableViewCell: UITableViewCell {
     @IBOutlet weak var heartImageView: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var followButton: UIButton!
+    @IBOutlet weak var profileImageView: UIImageView!
     
     
     var player: AVPlayer!
@@ -28,6 +29,13 @@ class AnswerTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        self.profileImageView.frame = CGRectMake(0, 0, 40, 40)
+        self.profileImageView.layer.borderWidth = 0.5
+        self.profileImageView.layer.masksToBounds = false
+        self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor
+        self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2
+        self.profileImageView.clipsToBounds = true
         
         likeCountTextView.layer.shadowColor = UIColor.blackColor().CGColor
         likeCountTextView.layer.shadowOffset = CGSizeMake(0, 2.0)

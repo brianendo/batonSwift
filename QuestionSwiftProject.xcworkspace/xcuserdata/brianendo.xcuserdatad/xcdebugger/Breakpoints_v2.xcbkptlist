@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/ProfileViewController.swift"
-            timestampString = "474334468.846687"
+            timestampString = "474925128.77961"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "726"
-            endingLineNumber = "726">
+            startingLineNumber = "972"
+            endingLineNumber = "972">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -24,11 +24,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/TakeVideoViewController.swift"
-            timestampString = "473810874.3608"
+            timestampString = "474928197.392222"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "176"
-            endingLineNumber = "176"
+            startingLineNumber = "270"
+            endingLineNumber = "270"
             landmarkName = "recordVideo()"
             landmarkType = "5">
          </BreakpointContent>
@@ -40,11 +40,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/TakeVideoViewController.swift"
-            timestampString = "473810874.3608"
+            timestampString = "474928197.392222"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "246"
-            endingLineNumber = "246"
+            startingLineNumber = "411"
+            endingLineNumber = "411"
             landmarkName = "captureOutput(_:didFinishRecordingToOutputFileAtURL:fromConnections:error:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -56,11 +56,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/TakeVideoViewController.swift"
-            timestampString = "473810874.3608"
+            timestampString = "474928197.392222"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "254"
-            endingLineNumber = "254"
+            startingLineNumber = "418"
+            endingLineNumber = "418"
             landmarkName = "captureOutput(_:didStartRecordingToOutputFileAtURL:fromConnections:)"
             landmarkType = "5">
          </BreakpointContent>

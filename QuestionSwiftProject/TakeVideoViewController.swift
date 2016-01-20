@@ -24,7 +24,9 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     @IBOutlet var doneButton: UIButton!
     @IBOutlet var closeButton: UIButton!
     @IBOutlet var recordButton: UIButton!
-    @IBOutlet weak var clipsScrollView: UIScrollView!
+    @IBOutlet weak var questionTextView: UITextView!
+    @IBOutlet weak var progressView: UIView!
+    @IBOutlet weak var thumbnailImageView: UIImageView!
     
     
     var captureSession = AVCaptureSession()
@@ -35,7 +37,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     var output: AVCaptureMovieFileOutput?
     var videoClips:[NSURL] = []
     var moviePlayer:MPMoviePlayerController!
-    var player = AVPlayer()
+    var player:AVPlayer!
     var playerController: AVPlayerViewController!
     
     var frontCamera: Bool = true
@@ -44,6 +46,40 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     var content = ""
     var id = ""
     var videoUrl: NSURL?
+    
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        var touchPoint = touches.first! as UITouch
+        var screenSize = cameraView.bounds.size
+        var focusPoint = CGPoint(x: touchPoint.locationInView(cameraView).y / screenSize.height, y: 1.0 - touchPoint.locationInView(cameraView).x / screenSize.width)
+        
+        if let device = backCameraVideoCapture {
+            if device.isFocusModeSupported(AVCaptureFocusMode.AutoFocus) {
+                do {
+                    try device.lockForConfiguration()
+                    device.focusPointOfInterest = focusPoint
+                    device.focusMode = AVCaptureFocusMode.ContinuousAutoFocus
+                    device.exposurePointOfInterest = focusPoint
+                    device.exposureMode = AVCaptureExposureMode.ContinuousAutoExposure
+                } catch let error as NSError {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+        if let device = frontCameraVideoCapture {
+            if device.isFocusModeSupported(AVCaptureFocusMode.AutoFocus) {
+                do {
+                    try device.lockForConfiguration()
+                    device.focusPointOfInterest = focusPoint
+                    device.focusMode = AVCaptureFocusMode.ContinuousAutoFocus
+                    device.exposurePointOfInterest = focusPoint
+                    device.exposureMode = AVCaptureExposureMode.ContinuousAutoExposure
+                } catch let error as NSError {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
     
     override func viewWillAppear(animated: Bool) {
         NSNotificationCenter.defaultCenter().addObserver(self,
@@ -83,9 +119,10 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
 //        self.cameraView.clipsToBounds = true
 //        previewLayer?.frame = self.view.bounds
         cameraView.layer.addSublayer(previewLayer!)
+        cameraView.bringSubviewToFront(flashLightButton)
+        cameraView.bringSubviewToFront(switchCameraButton)
         captureSession.commitConfiguration()
         captureSession.startRunning()
-        
     }
     
     
@@ -101,7 +138,10 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        flashLightButton.hidden = true
+        self.questionTextView.text = self.content
+        self.questionTextView.font = UIFont(name: "HelveticaNeue-Medium", size: 17)
+        self.questionTextView.textColor = UIColor.whiteColor()
         // Do any additional setup after loading the view.
         //        captureSession.sessionPreset = AVCaptureSessionPresetHigh
         let devices = AVCaptureDevice.devices()
@@ -118,7 +158,57 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
             }
         }
         beginSession()
+
         self.doneButton.hidden = true
+    }
+    
+    func animateProgressView(duration: Double) {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = progressView.bounds
+        
+        gradientLayer.locations = [0.0, 1.0]
+        
+        let colorTop: AnyObject = UIColor(red: 255.0/255.0, green: 213.0/255.0, blue: 63.0/255.0, alpha: 1.0).CGColor
+        let colorBottom: AnyObject = UIColor(red: 255.0/255.0, green: 198.0/255.0, blue: 5.0/255.0, alpha: 1.0).CGColor
+        let arrayOfColors: [AnyObject] = [colorTop, colorBottom]
+        gradientLayer.colors = arrayOfColors
+        
+        let path: UIBezierPath = UIBezierPath()
+        path.moveToPoint(CGPointMake(0, 0))
+        path.addLineToPoint(CGPointMake(CGRectGetWidth(progressView.frame), 0))
+        
+        //Create a CAShape Layer
+        let pathLayer: CAShapeLayer = CAShapeLayer()
+        pathLayer.frame = self.view.bounds
+        pathLayer.path = path.CGPath
+        pathLayer.backgroundColor = UIColor.clearColor().CGColor
+        pathLayer.strokeColor = UIColor.blackColor().CGColor
+        pathLayer.fillColor = nil
+        pathLayer.lineWidth = 8.0
+        pathLayer.strokeStart = 0.0
+        pathLayer.strokeEnd = 0.0
+        
+        gradientLayer.mask = pathLayer
+        self.progressView.layer.addSublayer(gradientLayer)
+        
+        //Add the layer to your view's layer
+        //        self.progressView.layer.addSublayer(pathLayer)
+        
+        //This is basic animation, quite a few other methods exist to handle animation see the reference site answers
+        let pathAnimation = CABasicAnimation(keyPath: "strokeEnd")
+        pathAnimation.fromValue = CGFloat(0.0)
+        pathAnimation.toValue = CGFloat(1.0)
+        pathAnimation.duration = duration
+        pathAnimation.delegate = self
+        pathAnimation.removedOnCompletion = false
+        pathAnimation.additive = true
+        pathAnimation.fillMode = kCAFillModeForwards
+        //Animation will happen right away
+        pathLayer.addAnimation(pathAnimation, forKey: "strokeEnd")
+    }
+    
+    func hideProgressView() {
+        progressView.layer.removeAllAnimations()
     }
 
     override func didReceiveMemoryWarning() {
@@ -127,7 +217,9 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     }
     
     @IBAction func closeButtonPressed(sender: UIButton) {
-        if (player.rate > 0) {
+        if player == nil {
+            
+        } else {
             player.pause()
         }
         self.dismissViewControllerAnimated(true, completion: nil)
@@ -146,8 +238,10 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         
         if frontCamera {
             try! captureSession.addInput(AVCaptureDeviceInput(device: backCameraVideoCapture))
+            flashLightButton.hidden = false
         } else  {
             try! captureSession.addInput(AVCaptureDeviceInput(device: frontCameraVideoCapture))
+            flashLightButton.hidden = true
         }
         frontCamera = !frontCamera
     }
@@ -174,19 +268,29 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     }
     
     @IBAction func recordVideo() {
+        print(self.recordButton.titleLabel?.text)
         if self.recordButton.titleLabel?.text == "Re-take" {
+            print("Reach")
             self.player.pause()
+            self.doneButton.hidden = true
             self.playerController.view.removeFromSuperview()
             self.playerController.removeFromParentViewController()
-            self.recordButton.setTitle("Record", forState: .Normal)
+            self.recordButton.titleLabel!.text = ""
+            self.recordButton.setTitle("", forState: .Normal)
+            self.recordButton.setImage(UIImage(named: "RecordButton"), forState: .Normal)
         } else {
             if recordingInProgress {
                 output!.stopRecording()
                 print("Stop")
+                self.hideProgressView()
+                self.progressView.hidden = true
                 self.recordButton.setTitle("Re-take", forState: .Normal)
+                self.recordButton.setImage(nil, forState: .Normal)
             } else {
                 print("Recording")
-                self.recordButton.setTitle("Stop", forState: .Normal)
+                self.animateProgressView(20)
+                self.recordButton.setTitle("", forState: .Normal)
+                self.recordButton.setImage(UIImage(named: "StopButton"), forState: .Normal)
                 let formatter = NSDateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
                 let date = NSDate()
@@ -200,6 +304,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     }
     
     @IBAction func doneButtonPressed(sender: UIButton) {
+        
+//        getThumbnail(videoUrl!)
         
         // Save video in S3 with the userID
         let transferManager = AWSS3TransferManager.defaultS3TransferManager()
@@ -221,21 +327,80 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                 print("Error: \(task.error)", terminator: "")
             } else {
                 print("Upload successful", terminator: "")
-                let url = globalurl + "api/answers"
                 
-                let amazonUrl = "https://s3-us-west-1.amazonaws.com/batonapp/"
+                let clip = AVURLAsset(URL: self.videoUrl!)
+                let imgGenerator = AVAssetImageGenerator(asset: clip)
+                let cgImage = try! imgGenerator.copyCGImageAtTime(CMTimeMake(0,1), actualTime: nil)
+                var uiImage = UIImage(CGImage: cgImage)
                 
-                let parameters = [
-                    "question_id": self.id,
-                    "creator": userid,
-                    "creatorname": name,
-                    "video_url": amazonUrl + key,
-                    "frontCamera": self.frontCamera
-                ]
-                Alamofire.request(.POST, url, parameters: parameters as? [String: AnyObject], encoding: .JSON)
+                var flip = true
+                
+                if self.frontCamera {
+                    flip = true
+                } else {
+                    flip = false
+                }
+                
+                uiImage = uiImage.imageRotatedByDegrees(0, flip: flip)
+                
+                // Save video in S3 with the userID
+                let transferManager2 = AWSS3TransferManager.defaultS3TransferManager()
+                let testFileURL2 = NSURL(fileURLWithPath: (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp"))
+                let uploadRequest2 : AWSS3TransferManagerUploadRequest = AWSS3TransferManagerUploadRequest()
+                
+                let data = UIImageJPEGRepresentation(uiImage, 0.5)
+                data!.writeToURL(testFileURL2, atomically: true)
+                
+                let formatter2 = NSDateFormatter()
+                formatter2.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+                let date2 = NSDate()
+                let key2 = "\(self.id)/\(formatter2.stringFromDate(date2))"
+                
+                uploadRequest2.bucket = S3BucketName
+                uploadRequest2.key =  key2
+                uploadRequest2.body = testFileURL2
+                
+                let task2 = transferManager2.upload(uploadRequest2)
+                task2.continueWithBlock { (task) -> AnyObject! in
+                    if task.error != nil {
+                        print("Error: \(task.error)", terminator: "")
+                    } else {
+                        print("Upload successful", terminator: "")
+                        let url = globalurl + "api/answers"
+                        
+                        let amazonUrl = "https://s3-us-west-1.amazonaws.com/batonapp/"
+                        
+                        let parameters = [
+                            "question_id": self.id,
+                            "creator": userid,
+                            "creatorname": name,
+                            "video_url": amazonUrl + key,
+                            "frontCamera": self.frontCamera,
+                            "thumbnail_url": amazonUrl + key2
+                        ]
+                        Alamofire.request(.POST, url, parameters: parameters as? [String: AnyObject], encoding: .JSON)
+                    }
+                    return nil
+                }
+                
+//                let url = globalurl + "api/answers"
+//                
+//                let amazonUrl = "https://s3-us-west-1.amazonaws.com/batonapp/"
+//                
+//                let parameters = [
+//                    "question_id": self.id,
+//                    "creator": userid,
+//                    "creatorname": name,
+//                    "video_url": amazonUrl + key,
+//                    "frontCamera": self.frontCamera
+//                ]
+//                Alamofire.request(.POST, url, parameters: parameters as? [String: AnyObject], encoding: .JSON)
                 
             }
             return nil
+        }
+        if player.rate > 0 {
+            player.pause()
         }
         self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -247,7 +412,6 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         print("Ended")
         videoClips.append(outputFileURL)
         cropVideo(outputFileURL)
-        getThumbnail(outputFileURL)
     }
     
     func captureOutput(captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAtURL fileURL: NSURL!, fromConnections connections: [AnyObject]!) {
@@ -274,12 +438,16 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
         var transform1:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, -(clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height)/2)
         //        transform1 = CGAffineTransformMakeScale(-1.0, 1.0)
+//        let transform3 = CGAffineTransformScale(transform1, -1, 1)
         let transform2 = CGAffineTransformRotate(transform1, CGFloat(M_PI_2))
+        
+        
         let finalTransform = transform2
         transformer.setTransform(finalTransform, atTime: kCMTimeZero)
         
         instruction.layerInstructions = [transformer]
         videoComposition.instructions = [instruction]
+        
         
         let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
@@ -302,7 +470,6 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     
     func handleExportCompletion(session: AVAssetExportSession) {
         let library = ALAssetsLibrary()
-        
         if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(session.outputURL) {
             var completionBlock: ALAssetsLibraryWriteVideoCompletionBlock
             
@@ -316,9 +483,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
             
 //            library.writeVideoAtPathToSavedPhotosAlbum(session.outputURL, completionBlock: completionBlock)
         }
-        
         videoUrl = session.outputURL
-        
+        getThumbnail(videoUrl!)
         player = AVPlayer(URL: session.outputURL!)
         playerController = AVPlayerViewController()
         playerController.player = player
@@ -336,19 +502,26 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         self.addChildViewController(playerController)
         self.cameraView.addSubview(playerController.view)
         playerController.didMoveToParentViewController(self)
+        
+        print(CMTimeGetSeconds((player.currentItem?.asset.duration)!))
+        let time = CMTimeGetSeconds((player.currentItem?.asset.duration)!)
+        
         player.play()
 
         self.doneButton.hidden = false
     }
     
     func restartVideoFromBeginning()  {
-        
+        print("Reached")
         //create a CMTime for zero seconds so we can go back to the beginning
         let seconds : Int64 = 0
         let preferredTimeScale : Int32 = 1
         let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
         
         player.seekToTime(seekTime)
+        
+//        let time = CMTimeGetSeconds((player.currentItem?.asset.duration)!)
+//        self.animateProgressView(time)
         
         player.play()
         
@@ -368,14 +541,53 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let clip = AVURLAsset(URL: outputFileURL)
         let imgGenerator = AVAssetImageGenerator(asset: clip)
         let cgImage = try! imgGenerator.copyCGImageAtTime(CMTimeMake(0,1), actualTime: nil)
-        let uiImage = UIImage(CGImage: cgImage)
-        let xPos = CGFloat((videoClips.count - 1) * 100 + 5)
-        let imageView = UIImageView(frame: CGRect(x: xPos, y: 0, width: 100, height: 100))
-        imageView.contentMode = UIViewContentMode.ScaleAspectFill
-        imageView.image = uiImage.imageRotatedByDegrees(90, flip: false)
+        var uiImage = UIImage(CGImage: cgImage)
+        
+        var flip = false
         if frontCamera {
-            imageView.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+            flip = true
+        } else {
+            flip = false
         }
+        
+        uiImage = uiImage.imageRotatedByDegrees(0, flip: flip)
+        thumbnailImageView.image = uiImage
+        
+        
+        // Save video in S3 with the userID
+//        let transferManager2 = AWSS3TransferManager.defaultS3TransferManager()
+//        let testFileURL2 = NSURL(fileURLWithPath: (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp"))
+//        let uploadRequest2 : AWSS3TransferManagerUploadRequest = AWSS3TransferManagerUploadRequest()
+//        
+//        let data = UIImageJPEGRepresentation(uiImage, 0.01)
+//        data!.writeToURL(testFileURL2, atomically: true)
+//        
+//        let formatter2 = NSDateFormatter()
+//        formatter2.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+//        let date2 = NSDate()
+//        let key2 = "\(self.id)/\(formatter2.stringFromDate(date2))"
+//        
+//        uploadRequest2.bucket = S3BucketName
+//        uploadRequest2.key =  key2
+//        uploadRequest2.body = testFileURL2
+//        
+//        let task2 = transferManager2.upload(uploadRequest2)
+//        task2.continueWithBlock { (task) -> AnyObject! in
+//            if task.error != nil {
+//                print("Error: \(task.error)", terminator: "")
+//            } else {
+//                print("Upload successful", terminator: "")
+//            }
+//            return nil
+//        }
+        
+//        let xPos = CGFloat((videoClips.count - 1) * 100 + 5)
+//        let imageView = UIImageView(frame: CGRect(x: xPos, y: 0, width: 100, height: 100))
+//        imageView.contentMode = UIViewContentMode.ScaleAspectFill
+//        imageView.image = uiImage.imageRotatedByDegrees(90, flip: false)
+//        if frontCamera {
+//            imageView.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+//        }
 //        clipsScrollView.addSubview(imageView)
     }
 

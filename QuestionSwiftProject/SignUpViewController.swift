@@ -12,12 +12,32 @@ import Alamofire
 
 class SignUpViewController: UIViewController {
 
-    @IBOutlet weak var firstNameTextField: UITextField!
-    @IBOutlet weak var lastNameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var firstNameTextField: UITextField!
+    @IBOutlet weak var lastNameTextField: UITextField!
+    
+    @IBOutlet weak var bottomLayoutConstraint: NSLayoutConstraint!
+    
+    func registerForKeyboardNotifications ()-> Void   {
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardDidShowNotification, object: nil)
+        
+    }
     
     
+    func keyboardWillShow(notification: NSNotification) {
+        var info = notification.userInfo!
+        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
+        
+        self.bottomLayoutConstraint.constant = keyboardFrame.size.height
+    }
+    
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(true)
+        self.registerForKeyboardNotifications()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,7 +79,8 @@ class SignUpViewController: UIViewController {
                                     "firstname": self.firstNameTextField.text!,
                                     "lastname": self.lastNameTextField.text!,
                                     "firebase_id": authData.uid,
-                                    "email": self.emailTextField.text!
+                                    "email": self.emailTextField.text!,
+                                    "username": self.firstNameTextField.text! + self.lastNameTextField.text!
                                 ]
                                 
                                 Alamofire.request(.POST, url, parameters: parameters, encoding: .JSON)

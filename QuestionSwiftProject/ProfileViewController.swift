@@ -25,6 +25,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     var followingCount = 0
     
     var counter = 0
+    var questionIndex = 0
     
     var refreshControl:UIRefreshControl!
     
@@ -139,6 +140,11 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     let question_id = subJson["question_id"].string
                     let video_url = subJson["video_url"].string
                     var likeCount = subJson["likeCount"].int
+                    var frontCamera = subJson["frontCamera"].bool
+                    
+                    if frontCamera == nil {
+                        frontCamera = true
+                    }
                     
                     if content == nil {
                         content = ""
@@ -169,7 +175,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                                     question_content = ""
                                 }
                                 
-                                let answer = Answer(content: content, creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: false)
+                                let answer = Answer(content: content, creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera)
                                 self.myAnswerArray.append(answer)
                                 
                                 self.tableView.reloadData()
@@ -203,6 +209,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     let question_id = subJson["question_id"].string
                     let video_url = subJson["video_url"].string
                     var likeCount = subJson["likeCount"].int
+                    var frontCamera = subJson["frontCamera"].bool
+                    if frontCamera == nil {
+                        frontCamera = true
+                    }
                     
                     if content == nil {
                         content = ""
@@ -233,7 +243,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                                     question_content = ""
                                 }
                                 
-                                let answer = Answer(content: content, creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: false)
+                                let answer = Answer(content: content, creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera)
                                 self.myLikedAnswerArray.append(answer)
                                 
                                 self.tableView.reloadData()
@@ -249,6 +259,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         for cell in tableView.visibleCells {
             if cell.isKindOfClass(ProfileRelayTableViewCell) {
                 let cell = cell as! ProfileRelayTableViewCell
+                cell.player.pause()
+            } else if cell.isKindOfClass(ProfileLikedTableViewCell) {
+                let cell = cell as! ProfileLikedTableViewCell
                 cell.player.pause()
             }
         }
@@ -354,12 +367,36 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         if sender.selectedSegmentIndex == 0 {
             print("Money")
             counter = 0
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
+            for cell in tableView.visibleCells {
+                if cell.isKindOfClass(ProfileRelayTableViewCell) {
+                    let cell = cell as! ProfileRelayTableViewCell
+                    cell.player.pause()
+                } else if cell.isKindOfClass(ProfileLikedTableViewCell) {
+                    let cell = cell as! ProfileLikedTableViewCell
+                    cell.player.pause()
+                }
+            }
         } else if sender.selectedSegmentIndex == 1 {
             print("Mayweather")
             counter = 1
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.None
+            for cell in tableView.visibleCells {
+                if cell.isKindOfClass(ProfileLikedTableViewCell) {
+                    let cell = cell as! ProfileLikedTableViewCell
+                    cell.player.pause()
+                }
+            }
             self.tableView.reloadData()
         } else {
             counter = 2
+            tableView.separatorStyle = UITableViewCellSeparatorStyle.None
+            for cell in tableView.visibleCells {
+                if cell.isKindOfClass(ProfileRelayTableViewCell) {
+                    let cell = cell as! ProfileRelayTableViewCell
+                    cell.player.pause()
+                }
+            }
         }
         
         self.tableView.reloadData()
@@ -384,7 +421,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.profileImageView.image = UIImage(data: cachedImageResult!)
             } else {
                 // 3
-                cell.profileImageView.image = UIImage(named: "BatPic")
+                cell.profileImageView.image = UIImage(named: "Placeholder")
                 
                 // 4
                 let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
@@ -447,7 +484,13 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             let newURL = NSURL(string: videoUrl)
             cell.player = AVPlayer(URL: newURL!)
             cell.playerController.player = cell.player
-            cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+            let frontCamera = myAnswerArray[indexPath.row].frontCamera
+            
+            print(frontCamera)
+            if frontCamera == true {
+                cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+            }
+            cell.layoutIfNeeded()
             self.addChildViewController(cell.playerController)
             cell.videoView.addSubview(cell.playerController.view)
             cell.playerController.didMoveToParentViewController(self)
@@ -462,7 +505,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.playerController.view.userInteractionEnabled = true
             
             let view = UIView(frame: cell.playerController.view.frame)
-            cell.addSubview(view)
+            cell.videoView.addSubview(view)
             
             print(CMTimeGetSeconds((cell.player.currentItem?.asset.duration)!))
             print(CMTimeGetSeconds((cell.player.currentItem?.currentTime())!))
@@ -478,26 +521,174 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             return cell
             
         } else {
-            let cell: ProfileRelayTableViewCell = tableView.dequeueReusableCellWithIdentifier("RelayCell", forIndexPath: indexPath) as! ProfileRelayTableViewCell
-            cell.selectionStyle = UITableViewCellSelectionStyle.None
+//            let cell: ProfileRelayTableViewCell = tableView.dequeueReusableCellWithIdentifier("RelayCell", forIndexPath: indexPath) as! ProfileRelayTableViewCell
+//            cell.selectionStyle = UITableViewCellSelectionStyle.None
+//            
+//            cell.separatorInset = UIEdgeInsetsMake(0, 10000, 0, 0)
+//            
+//            print(myLikedAnswerArray[indexPath.row].question_content)
+//            cell.contentTextView.text = myLikedAnswerArray[indexPath.row].question_content
+//            cell.contentTextView.userInteractionEnabled = false
+//            
+//            let videoUrl = myLikedAnswerArray[indexPath.row].video_url
+//            
+//            let newURL = NSURL(string: videoUrl)
+//            cell.player = AVPlayer(URL: newURL!)
+//            cell.playerController.player = cell.player
+//            
+//            let frontCamera = myLikedAnswerArray[indexPath.row].frontCamera
+//            
+//            if frontCamera == true {
+//                cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+//            }
+//            self.addChildViewController(cell.playerController)
+//            cell.videoView.addSubview(cell.playerController.view)
+//            cell.playerController.didMoveToParentViewController(self)
+//            cell.player.pause()
+//            
+//            if indexPath.row == 0 {
+//                cell.player.play()
+//            }
+//            
+//            cell.selectionStyle = UITableViewCellSelectionStyle.None
+//            
+//            cell.playerController.view.userInteractionEnabled = true
+//            
+//            let view = UIView(frame: cell.playerController.view.frame)
+//            cell.addSubview(view)
+//            
+//            print(CMTimeGetSeconds((cell.player.currentItem?.asset.duration)!))
+//            print(CMTimeGetSeconds((cell.player.currentItem?.currentTime())!))
+//            
+//            let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
+//            view.addGestureRecognizer(tapGesture)
+//            view.tag = indexPath.row
+//            
+//            //            let likeCount = self.likeCountArray[indexPath.row]
+//            //            cell.likeCountTextView.text = "\(likeCount)"
+//            //            cell.videoView.bringSubviewToFront(cell.likeCountTextView)
+//            
+//            return cell
             
-            cell.separatorInset = UIEdgeInsetsMake(0, 10000, 0, 0)
+            let cell: ProfileLikedTableViewCell = tableView.dequeueReusableCellWithIdentifier("profileLikedCell", forIndexPath: indexPath) as! ProfileLikedTableViewCell
             
-            print(myLikedAnswerArray[indexPath.row].question_content)
-            cell.contentTextView.text = myLikedAnswerArray[indexPath.row].question_content
-            cell.contentTextView.userInteractionEnabled = false
+            var question_content = myLikedAnswerArray[indexPath.row].question_content
+            let question_id = myLikedAnswerArray[indexPath.row].question_id
+            
+            let creatorname = myLikedAnswerArray[indexPath.row].creatorname
+            let userText = creatorname + " relayed:"
+            
+            cell.usernameButton.setTitle(userText, forState: .Normal)
+            
+            let creator = myLikedAnswerArray[indexPath.row].creator
+            
+            cell.profileImageView.image = UIImage(named: "Placeholder")
+            if let cachedImageResult = imageCache[creator] {
+                print("pull from cache")
+                cell.profileImageView.image = UIImage(data: cachedImageResult!)
+            } else {
+                // 3
+                cell.profileImageView.image = UIImage(named: "Placeholder")
+                
+                // 4
+                let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
+                let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
+                let transferManager = AWSS3TransferManager.defaultS3TransferManager()
+                
+                
+                let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
+                readRequest1.bucket = S3BucketName
+                readRequest1.key =  creator
+                readRequest1.downloadingFileURL = downloadingFileURL1
+                
+                let task = transferManager.download(readRequest1)
+                task.continueWithBlock { (task) -> AnyObject! in
+                    if task.error != nil {
+                        print("No Profile Pic")
+                    } else {
+                        let image = UIImage(contentsOfFile: downloadingFilePath1)
+                        let imageData = UIImageJPEGRepresentation(image!, 1.0)
+                        imageCache[creator] = imageData
+                        dispatch_async(dispatch_get_main_queue()
+                            , { () -> Void in
+                                cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
+                                cell.setNeedsLayout()
+                                
+                        })
+                        print("Fetched image")
+                    }
+                    return nil
+                }
+            }
+            
+            if question_content == "" {
+                let url = globalurl + "api/questions/" + question_id
+                
+                Alamofire.request(.GET, url, parameters: nil)
+                    .responseJSON { response in
+                        let json = JSON(response.result.value!)
+                        print("JSON: \(json)")
+                        if json == [] {
+                            print("No answers")
+                        }
+                        let content = json["content"].string
+                        print(content)
+                        question_content = content!
+                        self.myLikedAnswerArray[indexPath.row].question_content = question_content
+                        cell.questionContentButton.setTitle(question_content, forState: .Normal)
+                        cell.questionContentButton.titleLabel!.text = question_content
+                        cell.questionContentButton.titleLabel!.numberOfLines = 0
+                        cell.questionContentButton.titleLabel!.lineBreakMode = NSLineBreakMode.ByWordWrapping
+                        cell.questionContentButton.layoutIfNeeded()
+                        cell.questionContentHeight.constant = cell.questionContentButton.titleLabel!.frame.size.height
+                        cell.layoutIfNeeded()
+                        for (_,subJson):(String, JSON) in json {
+                            //Do something you want
+                            
+                        }
+                }
+            } else {
+                cell.questionContentButton.setTitle(question_content, forState: .Normal)
+                cell.questionContentButton.titleLabel?.text = question_content
+                cell.questionContentButton.titleLabel!.numberOfLines = 0
+                cell.questionContentButton.titleLabel!.lineBreakMode = NSLineBreakMode.ByWordWrapping
+                cell.questionContentButton.layoutIfNeeded()
+                cell.questionContentHeight.constant = cell.questionContentButton.titleLabel!.frame.size.height
+                cell.layoutIfNeeded()
+            }
+            
+            cell.questionContentButton.addTarget(self, action: "questionContentPressed:", forControlEvents: .TouchUpInside)
+            cell.questionContentButton.tag = indexPath.row
             
             let videoUrl = myLikedAnswerArray[indexPath.row].video_url
+            let cloudUrl = cloudfrontUrl + "video.m3u8"
             
             let newURL = NSURL(string: videoUrl)
             cell.player = AVPlayer(URL: newURL!)
             cell.playerController.player = cell.player
-            cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
-            self.addChildViewController(cell.playerController)
-            cell.videoView.addSubview(cell.playerController.view)
-            cell.playerController.didMoveToParentViewController(self)
-            cell.player.pause()
             
+            let frontCamera = myLikedAnswerArray[indexPath.row].frontCamera
+            print(frontCamera)
+            
+            if frontCamera {
+                cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+            }
+            cell.layoutIfNeeded()
+            if CGAffineTransformIsIdentity(cell.playerController.view.transform) {
+                if frontCamera {
+                    cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+                }
+            } else {
+                if frontCamera {
+                    
+                } else {
+                    cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+                }
+            }
+            //            self.addChildViewController(cell.playerController)
+            cell.videoView.addSubview(cell.playerController.view)
+            
+            cell.player.pause()
             if indexPath.row == 0 {
                 cell.player.play()
             }
@@ -506,19 +697,12 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             
             cell.playerController.view.userInteractionEnabled = true
             
-            let view = UIView(frame: cell.playerController.view.frame)
-            cell.addSubview(view)
-            
-            print(CMTimeGetSeconds((cell.player.currentItem?.asset.duration)!))
-            print(CMTimeGetSeconds((cell.player.currentItem?.currentTime())!))
+            let view = UIView(frame: CGRectMake(cell.videoView.frame.origin.x, cell.videoView.frame.origin.y, cell.videoView.frame.size.width, cell.videoView.frame.size.height))
+            cell.videoView.addSubview(view)
             
             let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
             view.addGestureRecognizer(tapGesture)
             view.tag = indexPath.row
-            
-            //            let likeCount = self.likeCountArray[indexPath.row]
-            //            cell.likeCountTextView.text = "\(likeCount)"
-            //            cell.videoView.bringSubviewToFront(cell.likeCountTextView)
             
             return cell
             
@@ -528,15 +712,36 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         
     }
     
-    func singleTapped(sender: UITapGestureRecognizer) {
-        print("Tapped")
-        let tag = sender.view?.tag
-        
-        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 2)) as! ProfileRelayTableViewCell
+    func questionContentPressed(sender: UIButton) {
+        let tag = sender.tag
+        self.questionIndex = tag
+        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 2)) as! ProfileLikedTableViewCell
         if (cell.player.rate > 0) {
             cell.player.pause()
         } else {
             cell.player.play()
+        }
+        self.performSegueWithIdentifier("segueFromProfileToAnswers", sender: self)
+    }
+    
+    func singleTapped(sender: UITapGestureRecognizer) {
+        print("Tapped")
+        let tag = sender.view?.tag
+        
+        if counter == 1 {
+            let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 2)) as! ProfileRelayTableViewCell
+            if (cell.player.rate > 0) {
+                cell.player.pause()
+            } else {
+                cell.player.play()
+            }
+        } else if counter == 2 {
+            let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 2)) as! ProfileLikedTableViewCell
+            if (cell.player.rate > 0) {
+                cell.player.pause()
+            } else {
+                cell.player.play()
+            }
         }
         
     }
@@ -566,14 +771,30 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "segueFromProfileToAnswers" {
             let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let content = self.myQuestionArray[indexPath!.row].content
-            let id = self.myQuestionArray[indexPath!.row].id
-            let creatorname = self.myQuestionArray[indexPath!.row].creatorname
-            answerVC.content = content
-            answerVC.id = id
-            answerVC.creatorname = creatorname
-            answerVC.fromProfile = true
+            if counter == 0 {
+                let indexPath = self.tableView.indexPathForSelectedRow
+                let content = self.myQuestionArray[indexPath!.row].content
+                let id = self.myQuestionArray[indexPath!.row].id
+                let creatorname = self.myQuestionArray[indexPath!.row].creatorname
+                answerVC.content = content
+                answerVC.id = id
+                answerVC.creatorname = creatorname
+                answerVC.fromProfile = true
+            } else if counter == 2 {
+                let indexPath = self.questionIndex
+                let content = self.myLikedAnswerArray[indexPath].question_content
+                let id = self.myLikedAnswerArray[indexPath].question_id
+                answerVC.content = content
+                answerVC.id = id
+                answerVC.fromProfile = true
+            }
+            
+        } else if segue.identifier == "segueFromProfileToFollowers" {
+            let userListVC: UserListViewController = segue.destinationViewController as! UserListViewController
+            userListVC.counter = "followers"
+        } else if segue.identifier == "segueFromProfileToFollowing" {
+            let userListVC: UserListViewController = segue.destinationViewController as! UserListViewController
+            userListVC.counter = "following"
         }
     }
     
@@ -681,6 +902,31 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 let visibleHeight = CGRectGetHeight(intersect)
                 let cellHeight = tableView.frame.height * 0.6
                 let cell = cell as! ProfileRelayTableViewCell
+                
+                if visibleHeight > cellHeight {
+                    if (cell.player.rate > 0) {
+                        
+                    } else {
+                        let seconds : Int64 = 0
+                        let preferredTimeScale : Int32 = 1
+                        let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
+                        
+                        cell.player.seekToTime(seekTime)
+                        cell.player.play()
+                    }
+                } else {
+                    cell.player.pause()
+                }
+            }
+            else if cell.isKindOfClass(ProfileLikedTableViewCell) {
+                let indexPath = tableView.indexPathForCell(cell)
+                let cellRect = tableView.rectForRowAtIndexPath(indexPath!)
+                let superView = tableView.superview
+                let convertedRect = tableView.convertRect(cellRect, toView: superView)
+                let intersect = CGRectIntersection(tableView.frame, convertedRect)
+                let visibleHeight = CGRectGetHeight(intersect)
+                let cellHeight = tableView.frame.height * 0.6
+                let cell = cell as! ProfileLikedTableViewCell
                 
                 if visibleHeight > cellHeight {
                     if (cell.player.rate > 0) {
