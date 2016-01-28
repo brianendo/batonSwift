@@ -143,7 +143,7 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
             contentTextView.text = placeholder
             contentTextView.textColor = UIColor.lightGrayColor()
             
-            self.charRemainingLabel.text = "100"
+            self.charRemainingLabel.text = "200"
             contentTextView.selectedTextRange = textView.textRangeFromPosition(textView.beginningOfDocument, toPosition: textView.beginningOfDocument)
             
             self.sendButton.enabled = false
@@ -166,13 +166,13 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
         let remainingChar: Int = 200 - newLength
         
         if contentTextView.text == placeholder {
-            charRemainingLabel.text = "100"
+            charRemainingLabel.text = "200"
         } else {
             // Make label show remaining characters
             charRemainingLabel.text = "\(remainingChar)"
         }
         // Once text > 100 chars, stop ability to change text
-        return (newLength == 100) ? false : true
+        return (newLength == 200) ? false : true
         
         
         

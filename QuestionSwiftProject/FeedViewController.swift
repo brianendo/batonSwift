@@ -17,12 +17,16 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
+    
     var questionArray = [Question]()
     var myQuestionArray = [Question]()
+    var hotQuestionArray = [Question]()
     var selectedIndexPath = 0
     var currentPage = 0
     private var lastContentOffset: CGFloat = 0
     var isLoading = false
+    var counter = 0
     
     var refreshControl:UIRefreshControl!
     
@@ -84,6 +88,73 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     
                     let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
                     self.questionArray.append(question)
+                    self.questionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+
+                    
+                    self.tableView.reloadData()
+                }
+        }
+    }
+    
+    func loadHotQuestionData() {
+        let url = globalurl + "api/questions-hottest/" + userid
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                
+                let json = JSON(value!)
+                print("JSON: \(json)")
+                for (_,subJson):(String, JSON) in json {
+                    //Do something you want
+                    let content = subJson["content"].string
+                    let id = subJson["_id"].string
+                    let anonymous = subJson["anonymous"].string
+                    var answercount = subJson["answercount"].number?.integerValue
+                    var creatorname = subJson["creatorname"].string
+                    let answeredBy = subJson["answered_by"]
+                    let creator = subJson["creator"].string
+                    var answered = false
+                    var user = false
+                    let createdAt = subJson["created_at"].string
+                    var likecount = subJson["likes"].number?.integerValue
+                    
+                    if likecount == nil {
+                        likecount = 0
+                    }
+                    
+                    let dateFor: NSDateFormatter = NSDateFormatter()
+                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+                    
+                    if creator == userid {
+                        user = true
+                    }
+                    
+                    for (_,subJson):(String, JSON) in answeredBy {
+                        let answerer = subJson.string
+                        if answerer == userid {
+                            answered = true
+                        }
+                    }
+                    
+                    if answercount == nil {
+                        answercount = 0
+                    }
+                    
+                    if creatorname == nil {
+                        creatorname = "Anonymous"
+                    } else if anonymous == "true" {
+                        creatorname = "Anonymous"
+                    }
+                    
+                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
+                    self.hotQuestionArray.append(question)
+                    self.hotQuestionArray.sortInPlace({ $0.likecount > $1.likecount })
                     
                     self.tableView.reloadData()
                 }
@@ -237,6 +308,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     
                     self.tableView.reloadData()
                     self.loadData()
+                    self.loadHotQuestionData()
                 }
         }
     }
@@ -264,8 +336,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 self.myQuestionArray.removeAll(keepCapacity: true)
                 
                 self.loadUserInfo()
+//                self.navigationController?.hidesBarsOnSwipe = true
                 NSNotificationCenter.defaultCenter().addObserver(self, selector: "changeFeed", name: "submittedAnswer", object: nil)
                  NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "askedQuestion", object: nil)
+                
+                self.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
             } else {
                 // No user is signed in
                 let login = UIStoryboard(name: "LogIn", bundle: nil)
@@ -279,6 +354,20 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
         self.tableView.addSubview(refreshControl)
+    }
+    
+    func profileSegmentedControlChanged(sender: UISegmentedControl) {
+        
+        if sender.selectedSegmentIndex == 0 {
+            print("Money")
+            counter = 0
+        } else if sender.selectedSegmentIndex == 1 {
+            print("Mayweather")
+            counter = 1
+        }
+        
+        self.tableView.reloadData()
+        
     }
     
     func changeFeed(){
@@ -393,38 +482,77 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return questionArray.count
+        if counter == 0 {
+            return questionArray.count
+        } else {
+            return hotQuestionArray.count
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
-        
-        cell.preservesSuperviewLayoutMargins = false
-        cell.separatorInset = UIEdgeInsetsZero
-        cell.layoutMargins = UIEdgeInsetsZero
-        
-        cell.questionTextView.text = questionArray[indexPath.row].content
-        cell.questionTextView.userInteractionEnabled = false
-        
-        let creatorname = questionArray[indexPath.row].creatorname
-        let answercount = questionArray[indexPath.row].answercount
-        
-        let answered = questionArray[indexPath.row].answered
-        let userStatus = questionArray[indexPath.row].currentuser
-        
-        cell.answercountLabel.text =  "\(answercount)"
-        
-        let likecount = questionArray[indexPath.row].likecount
-        cell.likecountTextView.text = "\(likecount)"
-        
-        let date = questionArray[indexPath.row].createdAt
-        let timeAgo = timeAgoSinceDate(date, numericDates: true)
-        
-        cell.timeAgoLabel.text = timeAgo
-        
-        let creator = questionArray[indexPath.row].creator
-        
-        return cell
+        if counter == 0 {
+            let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+            
+            cell.preservesSuperviewLayoutMargins = false
+            cell.separatorInset = UIEdgeInsetsZero
+            cell.layoutMargins = UIEdgeInsetsZero
+            
+            cell.questionTextView.text = questionArray[indexPath.row].content
+            cell.questionTextView.userInteractionEnabled = false
+            
+            let creatorname = questionArray[indexPath.row].creatorname
+            let answercount = questionArray[indexPath.row].answercount
+            
+            let answered = questionArray[indexPath.row].answered
+            let userStatus = questionArray[indexPath.row].currentuser
+            
+            cell.answercountLabel.text =  "\(answercount)"
+            
+            let likecount = questionArray[indexPath.row].likecount
+            cell.likecountTextView.text = "\(likecount)"
+            cell.likecountTextView.editable = false
+            cell.likecountTextView.selectable = false
+            
+            let date = questionArray[indexPath.row].createdAt
+            let timeAgo = timeAgoSinceDate(date, numericDates: true)
+            
+            cell.timeAgoLabel.text = timeAgo
+            
+            let creator = questionArray[indexPath.row].creator
+            
+            return cell
+        } else {
+            let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+            
+            cell.preservesSuperviewLayoutMargins = false
+            cell.separatorInset = UIEdgeInsetsZero
+            cell.layoutMargins = UIEdgeInsetsZero
+            
+            cell.questionTextView.text = hotQuestionArray[indexPath.row].content
+            cell.questionTextView.userInteractionEnabled = false
+            
+            let creatorname = hotQuestionArray[indexPath.row].creatorname
+            let answercount = hotQuestionArray[indexPath.row].answercount
+            
+            let answered = hotQuestionArray[indexPath.row].answered
+            let userStatus = hotQuestionArray[indexPath.row].currentuser
+            
+            cell.answercountLabel.text =  "\(answercount)"
+            
+            let likecount = hotQuestionArray[indexPath.row].likecount
+            cell.likecountTextView.text = "\(likecount)"
+            cell.likecountTextView.editable = false
+            cell.likecountTextView.selectable = false
+            
+            let date = hotQuestionArray[indexPath.row].createdAt
+            let timeAgo = timeAgoSinceDate(date, numericDates: true)
+            
+            cell.timeAgoLabel.text = timeAgo
+            
+            let creator = hotQuestionArray[indexPath.row].creator
+            
+            return cell
+        }
         
     }
     
@@ -441,10 +569,12 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
             let content = self.questionArray[indexPath!.row].content
             let id = self.questionArray[indexPath!.row].id
             let creatorname = self.questionArray[indexPath!.row].creatorname
+            let question = self.questionArray[indexPath!.row]
             self.selectedIndexPath = indexPath!.row
             answerVC.content = content
             answerVC.id = id
             answerVC.creatorname = creatorname
+            answerVC.question = question
         }
     }
     
@@ -533,4 +663,69 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //    }
     
 
+}
+
+func timeAgoSinceDate(date:NSDate, numericDates:Bool) -> String {
+    let calendar = NSCalendar.currentCalendar()
+    let unitFlags: NSCalendarUnit = [NSCalendarUnit.Minute, NSCalendarUnit.Hour, NSCalendarUnit.Day, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.Second]
+    let now = NSDate()
+    let earliest = now.earlierDate(date)
+    let latest = (earliest == now) ? date : now
+    let components:NSDateComponents = calendar.components(unitFlags, fromDate: earliest, toDate: latest, options: [])
+    
+    
+    if (components.year >= 2) {
+        return "\(components.year)y"
+    } else if (components.year >= 1){
+        if (numericDates){
+            return "1y"
+        } else {
+            return "Last year"
+        }
+    } else if (components.month >= 2) {
+        return "\(components.month)mo"
+    } else if (components.month >= 1){
+        if (numericDates){
+            return "1mo"
+        } else {
+            return "Last month"
+        }
+    } else if (components.weekOfYear >= 2) {
+        return "\(components.weekOfYear)w"
+    } else if (components.weekOfYear >= 1){
+        if (numericDates){
+            return "1w"
+        } else {
+            return "Last week"
+        }
+    } else if (components.day >= 2) {
+        return "\(components.day)d"
+    } else if (components.day >= 1){
+        if (numericDates){
+            return "1d"
+        } else {
+            return "Yesterday"
+        }
+    } else if (components.hour >= 2) {
+        return "\(components.hour)h"
+    } else if (components.hour >= 1){
+        if (numericDates){
+            return "1h"
+        } else {
+            return "An hour ago"
+        }
+    } else if (components.minute >= 2) {
+        return "\(components.minute)m"
+    } else if (components.minute >= 1){
+        if (numericDates){
+            return "1m"
+        } else {
+            return "A minute ago"
+        }
+    } else if (components.second >= 3) {
+        return "\(components.second)s"
+    } else {
+        return "1s"
+    }
+    
 }

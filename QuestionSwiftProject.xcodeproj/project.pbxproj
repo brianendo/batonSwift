@@ -26,6 +26,8 @@
 		8EB9456D1C498B5200FA01E2 /* FollowingAnswerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB9456C1C498B5200FA01E2 /* FollowingAnswerTableViewCell.swift */; };
 		8EB9456F1C49B00D00FA01E2 /* FollowingQuestionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB9456E1C49B00D00FA01E2 /* FollowingQuestionTableViewCell.swift */; };
 		8EB945711C4DA46900FA01E2 /* ProfileLikedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB945701C4DA46900FA01E2 /* ProfileLikedTableViewCell.swift */; };
+		8EB945731C53151200FA01E2 /* FollowHeaderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB945721C53151100FA01E2 /* FollowHeaderTableViewCell.swift */; };
+		8EB945751C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB945741C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift */; };
 		8EE04ACE1BE2998A0040D5A5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE04ACD1BE2998A0040D5A5 /* AppDelegate.swift */; };
 		8EE04AD31BE2998A0040D5A5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8EE04AD11BE2998A0040D5A5 /* Main.storyboard */; };
 		8EE04AD51BE2998A0040D5A5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8EE04AD41BE2998A0040D5A5 /* Assets.xcassets */; };
@@ -86,6 +88,8 @@
 		8EB9456C1C498B5200FA01E2 /* FollowingAnswerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowingAnswerTableViewCell.swift; sourceTree = "<group>"; };
 		8EB9456E1C49B00D00FA01E2 /* FollowingQuestionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowingQuestionTableViewCell.swift; sourceTree = "<group>"; };
 		8EB945701C4DA46900FA01E2 /* ProfileLikedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileLikedTableViewCell.swift; sourceTree = "<group>"; };
+		8EB945721C53151100FA01E2 /* FollowHeaderTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowHeaderTableViewCell.swift; sourceTree = "<group>"; };
+		8EB945741C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileButtonsTableViewCell.swift; sourceTree = "<group>"; };
 		8EE04ACA1BE299890040D5A5 /* QuestionSwiftProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuestionSwiftProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE04ACD1BE2998A0040D5A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8EE04AD21BE2998A0040D5A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -206,11 +210,13 @@
 				8EE04B2D1BEABBD10040D5A5 /* ProfileTableViewCell.swift */,
 				8E9D70EC1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift */,
 				8EB945701C4DA46900FA01E2 /* ProfileLikedTableViewCell.swift */,
+				8EB945741C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift */,
 				8EB945641C487B1000FA01E2 /* UserListViewController.swift */,
 				8EB945661C487BA000FA01E2 /* UserTableViewCell.swift */,
 				8EB9456A1C498B3000FA01E2 /* FollowingViewController.swift */,
 				8EB9456C1C498B5200FA01E2 /* FollowingAnswerTableViewCell.swift */,
 				8EB9456E1C49B00D00FA01E2 /* FollowingQuestionTableViewCell.swift */,
+				8EB945721C53151100FA01E2 /* FollowHeaderTableViewCell.swift */,
 				8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */,
 				8EB945621C4825AD00FA01E2 /* ProgressView.swift */,
 				8EE04AD11BE2998A0040D5A5 /* Main.storyboard */,
@@ -445,6 +451,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8EB945751C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift in Sources */,
 				8EE04B051BE2A77D0040D5A5 /* StartViewController.swift in Sources */,
 				8EE04B1C1BE862160040D5A5 /* Question.swift in Sources */,
 				8E9D70E51C164A920073CA17 /* AnsweredQuestionTableViewCell.swift in Sources */,
@@ -468,6 +475,7 @@
 				8EB945671C487BA000FA01E2 /* UserTableViewCell.swift in Sources */,
 				8E9D70EB1C17A0300073CA17 /* TabBarViewController.swift in Sources */,
 				8E9D70E91C1776860073CA17 /* ProfileRelayTableViewCell.swift in Sources */,
+				8EB945731C53151200FA01E2 /* FollowHeaderTableViewCell.swift in Sources */,
 				8EE04B1E1BE95D7B0040D5A5 /* NotificationViewController.swift in Sources */,
 				8E9D70ED1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift in Sources */,
 				8EE04AFE1BE29C3A0040D5A5 /* QuestionTableViewCell.swift in Sources */,

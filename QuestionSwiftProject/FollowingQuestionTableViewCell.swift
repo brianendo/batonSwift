@@ -19,14 +19,14 @@ class FollowingQuestionTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        self.profileImageView.frame = CGRectMake(0, 0, 40, 40)
+        self.profileImageView.frame = CGRectMake(0, 0, 35, 35)
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor
         self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2
         self.profileImageView.clipsToBounds = true
         
-        usernameButton.titleLabel?.font = UIFont(name: "HelveticaNeue-Medium", size: 15)
+        usernameButton.titleLabel?.font = UIFont(name: "HelveticaNeue-Bold", size: 12)
         usernameButton.titleLabel?.textColor = UIColor.blackColor()
         
         

@@ -10,7 +10,13 @@ import UIKit
 
 class QuestionTitleTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var likeCountTextView: UITextView!
     @IBOutlet weak var contentTextView: UITextView!
+    @IBOutlet weak var postedByTextView: UITextView!
+    @IBOutlet weak var timeAgoLabel: UILabel!
+    @IBOutlet weak var answerCountLabel: UILabel!
+    @IBOutlet weak var postedByButton: UIButton!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

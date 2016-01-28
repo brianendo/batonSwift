@@ -21,7 +21,9 @@ class AnswerTableViewCell: UITableViewCell {
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var followButton: UIButton!
     @IBOutlet weak var profileImageView: UIImageView!
-    
+    @IBOutlet weak var timeAgoLabel: UILabel!
+    @IBOutlet weak var viewCountLabel: UILabel!
+    @IBOutlet weak var nameButton: UIButton!
     
     var player: AVPlayer!
     var playerController: AVPlayerViewController!
@@ -30,18 +32,18 @@ class AnswerTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        self.profileImageView.frame = CGRectMake(0, 0, 40, 40)
+        self.profileImageView.frame = CGRectMake(0, 0, 35, 35)
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor
         self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2
         self.profileImageView.clipsToBounds = true
         
-        likeCountTextView.layer.shadowColor = UIColor.blackColor().CGColor
-        likeCountTextView.layer.shadowOffset = CGSizeMake(0, 2.0)
-        likeCountTextView.layer.shadowOpacity = 1.0
-        likeCountTextView.layer.shadowRadius = 2.0
-        likeCountTextView.layer.backgroundColor = UIColor.clearColor().CGColor
+//        likeCountTextView.layer.shadowColor = UIColor.blackColor().CGColor
+//        likeCountTextView.layer.shadowOffset = CGSizeMake(0, 2.0)
+//        likeCountTextView.layer.shadowOpacity = 1.0
+//        likeCountTextView.layer.shadowRadius = 2.0
+//        likeCountTextView.layer.backgroundColor = UIColor.clearColor().CGColor
         
         playerController = AVPlayerViewController()
         playerController.player = player

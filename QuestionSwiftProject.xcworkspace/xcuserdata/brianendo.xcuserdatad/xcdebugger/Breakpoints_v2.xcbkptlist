@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/ProfileViewController.swift"
-            timestampString = "474925128.77961"
+            timestampString = "475624698.921599"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "972"
-            endingLineNumber = "972">
+            startingLineNumber = "1561"
+            endingLineNumber = "1561">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -72,11 +72,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "QuestionSwiftProject/AnswersViewController.swift"
-            timestampString = "474330613.816324"
+            timestampString = "475537599.206963"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "93"
-            endingLineNumber = "93"
+            startingLineNumber = "187"
+            endingLineNumber = "187"
             landmarkName = "loadAnswers()"
             landmarkType = "5">
          </BreakpointContent>

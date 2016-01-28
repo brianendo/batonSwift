@@ -17,6 +17,13 @@ class ProfileLikedTableViewCell: UITableViewCell {
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var questionContentHeight: NSLayoutConstraint!
+    @IBOutlet weak var likeCountTextView: UITextView!
+    @IBOutlet weak var heartImageView: UIImageView!
+    @IBOutlet weak var likeImageView: UIImageView!
+    @IBOutlet weak var likeButton: UIButton!
+    @IBOutlet weak var timeAgoLabel: UILabel!
+    @IBOutlet weak var questionContentTextView: UITextView!
+    @IBOutlet weak var viewCountLabel: UILabel!
     
     
     var player: AVPlayer!
@@ -26,7 +33,7 @@ class ProfileLikedTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        self.profileImageView.frame = CGRectMake(0, 0, 40, 40)
+        self.profileImageView.frame = CGRectMake(0, 0, 35, 35)
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor

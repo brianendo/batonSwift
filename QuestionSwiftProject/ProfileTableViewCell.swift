@@ -11,15 +11,18 @@ import UIKit
 class ProfileTableViewCell: UITableViewCell {
 
     @IBOutlet weak var profileImageView: UIImageView!
-    @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var followersButton: UIButton!
     @IBOutlet weak var followingButton: UIButton!
-    
+    @IBOutlet weak var profileButton: UIButton!
+    @IBOutlet weak var profileDescriptionLabel: UILabel!
+    @IBOutlet weak var viewButton: UIButton!
     
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        
         self.profileImageView.frame = CGRectMake(0, 0, 60, 60)
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false

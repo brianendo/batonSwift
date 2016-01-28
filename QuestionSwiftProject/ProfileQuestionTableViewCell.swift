@@ -11,8 +11,9 @@ import UIKit
 class ProfileQuestionTableViewCell: UITableViewCell {
 
     @IBOutlet weak var answercountLabel: UILabel!
-    
     @IBOutlet weak var questionTextView: UITextView!
+    @IBOutlet weak var likeCountTextView: UITextView!
+    @IBOutlet weak var timeAgoLabel: UILabel!
     
     
     override func awakeFromNib() {

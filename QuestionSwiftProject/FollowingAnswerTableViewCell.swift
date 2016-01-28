@@ -21,7 +21,9 @@ class FollowingAnswerTableViewCell: UITableViewCell {
     @IBOutlet weak var heartImageView: UIImageView!
     @IBOutlet weak var likeImageView: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
-    
+    @IBOutlet weak var timeAgoLabel: UILabel!
+    @IBOutlet weak var questionContentTextView: UITextView!
+    @IBOutlet weak var viewCountLabel: UILabel!
     
     var player: AVPlayer!
     var playerController: AVPlayerViewController!
@@ -30,13 +32,13 @@ class FollowingAnswerTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        likeCountTextView.layer.shadowColor = UIColor.blackColor().CGColor
-        likeCountTextView.layer.shadowOffset = CGSizeMake(0, 2.0)
-        likeCountTextView.layer.shadowOpacity = 1.0
-        likeCountTextView.layer.shadowRadius = 2.0
-        likeCountTextView.layer.backgroundColor = UIColor.clearColor().CGColor
+//        likeCountTextView.layer.shadowColor = UIColor.blackColor().CGColor
+//        likeCountTextView.layer.shadowOffset = CGSizeMake(0, 2.0)
+//        likeCountTextView.layer.shadowOpacity = 1.0
+//        likeCountTextView.layer.shadowRadius = 2.0
+//        likeCountTextView.layer.backgroundColor = UIColor.clearColor().CGColor
         
-        self.profileImageView.frame = CGRectMake(0, 0, 40, 40)
+        self.profileImageView.frame = CGRectMake(0, 0, 35, 35)
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor

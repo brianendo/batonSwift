@@ -48,9 +48,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().barTintColor = UIColor(red:0.17, green:0.18, blue:0.29, alpha:1.0)
         UINavigationBar.appearance().tintColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
         
-        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor(red:0.17, green:0.18, blue:0.29, alpha:1.0), NSFontAttributeName: UIFont(name: "HelveticaNeue", size: 20)!]
+        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName:UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0), NSFontAttributeName: UIFont(name: "HelveticaNeue-Medium", size: 20)!]
         
         UIApplication.sharedApplication().statusBarStyle = .LightContent
+        
+        let statusbar = UIView.init(frame: CGRectMake(0, 0, self.window!.frame.size.width, 20))
+        statusbar.backgroundColor = UIColor(red:0.17, green:0.18, blue:0.29, alpha:1.0)
+        self.window?.rootViewController?.view.addSubview(statusbar)
         
         UITabBar.appearance().barTintColor = UIColor(red:0.95, green:0.95, blue:0.95, alpha:1.0)
         UITabBar.appearance().tintColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)

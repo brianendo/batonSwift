@@ -18,11 +18,16 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     
+    
     var counter = 0
     var answerArray = [Answer]()
     var questionArray = [Question]()
     var selectedIndexPath = 0
     var questionIndex = 0
+    var headerView: UIView?
+    var question: Question?
+    var fromRelays = true
+    var tag = 0
     
     func loadQuestions() {
         let url = globalurl + "api/users/" + userid + "/followingquestions"
@@ -68,7 +73,8 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                     
                     let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
                     self.questionArray.append(question)
-                    
+                    self.questionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+
                     self.tableView.reloadData()
                 }
         }
@@ -93,6 +99,19 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                     var likeCount = subJson["likes"].int
                     var frontCamera = subJson["frontCamera"].bool
                     var question_id = subJson["question_id"].string
+                    var views = subJson["views"].number?.integerValue
+                    if views == nil {
+                        views = 0
+                    }
+                    var question_content = subJson["question_content"].string
+                    if question_content == nil {
+                        question_content = ""
+                    }
+                    
+                    let createdAt = subJson["created_at"].string
+                    let dateFor: NSDateFormatter = NSDateFormatter()
+                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
                     
                     if question_id == nil {
                         question_id = ""
@@ -109,8 +128,43 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                     if video_url != nil {
                         print(video_url)
                         
-                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera)
-                        self.answerArray.append(answer)
+                        if question_content == "" {
+                            let url = globalurl + "api/questions/" + question_id!
+                            
+                            Alamofire.request(.GET, url, parameters: nil)
+                                .responseJSON { response in
+                                    let json = JSON(response.result.value!)
+                                    print("JSON: \(json)")
+                                    if json == [] {
+                                        print("No answers")
+                                    }
+                                    var content = json["content"].string
+                                    print(content)
+                                    
+                                    if content == nil {
+                                        content = ""
+                                    }
+                                    
+                                    let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: content, video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views)
+                                    self.answerArray.append(answer)
+                                    self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+
+                                    self.tableView.reloadData()
+
+                                    
+                            }
+                        } else {
+                            let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views)
+                            self.answerArray.append(answer)
+                            self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+
+                            self.tableView.reloadData()
+
+                            
+                        }
+                        
+//                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views)
+//                        self.answerArray.append(answer)
                     }
                     
                     self.tableView.reloadData()
@@ -147,6 +201,10 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             }
         }
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        self.navigationController?.hidesBarsOnSwipe = true
     }
     
     override func viewDidLoad() {
@@ -216,9 +274,79 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
        
     }
     
+    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 60
+    }
+    
+    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let cell: FollowHeaderTableViewCell = tableView.dequeueReusableCellWithIdentifier("followingHeaderCell") as! FollowHeaderTableViewCell
+        
+        cell.relayButton.addTarget(self, action: "toggleButton:", forControlEvents: .TouchUpInside)
+        cell.relayButton.tag = 0
+        if counter == 0 {
+            cell.relayButton.selected = true
+            cell.relayButton.backgroundColor = UIColor(red:0.9, green:0.9, blue:0.93, alpha:1.0)
+        } else {
+            cell.relayButton.selected = false
+            cell.relayButton.backgroundColor = UIColor.whiteColor()
+        }
+        
+        cell.postButton.addTarget(self, action: "toggleButton:", forControlEvents: .TouchUpInside)
+        cell.postButton.tag = 1
+        
+        if counter == 1 {
+            cell.postButton.selected = true
+            cell.postButton.backgroundColor = UIColor(red:0.9, green:0.9, blue:0.93, alpha:1.0)
+        } else {
+            cell.postButton.selected = false
+            cell.postButton.backgroundColor = UIColor.whiteColor()
+        }
+        
+        return cell
+        
+    }
+    
+    func tableView(tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        let headerView = view
+        self.headerView = headerView
+    }
+    
+    func toggleButton(sender: UIButton) {
+        let header = headerView as! FollowHeaderTableViewCell
+        let relayButton: UIButton = header.relayButton
+        let postButton: UIButton = header.postButton
+        
+        if sender.tag == 0 {
+            if counter == 0 {
+                
+            } else {
+                counter = 0
+                header.setNeedsDisplay()
+                header.setNeedsLayout()
+                self.tableView.reloadData()
+            }
+        } else {
+            if counter == 1 {
+                
+                
+            } else {
+                counter = 1
+                header.setNeedsDisplay()
+                header.setNeedsLayout()
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
+    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
         if counter == 0 {
             let cell: FollowingAnswerTableViewCell = tableView.dequeueReusableCellWithIdentifier("followingAnswerCell", forIndexPath: indexPath) as! FollowingAnswerTableViewCell
+            
+            cell.preservesSuperviewLayoutMargins = false
+            cell.separatorInset = UIEdgeInsetsZero
+            cell.layoutMargins = UIEdgeInsetsZero
             
             var question_content = answerArray[indexPath.row].question_content
             let question_id = answerArray[indexPath.row].question_id
@@ -226,7 +354,19 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             let creatorname = answerArray[indexPath.row].creatorname
             let userText = creatorname + " relayed:"
             
-            cell.usernameButton.setTitle(userText, forState: .Normal)
+            let postedText = "\(creatorname)"
+            let myFirstString = NSMutableAttributedString(string: postedText, attributes: [NSForegroundColorAttributeName:UIColor.blackColor(), NSFontAttributeName:UIFont(name: "HelveticaNeue-Bold", size: 12.0)!])
+            
+            let creatornameText = " relayed:"
+            let mySecondString = NSMutableAttributedString(string: creatornameText, attributes: [NSForegroundColorAttributeName:UIColor.blackColor(), NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 12.0)!])
+            
+            let result = NSMutableAttributedString()
+            result.appendAttributedString(myFirstString)
+            result.appendAttributedString(mySecondString)
+            
+            cell.usernameButton.setAttributedTitle(result, forState: .Normal)
+            cell.usernameButton.addTarget(self, action: "usernameTapped:", forControlEvents: .TouchUpInside)
+            cell.usernameButton.tag = indexPath.row
             
             let creator = answerArray[indexPath.row].creator
             
@@ -283,35 +423,21 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                         print(content)
                         question_content = content!
                         self.answerArray[indexPath.row].question_content = question_content
-                        cell.questionContentButton.setTitle(question_content, forState: .Normal)
-                        cell.questionContentButton.titleLabel!.text = question_content
-                        cell.questionContentButton.titleLabel!.numberOfLines = 0
-                        cell.questionContentButton.titleLabel!.lineBreakMode = NSLineBreakMode.ByWordWrapping
-                        cell.questionContentButton.sizeToFit()
-                        cell.questionContentButton.layoutIfNeeded()
-                        let buttonLabel = cell.questionContentButton.titleLabel
-                        cell.questionContentButton.frame = CGRect(x: (buttonLabel?.frame.origin.x)!, y: (buttonLabel?.frame.origin.y)!, width: (buttonLabel?.frame.width)!, height: (buttonLabel?.frame.height)!)
-                        cell.questionContentHeight.constant = cell.questionContentButton.titleLabel!.frame.size.height
-                        cell.questionContentButton.layoutIfNeeded()
-                        
+                        cell.questionContentTextView.text = question_content
+                        cell.questionContentTextView.editable = false
+                        cell.questionContentTextView.selectable = false
                         for (_,subJson):(String, JSON) in json {
                             //Do something you want
                             
                         }
                 }
             } else {
-                cell.questionContentButton.setTitle(question_content, forState: .Normal)
-                cell.questionContentButton.titleLabel?.text = question_content
-                cell.questionContentButton.titleLabel!.numberOfLines = 0
-                cell.questionContentButton.titleLabel!.lineBreakMode = NSLineBreakMode.ByWordWrapping
-                cell.questionContentButton.layoutIfNeeded()
-                cell.questionContentButton.sizeToFit()
-                let buttonLabel = cell.questionContentButton.titleLabel
-                cell.questionContentButton.frame = CGRect(x: (buttonLabel?.frame.origin.x)!, y: (buttonLabel?.frame.origin.y)!, width: (buttonLabel?.frame.width)!, height: (buttonLabel?.frame.height)!)
-                cell.questionContentHeight.constant = cell.questionContentButton.titleLabel!.frame.size.height
-                cell.questionContentButton.layoutIfNeeded()
+                cell.questionContentTextView.text = question_content
+                cell.questionContentTextView.editable = false
+                cell.questionContentTextView.selectable = false
                 
             }
+            
             
             cell.questionContentButton.addTarget(self, action: "questionContentPressed:", forControlEvents: .TouchUpInside)
             cell.questionContentButton.tag = indexPath.row
@@ -351,6 +477,14 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.likeImageView.hidden = true
             cell.videoView.bringSubviewToFront(cell.likeImageView)
             
+            let date = answerArray[indexPath.row].createdAt
+            let timeAgo = timeAgoSinceDate(date, numericDates: true)
+            
+            cell.timeAgoLabel.text = timeAgo
+            
+            let views = answerArray[indexPath.row].views
+            cell.viewCountLabel.text = "\(views) views"
+            
             let doubleTapGesture = UITapGestureRecognizer()
             doubleTapGesture.numberOfTapsRequired = 2
             doubleTapGesture.addTarget(self, action: "doubleTapped:")
@@ -388,7 +522,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             
             if liked_by_user == true {
                 cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-                cell.heartImageView.image = UIImage(named: "RedHeart")
+                cell.heartImageView.image = UIImage(named: "redHeartOutline")
             } else {
                 let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/likecheck/" + userid
                 
@@ -398,12 +532,12 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                         print(result)
                         if result == nil {
                             print("Gobi")
-                            cell.likeCountTextView.textColor = UIColor(red: 0.776, green: 0.776, blue: 0.776, alpha: 1)
-                            cell.heartImageView.image = UIImage(named: "GrayHeart")
+                            cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
+                            cell.heartImageView.image = UIImage(named: "grayHeartOutline")
                         } else {
                             print("Liked")
                             cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-                            cell.heartImageView.image = UIImage(named: "RedHeart")
+                            cell.heartImageView.image = UIImage(named: "redHeartOutline")
                             self.answerArray[indexPath.row].liked_by_user = true
                         }
                 }
@@ -461,8 +595,20 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
             let userText = creatorname + " posted:"
+            let postedText = "\(creatorname)"
+            let myFirstString = NSMutableAttributedString(string: postedText, attributes: [NSForegroundColorAttributeName:UIColor.blackColor(), NSFontAttributeName:UIFont(name: "HelveticaNeue-Bold", size: 12.0)!])
             
-            cell.usernameButton.setTitle(userText, forState: .Normal)
+            let creatornameText = " posted:"
+            let mySecondString = NSMutableAttributedString(string: creatornameText, attributes: [NSForegroundColorAttributeName:UIColor.blackColor(), NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 12.0)!])
+            
+            let result = NSMutableAttributedString()
+            result.appendAttributedString(myFirstString)
+            result.appendAttributedString(mySecondString)
+            
+            cell.usernameButton.setAttributedTitle(result, forState: .Normal)
+            cell.usernameButton.addTarget(self, action: "usernameTapped:", forControlEvents: .TouchUpInside)
+            cell.usernameButton.tag = indexPath.row
+            
             cell.contentTextView.text = content
             
             cell.contentTextView.font = UIFont(name: "HelveticaNeue", size: 16)
@@ -471,6 +617,19 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             return cell
         }
         
+    }
+    
+    func usernameTapped(sender: UIButton) {
+        let tag = sender.tag
+        if counter == 0 {
+            fromRelays = true
+            self.tag = tag
+           self.performSegueWithIdentifier("segueFromFollowingToProfile", sender: self)
+        } else if counter == 1 {
+            fromRelays = false
+            self.tag = tag
+            self.performSegueWithIdentifier("segueFromFollowingToProfile", sender: self)
+        }
     }
     
     func questionContentPressed(sender: UIButton) {
@@ -483,7 +642,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
         print("button hit")
         let currentLiked = self.answerArray[sender.tag].liked_by_user
         let tag = sender.tag
-        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 1)) as! AnswerTableViewCell
+        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 0)) as! FollowingAnswerTableViewCell
         let answerId = self.answerArray[sender.tag].id
         
         if currentLiked == true {
@@ -496,15 +655,15 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                     let result = response.result.value
                     print(result)
                     if result == nil {
-                        print("Already liked")
+
                     } else {
-                        print("Liked")
+                        print("unliked")
                         self.answerArray[tag].likeCount -= 1
                         self.answerArray[tag].liked_by_user = false
                         let likeCount = self.answerArray[tag].likeCount
                         cell.likeCountTextView.text = "\(likeCount)"
-                        cell.likeCountTextView.textColor = UIColor(red: 0.776, green: 0.776, blue: 0.776, alpha: 1)
-                        cell.heartImageView.image = UIImage(named: "GrayHeart")
+                        cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
+                        cell.heartImageView.image = UIImage(named: "grayHeartOutline")
                     }
             }
         } else {
@@ -526,7 +685,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                         let likeCount = self.answerArray[tag].likeCount
                         cell.likeCountTextView.text = "\(likeCount)"
                         cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-                        cell.heartImageView.image = UIImage(named: "RedHeart")
+                        cell.heartImageView.image = UIImage(named: "redHeartOutline")
                     }
             }
         }
@@ -564,7 +723,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                             let likeCount = self.answerArray[tag!].likeCount
                             cell.likeCountTextView.text = "\(likeCount)"
                             cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-                            cell.heartImageView.image = UIImage(named: "RedHeart")
+                            cell.heartImageView.image = UIImage(named: "redHeartOutline")
                         }
                 }
                 //                let thankurl = globalurl + "api/answers/" + answerId + "/thanked/"
@@ -605,16 +764,50 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 let id = self.answerArray[indexPath].question_id
                 answerVC.content = content
                 answerVC.id = id
+                answerVC.fromFollowing = true
+                self.navigationController?.hidesBarsOnSwipe = false
+                self.navigationController?.navigationBarHidden = false
             } else {
                 let indexPath = self.tableView.indexPathForSelectedRow
                 let content = self.questionArray[indexPath!.row].content
                 let id = self.questionArray[indexPath!.row].id
                 let creatorname = self.questionArray[indexPath!.row].creatorname
+                let question = self.questionArray[indexPath!.row]
                 self.selectedIndexPath = indexPath!.row
                 answerVC.content = content
                 answerVC.id = id
                 answerVC.creatorname = creatorname
+                answerVC.question = question
             }
+        } else if segue.identifier == "segueFromFollowingToProfile" {
+            if fromRelays {
+                let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController
+                for cell in tableView.visibleCells {
+                    if cell.isKindOfClass(FollowingAnswerTableViewCell) {
+                        let cell = cell as! FollowingAnswerTableViewCell
+                        cell.player.pause()
+                    }
+                }
+                let creatorId = answerArray[tag].creator
+                let creatorname = answerArray[tag].creatorname
+                profileVC.fromOtherVC = true
+                profileVC.creatorId = creatorId
+                profileVC.creatorname = creatorname
+            } else {
+                let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController
+                for cell in tableView.visibleCells {
+                    if cell.isKindOfClass(FollowingAnswerTableViewCell) {
+                        let cell = cell as! FollowingAnswerTableViewCell
+                        cell.player.pause()
+                    }
+                }
+                let creatorId = questionArray[tag].creator
+                let creatorname = questionArray[tag].creatorname
+                profileVC.fromOtherVC = true
+                profileVC.creatorId = creatorId
+                profileVC.creatorname = creatorname
+            }
+
         }
     }
     

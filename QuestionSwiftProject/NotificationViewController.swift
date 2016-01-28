@@ -172,7 +172,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     override func viewWillAppear(animated: Bool) {
-        
+        self.tabBarController!.tabBar.hidden = false
     }
     
     func readAll() {
@@ -200,7 +200,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         super.viewDidLoad()
 
         print("Loaded")
-        
+        self.navigationItem.title = "Notifications"
         // Do any additional setup after loading the view.
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -260,6 +260,9 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             
             cell.contentTextView.text = "\"\(answerContent)\""
             
+            cell.preservesSuperviewLayoutMargins = false
+            cell.separatorInset = UIEdgeInsetsZero
+            cell.layoutMargins = UIEdgeInsetsZero
             cell.headerTextView.userInteractionEnabled = false
             cell.contentTextView.userInteractionEnabled = false
             
@@ -273,7 +276,9 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             }
             
             let notificationId = notificationArray[indexPath.row].id
-            
+            cell.preservesSuperviewLayoutMargins = false
+            cell.separatorInset = UIEdgeInsetsZero
+            cell.layoutMargins = UIEdgeInsetsZero
             cell.contentTextView.text = "\(sendername) liked your answer:"
             cell.contentTextView.userInteractionEnabled = false
             let thumbnail = notificationArray[indexPath.row].thumbnail_url

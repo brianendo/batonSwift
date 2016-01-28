@@ -18,10 +18,12 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
     var counter = ""
     var userIdArray = [String]()
     var usernameArray = [String]()
+    var indexPath = 0
+    var id = ""
     
     func loadUsers() {
         if counter == "followers" {
-            let url = globalurl + "api/followers/" + userid
+            let url = globalurl + "api/followers/" + id
             
             Alamofire.request(.GET, url, parameters: nil)
                 .responseJSON { response in
@@ -45,7 +47,7 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
                     }
             }
         } else if counter == "following" {
-            let url = globalurl + "api/following/" + userid
+            let url = globalurl + "api/following/" + id
             
             Alamofire.request(.GET, url, parameters: nil)
                 .responseJSON { response in
@@ -145,6 +147,23 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return userIdArray.count
+    }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        self.indexPath = indexPath.row
+        self.performSegueWithIdentifier("segueFromUserListToProfile", sender: self)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "segueFromUserListToProfile" {
+            let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController
+            let creatorId = userIdArray[indexPath]
+            let creatorname = usernameArray[indexPath]
+            profileVC.fromOtherVC = true
+            profileVC.creatorId = creatorId
+            profileVC.creatorname = creatorname
+        }
     }
 
 }
