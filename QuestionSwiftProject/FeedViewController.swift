@@ -80,12 +80,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         answercount = 0
                     }
                     
-                    if creatorname == nil {
-                        creatorname = "Anonymous"
-                    } else if anonymous == "true" {
-                        creatorname = "Anonymous"
-                    }
-                    
                     let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
                     self.questionArray.append(question)
                     self.questionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
@@ -285,12 +279,35 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func loadUserInfo() {
-        let url = globalurl + "api/currentuser"
-        let parameters = [
-            "firebase_id": currentUser
-        ]
+//        let url = globalurl + "api/currentuser"
+//        let parameters = [
+//            "firebase_id": currentUser
+//        ]
+//        
+//        Alamofire.request(.POST, url, parameters: parameters)
+//            .responseJSON { response in
+//                var value = response.result.value
+//                
+//                if value == nil {
+//                    value = []
+//                } else {
+//                    let json = JSON(value!)
+//                    print("JSON: \(json)")
+//                    let currentuserid = json["_id"].string
+//                    let firstname = json["firstname"].string
+//                    let lastname = json["lastname"].string
+//                    
+//                    name = firstname! + " " + lastname!
+//                    userid = currentuserid!
+//                    
+//                    self.tableView.reloadData()
+//                    self.loadData()
+//                    self.loadHotQuestionData()
+//                }
+//        }
+        let url = globalurl + "api/users/" + userid
         
-        Alamofire.request(.POST, url, parameters: parameters)
+        Alamofire.request(.GET, url, parameters: nil)
             .responseJSON { response in
                 var value = response.result.value
                 
@@ -299,12 +316,23 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 } else {
                     let json = JSON(value!)
                     print("JSON: \(json)")
-                    let currentuserid = json["_id"].string
                     let firstname = json["firstname"].string
                     let lastname = json["lastname"].string
+                    var username = json["username"].string
+                    let email = json["email"].string
                     
                     name = firstname! + " " + lastname!
-                    userid = currentuserid!
+                    
+                    if username == nil {
+                        username = firstname! + lastname!
+                    } else {
+                        username = username!
+                    }
+                    
+                    myfirstname = firstname!
+                    mylastname = lastname!
+                    myUsername = username!
+                    myemail = email!
                     
                     self.tableView.reloadData()
                     self.loadData()
@@ -313,41 +341,109 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
+    func updateFollow() {
+        let url = globalurl + "api/updatefollow/" + userid
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                
+        }
+    }
+    
+    func checkNotifications() {
+        let url = globalurl + "api/unreadnotifications/" + userid
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                print(response.request)
+                print(response.response)
+                print(response.result)
+                print(response.response?.statusCode)
+                
+                let statuscode = response.response?.statusCode
+                if statuscode == 200 {
+                    print("unread notifcations")
+                    
+                } else if statuscode == 400 {
+                    print("no new notifications")
+                    
+                } else if statuscode == 404 {
+                    
+                } else {
+                    
+                }
+        }
+
+    }
+    
     override func viewDidAppear(animated: Bool) {
         self.tabBarController!.tabBar.hidden = false
+        self.checkNotifications()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        ref.observeAuthEventWithBlock({ authData in
-            if authData != nil {
-                // user authenticated
-                print(authData.uid)
-                currentUser = authData.uid
-                
-                self.tableView.dataSource = self
-                self.tableView.delegate = self
-                
-//                self.tableView.separatorStyle = UITableViewCellSeparatorStyle.None
-                self.tableView.rowHeight = UITableViewAutomaticDimension
-                self.tableView.estimatedRowHeight = 80
-                
-                self.questionArray.removeAll(keepCapacity: true)
-                self.myQuestionArray.removeAll(keepCapacity: true)
-                
-                self.loadUserInfo()
-//                self.navigationController?.hidesBarsOnSwipe = true
-                NSNotificationCenter.defaultCenter().addObserver(self, selector: "changeFeed", name: "submittedAnswer", object: nil)
-                 NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "askedQuestion", object: nil)
-                
-                self.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
-            } else {
-                // No user is signed in
-                let login = UIStoryboard(name: "LogIn", bundle: nil)
-                let loginVC = login.instantiateInitialViewController()
-                self.presentViewController(loginVC!, animated: true, completion: nil)
-            }
-        })
+        
+        let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
+        if (isLoggedIn != 1) {
+            let login = UIStoryboard(name: "LogIn", bundle: nil)
+            let loginVC = login.instantiateInitialViewController()
+            self.presentViewController(loginVC!, animated: true, completion: nil)
+        } else {
+            let id = prefs.valueForKey("ID") as? String
+            userid = id!
+            
+            self.tableView.dataSource = self
+            self.tableView.delegate = self
+            self.tableView.tableFooterView = UIView()
+            self.tableView.rowHeight = UITableViewAutomaticDimension
+            self.tableView.estimatedRowHeight = 80
+            self.tableView.scrollsToTop = true
+            
+            self.questionArray.removeAll(keepCapacity: true)
+            self.myQuestionArray.removeAll(keepCapacity: true)
+            self.updateFollow()
+            self.loadUserInfo()
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: "changeFeed", name: "submittedAnswer", object: nil)
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "askedQuestion", object: nil)
+            
+            self.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
+        }
+        
+        
+//        ref.observeAuthEventWithBlock({ authData in
+//            if authData != nil {
+//                // user authenticated
+//                print(authData.uid)
+//                currentUser = authData.uid
+//                
+//                self.tableView.dataSource = self
+//                self.tableView.delegate = self
+//                
+//                self.tableView.rowHeight = UITableViewAutomaticDimension
+//                self.tableView.estimatedRowHeight = 80
+//                
+//                self.questionArray.removeAll(keepCapacity: true)
+//                self.myQuestionArray.removeAll(keepCapacity: true)
+//                
+//                self.loadUserInfo()
+//                NSNotificationCenter.defaultCenter().addObserver(self, selector: "changeFeed", name: "submittedAnswer", object: nil)
+//                 NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "askedQuestion", object: nil)
+//                
+//                self.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
+//            } else {
+//                // No user is signed in
+//                let login = UIStoryboard(name: "LogIn", bundle: nil)
+//                let loginVC = login.instantiateInitialViewController()
+//                self.presentViewController(loginVC!, animated: true, completion: nil)
+//            }
+//        })
 
         // Do any additional setup after loading the view.
         self.refreshControl = UIRefreshControl()
@@ -379,19 +475,23 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func refreshFeed(){
         self.questionArray.removeAll(keepCapacity: true)
-        self.myQuestionArray.removeAll(keepCapacity: true)
-        self.currentPage = 0
-        self.loadPaginatedData()
+        self.hotQuestionArray.removeAll(keepCapacity: true)
+        
+//        self.currentPage = 0
+//        self.loadPaginatedData()
+        self.loadData()
+        self.loadHotQuestionData()
         self.tableView.reloadData()
     }
     
     func refresh(sender:AnyObject){
         // Code to refresh table view
         self.questionArray.removeAll(keepCapacity: true)
-        self.myQuestionArray.removeAll(keepCapacity: true)
+        self.hotQuestionArray.removeAll(keepCapacity: true)
         
 //        self.currentPage = 0
-        self.loadUserInfo()
+        self.loadData()
+        self.loadHotQuestionData()
 //        self.loadPaginatedData()
         self.tableView.reloadData()
         
@@ -403,70 +503,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
 
-    func timeAgoSinceDate(date:NSDate, numericDates:Bool) -> String {
-        let calendar = NSCalendar.currentCalendar()
-        let unitFlags: NSCalendarUnit = [NSCalendarUnit.Minute, NSCalendarUnit.Hour, NSCalendarUnit.Day, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.Second]
-        let now = NSDate()
-        let earliest = now.earlierDate(date)
-        let latest = (earliest == now) ? date : now
-        let components:NSDateComponents = calendar.components(unitFlags, fromDate: earliest, toDate: latest, options: [])
-        
-        
-        if (components.year >= 2) {
-            return "\(components.year)y"
-        } else if (components.year >= 1){
-            if (numericDates){
-                return "1y"
-            } else {
-                return "Last year"
-            }
-        } else if (components.month >= 2) {
-            return "\(components.month)mo"
-        } else if (components.month >= 1){
-            if (numericDates){
-                return "1mo"
-            } else {
-                return "Last month"
-            }
-        } else if (components.weekOfYear >= 2) {
-            return "\(components.weekOfYear)w"
-        } else if (components.weekOfYear >= 1){
-            if (numericDates){
-                return "1w"
-            } else {
-                return "Last week"
-            }
-        } else if (components.day >= 2) {
-            return "\(components.day)d"
-        } else if (components.day >= 1){
-            if (numericDates){
-                return "1d"
-            } else {
-                return "Yesterday"
-            }
-        } else if (components.hour >= 2) {
-            return "\(components.hour)h"
-        } else if (components.hour >= 1){
-            if (numericDates){
-                return "1h"
-            } else {
-                return "An hour ago"
-            }
-        } else if (components.minute >= 2) {
-            return "\(components.minute)m"
-        } else if (components.minute >= 1){
-            if (numericDates){
-                return "1m"
-            } else {
-                return "A minute ago"
-            }
-        } else if (components.second >= 3) {
-            return "\(components.second)s"
-        } else {
-            return "1s"
-        }
-        
-    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -600,16 +636,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func askQuestionBarButtonPressed(sender: UIBarButtonItem) {
         self.performSegueWithIdentifier("showAskQuestionVC", sender: self)
-    }
-    
-    
-    @IBAction func logOutButtonPressed(sender: UIBarButtonItem) {
-        ref.unauth()
-        
-        let login = UIStoryboard(name: "LogIn", bundle: nil)
-        let loginVC = login.instantiateInitialViewController()
-        self.presentViewController(loginVC!, animated: true, completion: nil)
-        
     }
     
 //    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {

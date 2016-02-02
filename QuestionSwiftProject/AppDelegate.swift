@@ -19,6 +19,11 @@ let ref = Firebase(url: "https://questionproject.firebaseio.com/")
 var currentUser = ""
 var name = ""
 var userid = ""
+var myUsername = ""
+var myfirstname = ""
+var mylastname = ""
+var mybio = ""
+var myemail = ""
 
 let herokuUrl = "https://arcane-savannah-8802.herokuapp.com/"
 let localUrl = "http://localhost:5000/"

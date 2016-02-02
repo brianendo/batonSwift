@@ -24,6 +24,7 @@ class FollowingAnswerTableViewCell: UITableViewCell {
     @IBOutlet weak var timeAgoLabel: UILabel!
     @IBOutlet weak var questionContentTextView: UITextView!
     @IBOutlet weak var viewCountLabel: UILabel!
+    @IBOutlet weak var extraButton: UIButton!
     
     var player: AVPlayer!
     var playerController: AVPlayerViewController!
@@ -31,12 +32,6 @@ class FollowingAnswerTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        
-//        likeCountTextView.layer.shadowColor = UIColor.blackColor().CGColor
-//        likeCountTextView.layer.shadowOffset = CGSizeMake(0, 2.0)
-//        likeCountTextView.layer.shadowOpacity = 1.0
-//        likeCountTextView.layer.shadowRadius = 2.0
-//        likeCountTextView.layer.backgroundColor = UIColor.clearColor().CGColor
         
         self.profileImageView.frame = CGRectMake(0, 0, 35, 35)
         self.profileImageView.layer.borderWidth = 0.5
@@ -49,10 +44,6 @@ class FollowingAnswerTableViewCell: UITableViewCell {
         playerController.player = player
         
         playerController.view.frame = CGRectMake(videoView.frame.origin.x, videoView.frame.origin.x, videoView.frame.size.width, videoView.frame.size.height)
-        //                        playerController.view.frame = self.videoView.frame
-        
-        // Mirrors video
-        //        playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
         
         playerController.showsPlaybackControls = false
         playerController.videoGravity = AVLayerVideoGravityResizeAspectFill

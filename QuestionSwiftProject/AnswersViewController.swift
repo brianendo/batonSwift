@@ -19,6 +19,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     @IBOutlet weak var relayButton: UIButton!
     @IBOutlet weak var bottomLayoutConstraint: NSLayoutConstraint!
     
+    @IBOutlet weak var moreInfoBarButton: UIBarButtonItem!
     
     var content = ""
     var id = ""
@@ -29,12 +30,9 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     var nameIndex = 0
     var questionName = false
     
-//    var idArray = [String]()
-//    var videoUrlArray = [String]()
-//    var creatornameArray = [String]()
-//    var likeCountArray = [Int]()
-//    var frontCameraArray = [Bool]()
     var answerArray = [Answer]()
+    
+    let label = UILabel(frame: CGRectMake(0, 0, 400, 400))
     
     override func viewWillAppear(animated: Bool) {
         if fromFollowing {
@@ -42,6 +40,25 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             self.navigationController?.navigationBar.hidden = false
             if question == nil {
                 self.loadQuestion()
+            }
+        }
+       
+        
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        NSNotificationCenter.defaultCenter().removeObserver(self,
+            name: AVPlayerItemDidPlayToEndTimeNotification,
+            object: nil)
+        for cell in tableView.visibleCells {
+            if cell.isKindOfClass(AnswerTableViewCell) {
+                let cell = cell as! AnswerTableViewCell
+                if (cell.player.rate > 0) {
+                    cell.player.pause()
+                    cell.likeImageView.image = UIImage(named: "playImage")
+                    cell.likeImageView.hidden = false
+                    cell.likeImageView.alpha = 0.7
+                }
             }
         }
     }
@@ -54,23 +71,23 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         self.tabBarController?.tabBar.hidden = true
         self.tableView.dataSource = self
         self.tableView.delegate = self
-        
-//        if fromProfile {
-//            relayButton.removeFromSuperview()
-//            bottomLayoutConstraint.constant = 0
-//            self.view.layoutIfNeeded()
-//        }
-        
-        if fromFollowing {
-            
-        }
+        self.tableView.tableFooterView = UIView()
         
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 300
-//        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.None
         
         self.relayButton.layer.borderColor = UIColor.lightGrayColor().CGColor
         self.relayButton.layer.borderWidth = 0.5
+        
+        self.moreInfoBarButton.setTitleTextAttributes([NSForegroundColorAttributeName:UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0), NSFontAttributeName: UIFont(name: "HelveticaNeue-Medium", size: 28)!], forState: .Normal)
+        
+        label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, 300)
+        label.textAlignment = NSTextAlignment.Center
+        label.text = "No Answers"
+        label.font = UIFont(name: "HelveticaNeue-Light", size: 30)
+        label.numberOfLines = 0
+        self.tableView.addSubview(label)
+        label.hidden = true
         
         self.loadAnswers()
     }
@@ -93,7 +110,6 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 
                 let subJson = JSON(value!)
                 print("JSON: \(subJson)")
-                
                 let content = subJson["content"].string
                 let id = subJson["_id"].string
                 let anonymous = subJson["anonymous"].string
@@ -149,7 +165,12 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         
         Alamofire.request(.GET, url, parameters: nil)
             .responseJSON { response in
-                let json = JSON(response.result.value!)
+                var value = response.result.value
+                if value == nil {
+                    value = []
+                }
+                
+                let json = JSON(value!)
                 print("JSON: \(json)")
                 if json == [] {
                     print("No answers")
@@ -186,13 +207,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                         
                         let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views)
                         self.answerArray.append(answer)
-                        self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-
-//                        self.videoUrlArray.append(video_url!)
-//                        self.creatornameArray.append(creatorname!)
-//                        self.idArray.append(id!)
-//                        self.likeCountArray.append(likeCount!)
-//                        self.frontCameraArray.append(frontCamera!)
+                        self.answerArray.sortInPlace({ $0.likeCount > $1.likeCount })
                     }
                     
                     self.tableView.reloadData()
@@ -202,70 +217,6 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         
     }
     
-    func timeAgoSinceDate(date:NSDate, numericDates:Bool) -> String {
-        let calendar = NSCalendar.currentCalendar()
-        let unitFlags: NSCalendarUnit = [NSCalendarUnit.Minute, NSCalendarUnit.Hour, NSCalendarUnit.Day, NSCalendarUnit.WeekOfYear, NSCalendarUnit.Month, NSCalendarUnit.Year, NSCalendarUnit.Second]
-        let now = NSDate()
-        let earliest = now.earlierDate(date)
-        let latest = (earliest == now) ? date : now
-        let components:NSDateComponents = calendar.components(unitFlags, fromDate: earliest, toDate: latest, options: [])
-        
-        
-        if (components.year >= 2) {
-            return "\(components.year)y"
-        } else if (components.year >= 1){
-            if (numericDates){
-                return "1y"
-            } else {
-                return "Last year"
-            }
-        } else if (components.month >= 2) {
-            return "\(components.month)mo"
-        } else if (components.month >= 1){
-            if (numericDates){
-                return "1mo"
-            } else {
-                return "Last month"
-            }
-        } else if (components.weekOfYear >= 2) {
-            return "\(components.weekOfYear)w"
-        } else if (components.weekOfYear >= 1){
-            if (numericDates){
-                return "1w"
-            } else {
-                return "Last week"
-            }
-        } else if (components.day >= 2) {
-            return "\(components.day)d"
-        } else if (components.day >= 1){
-            if (numericDates){
-                return "1d"
-            } else {
-                return "Yesterday"
-            }
-        } else if (components.hour >= 2) {
-            return "\(components.hour)h"
-        } else if (components.hour >= 1){
-            if (numericDates){
-                return "1h"
-            } else {
-                return "An hour ago"
-            }
-        } else if (components.minute >= 2) {
-            return "\(components.minute)m"
-        } else if (components.minute >= 1){
-            if (numericDates){
-                return "1m"
-            } else {
-                return "A minute ago"
-            }
-        } else if (components.second >= 3) {
-            return "\(components.second)s"
-        } else {
-            return "1s"
-        }
-        
-    }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 2
@@ -322,9 +273,6 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.postedByButton.addTarget(self, action: "postedByTapped:", forControlEvents: .TouchUpInside)
                 cell.contentView.bringSubviewToFront(cell.postedByButton)
             }
-            
-            
-            
             
             return cell
         } else {
@@ -414,13 +362,15 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
                 }
             }
-//            self.addChildViewController(cell.playerController)
             cell.videoView.addSubview(cell.playerController.view)
-//            cell.playerController.didMoveToParentViewController(self)
             cell.player.pause()
             
             if indexPath.row == 0 {
                 cell.player.play()
+                NSNotificationCenter.defaultCenter().addObserver(self,
+                    selector: "videoEnd",
+                    name: AVPlayerItemDidPlayToEndTimeNotification,
+                    object: nil)
                 
                 let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/viewed/"
                 
@@ -441,9 +391,6 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             
             cell.playerController.view.userInteractionEnabled = true
             
-//            let view = UIView(frame: cell.playerController.view.frame)
-//            cell.addSubview(view)
-            
             let view = UIView(frame: CGRectMake(cell.videoView.frame.origin.x, cell.videoView.frame.origin.y, cell.videoView.frame.size.width, cell.videoView.frame.size.height))
             cell.videoView.addSubview(view)
             
@@ -456,6 +403,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             
             cell.likeImageView.image = UIImage(named: "Heart")
             cell.likeImageView.hidden = true
+            cell.likeImageView.contentMode = UIViewContentMode.ScaleAspectFill
             cell.videoView.bringSubviewToFront(cell.likeImageView)
             
             let doubleTapGesture = UITapGestureRecognizer()
@@ -473,6 +421,8 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.likeButton.addTarget(self, action: "toggleLike:", forControlEvents: .TouchUpInside)
             cell.videoView.bringSubviewToFront(cell.likeButton)
             
+            cell.followButton.hidden = true
+            
             if creator == userid {
                 cell.followButton.hidden = true
             } else {
@@ -480,8 +430,6 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.followButton.addTarget(self, action: "toggleFollow:", forControlEvents: .TouchUpInside)
                 cell.followButton.setImage(UIImage(named: "addperson"), forState: .Normal)
                 cell.followButton.setImage(UIImage(named: "addedperson"), forState: .Selected)
-//                cell.followButton.setTitle("Follow", forState: .Normal)
-//                cell.followButton.setTitle("Following", forState: .Selected)
                 cell.followButton.selected = false
                 
                 let url = globalurl + "api/user/" + userid + "/follows/" + answerArray[indexPath.row].creator
@@ -493,13 +441,15 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                         if result == nil {
                             print("Not Following")
                             cell.followButton.selected = false
+                            cell.followButton.hidden = false
                         } else {
                             print("Already Following")
                             cell.followButton.selected = true
                         }
                 }
             }
-
+            cell.extraButton.addTarget(self, action: "extraButtonTapped:", forControlEvents: .TouchUpInside)
+            cell.extraButton.tag = indexPath.row
             
             let liked_by_user = self.answerArray[indexPath.row].liked_by_user
             
@@ -535,6 +485,63 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         
     }
     
+    func extraButtonTapped(sender: UIButton) {
+        let tag = sender.tag
+        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 1)) as! AnswerTableViewCell
+        if cell.player.rate > 0 {
+            cell.player.pause()
+            cell.likeImageView.alpha = 0.7
+            cell.likeImageView.image = UIImage(named: "playImage")
+            cell.likeImageView.hidden = false
+        }
+        let creator = answerArray[tag].creator
+        let answerId = answerArray[tag].id
+        
+        
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
+        let reportButton = UIAlertAction(title: "Report Video", style: UIAlertActionStyle.Default) { (alert) -> Void in
+            print("Video reported")
+            let parameters = [
+                "type" : "reported video",
+                "creator": userid,
+                "relayId": answerId
+            ]
+            let url = globalurl + "api/alerts"
+            
+            Alamofire.request(.POST, url, parameters: parameters)
+                .responseJSON { response in
+                    print(response.request)
+                    print(response.response)
+                    print(response.result)
+                    print(response.response?.statusCode)
+            }
+        }
+        let deleteButton = UIAlertAction(title: "Delete relay", style: UIAlertActionStyle.Default) { (alert) -> Void in
+            print("Video deleted")
+            
+            let url = globalurl + "api/answers/" + answerId
+            Alamofire.request(.DELETE, url, parameters: nil)
+                .responseJSON { response in
+                    print(response.request)
+                    print(response.response)
+                    print(response.result)
+                    print(response.response?.statusCode)
+            }
+            self.answerArray.removeAtIndex(tag)
+            self.tableView.reloadData()
+        }
+        let cancelButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alert) -> Void in
+            print("Cancel Pressed", terminator: "")
+        }
+        
+        alert.addAction(reportButton)
+        if creator == userid {
+            alert.addAction(deleteButton)
+        }
+        alert.addAction(cancelButton)
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
     func postedByTapped(sender:UIButton) {
         print("buttonTapped")
         questionName = true
@@ -545,6 +552,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         print("buttonClicked")
         let tag = sender.tag
         nameIndex = tag
+        questionName = false
         self.performSegueWithIdentifier("segueFromAnswersToProfile", sender: self)
     }
     
@@ -637,12 +645,63 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    func videoEnd() {
+        for cell in tableView.visibleCells {
+            if cell.isKindOfClass(AnswerTableViewCell) {
+                let indexPath = tableView.indexPathForCell(cell)
+                let cellRect = tableView.rectForRowAtIndexPath(indexPath!)
+                let superView = tableView.superview
+                let convertedRect = tableView.convertRect(cellRect, toView: superView)
+                let intersect = CGRectIntersection(tableView.frame, convertedRect)
+                let visibleHeight = CGRectGetHeight(intersect)
+                let cellHeight = tableView.frame.height * 0.6
+                let cell = cell as! AnswerTableViewCell
+                
+                
+                if visibleHeight > cellHeight {
+                    cell.likeImageView.image = UIImage(named: "replayImage")
+                    cell.likeImageView.hidden = false
+                    cell.likeImageView.alpha = 0.7
+                    if (cell.player.rate > 0) {
+                        
+                        
+                    } else {
+                        print("Reached")
+                        let url = globalurl + "api/answers/" + answerArray[(indexPath?.row)!].id + "/viewed/"
+                        
+                        Alamofire.request(.PUT, url, parameters: nil)
+                            .responseJSON { response in
+                                let result = response.result.value
+                                print(result)
+                                if result == nil {
+                                    print("Not viewed")
+                                    
+                                } else {
+                                    print("Viewed")
+                                }
+                        }
+                        let seconds : Int64 = 0
+                        let preferredTimeScale : Int32 = 1
+                        let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
+                        
+                        cell.player.seekToTime(seekTime)
+                        //                        cell.player.play()
+                    }
+                } else {
+                    cell.player.pause()
+                }
+            }
+        }
+    }
+    
     func doubleTapped(sender: UITapGestureRecognizer) {
         print("Double Tap")
         let tag = sender.view?.tag
         let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 1)) as! AnswerTableViewCell
-        
+        cell.likeImageView.image = UIImage(named: "Heart")
         cell.likeImageView.hidden = false
+        cell.likeImageView.alpha = 1
+        cell.player.play()
         
         UIView.animateWithDuration(1.0, delay: 0.5, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
             cell.likeImageView.alpha = 0
@@ -671,10 +730,6 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                             cell.heartImageView.image = UIImage(named: "redHeartOutline")
                         }
                 }
-//                let thankurl = globalurl + "api/answers/" + answerId + "/thanked/"
-//                Alamofire.request(.PUT, thankurl, parameters: nil)
-//                    .responseJSON { response in
-//                }
         }
         
         
@@ -687,8 +742,12 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 1)) as! AnswerTableViewCell
         if (cell.player.rate > 0) {
             cell.player.pause()
+            cell.likeImageView.alpha = 0.7
+            cell.likeImageView.image = UIImage(named: "playImage")
+            cell.likeImageView.hidden = false
         } else {
             cell.player.play()
+            cell.likeImageView.hidden = true
         }
         
     }
@@ -697,7 +756,14 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         if section == 0 {
             return 1
         } else {
-            return answerArray.count
+            if answerArray.count == 0 {
+                label.hidden = false
+                return 0
+            } else {
+                label.hidden = true
+                return answerArray.count
+            }
+            
         }
     }
     
@@ -725,8 +791,14 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 
                 if visibleHeight > cellHeight {
                     // Check is playing is already playing
+                    cell.likeImageView.hidden = true
+                    
                     if (cell.player.rate > 0) {
                         print("Playing")
+                        NSNotificationCenter.defaultCenter().addObserver(self,
+                            selector: "videoEnd",
+                            name: AVPlayerItemDidPlayToEndTimeNotification,
+                            object: nil)
                         
                         let url = globalurl + "api/answers/" + answerArray[(indexPath?.row)!].id + "/viewed/"
                         
@@ -743,6 +815,10 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                         }
                     } else {
                         print("Reached")
+                        NSNotificationCenter.defaultCenter().addObserver(self,
+                            selector: "videoEnd",
+                            name: AVPlayerItemDidPlayToEndTimeNotification,
+                            object: nil)
                         let url = globalurl + "api/answers/" + answerArray[(indexPath?.row)!].id + "/viewed/"
                         
                         Alamofire.request(.PUT, url, parameters: nil)
@@ -768,6 +844,9 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     
                 } else {
                     cell.player.pause()
+                    cell.likeImageView.image = UIImage(named: "playImage")
+                    cell.likeImageView.hidden = false
+                    cell.likeImageView.alpha = 0.7
                 }
             }
         }
@@ -815,6 +894,61 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             
         }
     }
+    
+    @IBAction func moreInfoButtonTapped(sender: UIBarButtonItem) {
+        let creator = (question?.creator)! as String
+        let questionId = (question?.id)! as String
+        let answerCount = question?.answercount
+        
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
+        let reportButton = UIAlertAction(title: "Report Post", style: UIAlertActionStyle.Default) { (alert) -> Void in
+            print("Post reported")
+            
+            let parameters = [
+                "type" : "reported post",
+                "creator": userid,
+                "questionId": questionId
+            ]
+            let url = globalurl + "api/alerts"
+            
+            Alamofire.request(.POST, url, parameters: parameters)
+                .responseJSON { response in
+                    print(response.request)
+                    print(response.response)
+                    print(response.result)
+                    print(response.response?.statusCode)
+            }
+        }
+        let deleteButton = UIAlertAction(title: "Delete Post", style: UIAlertActionStyle.Default) { (alert) -> Void in
+            print("Post deleted")
+            
+            let url = globalurl + "api/questions/" + questionId
+            Alamofire.request(.DELETE, url, parameters: nil)
+                .responseJSON { response in
+                    print(response.request)
+                    print(response.response)
+                    print(response.result)
+                    print(response.response?.statusCode)
+                    NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                    self.navigationController?.popViewControllerAnimated(true)
+            }
+        }
+        let cancelButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alert) -> Void in
+            print("Cancel Pressed", terminator: "")
+        }
+        
+        alert.addAction(reportButton)
+        if creator == userid {
+            if answerCount == 0 {
+                alert.addAction(deleteButton)
+            }
+        }
+        alert.addAction(cancelButton)
+        self.presentViewController(alert, animated: true, completion: nil)
+        
+        
+    }
+    
     
     @IBAction func relayButtonPressed(sender: UIButton) {
         self.performSegueWithIdentifier("segueFromAnswerToTakeVideo", sender: self)

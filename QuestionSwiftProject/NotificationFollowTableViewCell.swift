@@ -1,18 +1,19 @@
 //
-//  NotificationAnswerTableViewCell.swift
+//  NotificationFollowTableViewCell.swift
 //  QuestionSwiftProject
 //
-//  Created by Brian Endo on 11/3/15.
-//  Copyright © 2015 Brian Endo. All rights reserved.
+//  Created by Brian Endo on 1/28/16.
+//  Copyright © 2016 Brian Endo. All rights reserved.
 //
 
 import UIKit
 
-class NotificationAnswerTableViewCell: UITableViewCell {
-    
-    @IBOutlet weak var headerTextView: UITextView!
+class NotificationFollowTableViewCell: UITableViewCell {
+
     @IBOutlet weak var contentTextView: UITextView!
+    @IBOutlet weak var followButton: UIButton!
     @IBOutlet weak var profileImageView: UIImageView!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

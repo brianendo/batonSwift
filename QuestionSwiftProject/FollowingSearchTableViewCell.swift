@@ -1,23 +1,23 @@
 //
-//  NotificationAnswerTableViewCell.swift
+//  FollowingSearchTableViewCell.swift
 //  QuestionSwiftProject
 //
-//  Created by Brian Endo on 11/3/15.
-//  Copyright © 2015 Brian Endo. All rights reserved.
+//  Created by Brian Endo on 1/29/16.
+//  Copyright © 2016 Brian Endo. All rights reserved.
 //
 
 import UIKit
 
-class NotificationAnswerTableViewCell: UITableViewCell {
-    
-    @IBOutlet weak var headerTextView: UITextView!
-    @IBOutlet weak var contentTextView: UITextView!
+class FollowingSearchTableViewCell: UITableViewCell {
+
+    @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var profileImageView: UIImageView!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        self.profileImageView.frame = CGRectMake(0, 0, 35, 35)
+        self.profileImageView.frame = CGRectMake(0, 0, 40, 40)
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor

@@ -17,6 +17,8 @@ import AVKit
 class ProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var settingsBarButton: UIBarButtonItem!
+    
     
     var myQuestionArray = [Question]()
     var myAnswerArray = [Answer]()
@@ -32,8 +34,11 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     var creatorId = ""
     var id = ""
     var creatorname = ""
+    var views = 0
+    var ifFollowing = false
     
     var refreshControl:UIRefreshControl!
+    let label = UILabel(frame: CGRectMake(0, 0, 400, 400))
     
     func loadFollowInfo() {
         
@@ -50,6 +55,11 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     print("JSON: \(json)")
                     var followerCount = json["followerCount"].number?.integerValue
                     var followingCount = json["followingCount"].number?.integerValue
+                    var bio = json["bio"].string
+                    
+                    if bio == nil {
+                        bio = ""
+                    }
                     
                     if followerCount == nil {
                         followerCount = 0
@@ -59,8 +69,54 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                         followingCount = 0
                     }
                     
+                    mybio = bio!
                     self.followerCount = followerCount!
                     self.followingCount = followingCount!
+                    
+                    self.tableView.reloadData()
+                }
+        }
+    }
+    
+    func loadIfFollowing() {
+        let url = globalurl + "api/user/" + userid + "/follows/" + id
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                let result = response.result.value
+                print(result)
+                if result == nil {
+                    print("Not Following")
+                    self.ifFollowing = false
+                    self.tableView.reloadData()
+                } else {
+                    print("Already Following")
+                    self.ifFollowing = true
+                    self.tableView.reloadData()
+                }
+        }
+    }
+    
+    func loadViewInfo() {
+        let url = globalurl + "api/users/" + id + "/views"
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                let json = JSON(value!)
+                print("JSON: \(json)")
+                for (_,subJson):(String, JSON) in json {
+                    var views = subJson["total"].number?.integerValue
+                    
+                    if views == nil {
+                        views = 0
+                    }
+                    
+                    self.views = views!
                     
                     self.tableView.reloadData()
                 }
@@ -321,25 +377,33 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         self.navigationController?.hidesBarsOnSwipe = false
     }
     
+    override func viewWillAppear(animated: Bool) {
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         if fromOtherVC {
             id = self.creatorId
             self.navigationItem.title = creatorname
+            self.navigationItem.rightBarButtonItem = nil
+            self.loadIfFollowing()
         } else {
             id = userid
-            self.navigationItem.title = name
+            self.navigationItem.title = myUsername
+            self.navigationItem.rightBarButtonItem = self.settingsBarButton
         }
         
         // Do any additional setup after loading the view.
         
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        
+        self.tableView.tableFooterView = UIView()
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 70
+        self.tableView.scrollsToTop = true
         
+        self.loadViewInfo()
         self.loadFollowInfo()
         
         self.myQuestionArray.removeAll(keepCapacity: true)
@@ -356,6 +420,15 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
         self.tableView.addSubview(refreshControl)
         
+        
+        label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, 300)
+        label.textAlignment = NSTextAlignment.Center
+        label.text = "No Notifications"
+        label.font = UIFont(name: "HelveticaNeue-Light", size: 30)
+        label.numberOfLines = 0
+        self.tableView.addSubview(label)
+        label.hidden = true
+        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "askedQuestion", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "submittedAnswer", object: nil)
     }
@@ -365,6 +438,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         self.myAnswerArray.removeAll(keepCapacity: true)
         self.myLikedAnswerArray.removeAll(keepCapacity: true)
         
+        self.loadViewInfo()
         self.loadFollowInfo()
         self.loadMyQuestions()
         self.loadMyAnswers()
@@ -380,6 +454,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         self.myAnswerArray.removeAll(keepCapacity: true)
         self.myLikedAnswerArray.removeAll(keepCapacity: true)
         
+        self.loadViewInfo()
         self.loadFollowInfo()
         self.loadMyQuestions()
         self.loadMyAnswers()
@@ -413,11 +488,32 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             return 1
         } else {
             if counter == 0 {
-                return myQuestionArray.count
+                if myQuestionArray.count == 0 {
+                    label.text = "No posts"
+                    label.hidden = false
+                    return 0
+                } else {
+                    label.hidden = true
+                    return myQuestionArray.count
+                }
             } else if counter == 1 {
-                return myAnswerArray.count
+                if myAnswerArray.count == 0 {
+                    label.text = "No relays"
+                    label.hidden = false
+                    return 0
+                } else {
+                    label.hidden = true
+                    return myAnswerArray.count
+                }
             } else {
-                return myLikedAnswerArray.count
+                if myLikedAnswerArray.count == 0 {
+                    label.text = "No likes"
+                    label.hidden = false
+                    return 0
+                } else {
+                    label.hidden = true
+                    return myLikedAnswerArray.count
+                }
             }
         }
         
@@ -473,18 +569,63 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.layoutMargins = UIEdgeInsetsZero
             
             cell.selectionStyle = UITableViewCellSelectionStyle.None
+            cell.profileButton.layer.borderWidth = 1
+            
             
             if fromOtherVC {
-                cell.profileButton.setTitle("FOLLOW", forState: .Normal)
+                if id == userid {
+                    cell.profileButton.setTitle("EDIT PROFILE", forState: .Normal)
+                    cell.profileButton.backgroundColor = UIColor.clearColor()
+                    cell.profileButton.layer.borderColor = UIColor.blueColor().CGColor
+                } else {
+                    cell.profileButton.setTitle("FOLLOW", forState: .Normal)
+                    cell.profileButton.setTitle("FOLLOWING", forState: .Selected)
+                    cell.profileButton.setTitleColor(UIColor.whiteColor(), forState: .Selected)
+                    
+                    cell.profileButton.selected = false
+                    
+                    if self.ifFollowing == true {
+                        cell.profileButton.selected = true
+                        cell.profileButton.backgroundColor = UIColor(red:0.39, green:0.91, blue:0.61, alpha:1.0)
+                        cell.profileButton.layer.borderColor = UIColor(red:0.39, green:0.91, blue:0.61, alpha:1.0).CGColor
+                    } else {
+                        cell.profileButton.selected = false
+                        cell.profileButton.layer.borderColor = UIColor.blueColor().CGColor
+                        cell.profileButton.backgroundColor = UIColor.clearColor()
+                    }
+                    
+//                    let url = globalurl + "api/user/" + userid + "/follows/" + id
+//                    
+//                    Alamofire.request(.GET, url, parameters: nil)
+//                        .responseJSON { response in
+//                            let result = response.result.value
+//                            print(result)
+//                            if result == nil {
+//                                print("Not Following")
+//                                cell.profileButton.selected = false
+//                                cell.profileButton.layer.borderColor = UIColor.blueColor().CGColor
+//                                cell.profileButton.backgroundColor = UIColor.clearColor()
+//                            } else {
+//                                print("Already Following")
+//                                cell.profileButton.selected = true
+//                                cell.profileButton.backgroundColor = UIColor(red:0.39, green:0.91, blue:0.61, alpha:1.0)
+//                                cell.profileButton.layer.borderColor = UIColor(red:0.39, green:0.91, blue:0.61, alpha:1.0).CGColor
+//                            }
+//                    }
+                }
+            } else {
+                cell.profileButton.layer.borderColor = UIColor.blueColor().CGColor
+                cell.profileButton.backgroundColor = UIColor.clearColor()
             }
             
-            cell.profileButton.layer.borderWidth = 1
-            cell.profileButton.layer.borderColor = UIColor.blueColor().CGColor
             
-            if profileDescription == "" {
+            cell.profileButton.addTarget(self, action: "toggleProfileButton:", forControlEvents: .TouchUpInside)
+            
+            if mybio == "" {
                 cell.profileDescriptionLabel.hidden = true
             } else {
-                cell.profileDescriptionLabel.text = profileDescription
+                cell.profileDescriptionLabel.hidden = false
+                cell.profileDescriptionLabel.text = mybio
             }
             
             cell.followersButton.titleLabel?.textAlignment = .Center
@@ -498,7 +639,6 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 let index: Int = stringFollowers.startIndex.distanceTo(range.startIndex)
                 let myMutableString = NSMutableAttributedString(string: stringFollowers, attributes: [NSFontAttributeName:UIFont(name: "HelveticaNeue-Bold", size: 13.0)!])
                 myMutableString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Light", size: 13.0)!, range: NSRange(location: index, length: 9))
-                print(myMutableString)
                 cell.followersButton.titleLabel?.textColor = UIColor.blackColor()
                 cell.followersButton.setAttributedTitle(myMutableString, forState: .Normal)
             }
@@ -515,14 +655,13 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 let index: Int = stringFollowing.startIndex.distanceTo(range.startIndex)
                 let myMutableString = NSMutableAttributedString(string: stringFollowing, attributes: [NSFontAttributeName:UIFont(name: "HelveticaNeue-Bold", size: 13.0)!])
                 myMutableString.addAttribute(NSFontAttributeName, value: UIFont(name: "HelveticaNeue-Light", size: 13.0)!, range: NSRange(location: index, length: 9))
-                print(myMutableString)
                 cell.followingButton.titleLabel?.textColor = UIColor.blackColor()
                 cell.followingButton.setAttributedTitle(myMutableString, forState: .Normal)
             }
             
             
             cell.viewButton.titleLabel?.textAlignment = .Center
-            let postedText = "1.2k\n"
+            let postedText = "\(self.views)\n"
             let myFirstString = NSMutableAttributedString(string: postedText, attributes: [NSFontAttributeName:UIFont(name: "HelveticaNeue-Bold", size: 13.0)!])
             
             let creatornameText = "views"
@@ -577,15 +716,6 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             return cell
         }
         else if indexPath.section == 1 {
-//            let cell: ProfileSegmentedTableViewCell = tableView.dequeueReusableCellWithIdentifier("SegmentedCell", forIndexPath: indexPath) as! ProfileSegmentedTableViewCell
-//            
-//            cell.preservesSuperviewLayoutMargins = false
-//            cell.separatorInset = UIEdgeInsetsZero
-//            cell.layoutMargins = UIEdgeInsetsZero
-//            
-//            cell.profileSegmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
-//            
-//            return cell
             let cell: ProfileButtonsTableViewCell = tableView.dequeueReusableCellWithIdentifier("profileButtonsCell", forIndexPath: indexPath) as! ProfileButtonsTableViewCell
             
             cell.preservesSuperviewLayoutMargins = false
@@ -667,29 +797,26 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             if frontCamera == true {
                 cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
             }
-//            cell.layoutIfNeeded()
-//            self.addChildViewController(cell.playerController)
             cell.videoView.addSubview(cell.playerController.view)
-//            cell.playerController.didMoveToParentViewController(self)
             cell.player.pause()
             
-            if indexPath.row == 0 {
-                cell.player.play()
-                
-                let url = globalurl + "api/answers/" + myAnswerArray[indexPath.row].id + "/viewed/"
-                
-                Alamofire.request(.PUT, url, parameters: nil)
-                    .responseJSON { response in
-                        let result = response.result.value
-                        print(result)
-                        if result == nil {
-                            print("Not viewed")
-                            
-                        } else {
-                            print("Viewed")
-                        }
-                }
-            }
+//            if indexPath.row == 0 {
+//                cell.player.play()
+//                
+//                let url = globalurl + "api/answers/" + myAnswerArray[indexPath.row].id + "/viewed/"
+//                
+//                Alamofire.request(.PUT, url, parameters: nil)
+//                    .responseJSON { response in
+//                        let result = response.result.value
+//                        print(result)
+//                        if result == nil {
+//                            print("Not viewed")
+//                            
+//                        } else {
+//                            print("Viewed")
+//                        }
+//                }
+//            }
             
             cell.questionContentButton.addTarget(self, action: "questionContentPressed:", forControlEvents: .TouchUpInside)
             cell.questionContentButton.tag = indexPath.row
@@ -706,8 +833,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             view.addGestureRecognizer(tapGesture)
             view.tag = indexPath.row
             
-            cell.likeImageView.image = UIImage(named: "Heart")
-            cell.likeImageView.hidden = true
+            cell.likeImageView.image = UIImage(named: "playImage")
+            cell.likeImageView.hidden = false
+            cell.likeImageView.alpha = 0.7
+            cell.likeImageView.contentMode = UIViewContentMode.ScaleAspectFill
             cell.videoView.bringSubviewToFront(cell.likeImageView)
             
             let doubleTapGesture = UITapGestureRecognizer()
@@ -727,6 +856,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.likeButton.tag = indexPath.row
             cell.likeButton.addTarget(self, action: "toggleLike:", forControlEvents: .TouchUpInside)
             cell.videoView.bringSubviewToFront(cell.likeButton)
+            
+            cell.extraButton.tag = indexPath.row
+            cell.extraButton.addTarget(self, action: "extraButtonTapped:", forControlEvents: .TouchUpInside)
             
             let liked_by_user = self.myAnswerArray[indexPath.row].liked_by_user
             
@@ -886,9 +1018,6 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.videoView.addSubview(cell.playerController.view)
             
             cell.player.pause()
-            if indexPath.row == 0 {
-                cell.player.play()
-            }
             
             cell.selectionStyle = UITableViewCellSelectionStyle.None
             
@@ -901,8 +1030,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             view.addGestureRecognizer(tapGesture)
             view.tag = indexPath.row
             
-            cell.likeImageView.image = UIImage(named: "Heart")
-            cell.likeImageView.hidden = true
+            cell.likeImageView.image = UIImage(named: "playImage")
+            cell.likeImageView.hidden = false
+            cell.likeImageView.alpha = 0.7
+            cell.likeImageView.contentMode = UIViewContentMode.ScaleAspectFill
             cell.videoView.bringSubviewToFront(cell.likeImageView)
             
             let date = myLikedAnswerArray[indexPath.row].createdAt
@@ -928,23 +1059,26 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.likeButton.addTarget(self, action: "toggleLike:", forControlEvents: .TouchUpInside)
             cell.videoView.bringSubviewToFront(cell.likeButton)
             
-            if indexPath.row == 0 {
-                cell.player.play()
-                
-                let url = globalurl + "api/answers/" + myLikedAnswerArray[indexPath.row].id + "/viewed/"
-                
-                Alamofire.request(.PUT, url, parameters: nil)
-                    .responseJSON { response in
-                        let result = response.result.value
-                        print(result)
-                        if result == nil {
-                            print("Not viewed")
-                            
-                        } else {
-                            print("Viewed")
-                        }
-                }
-            }
+            cell.extraButton.tag = indexPath.row
+            cell.extraButton.addTarget(self, action: "extraButtonTapped:", forControlEvents: .TouchUpInside)
+            
+//            if indexPath.row == 0 {
+//                cell.player.play()
+//                
+//                let url = globalurl + "api/answers/" + myLikedAnswerArray[indexPath.row].id + "/viewed/"
+//                
+//                Alamofire.request(.PUT, url, parameters: nil)
+//                    .responseJSON { response in
+//                        let result = response.result.value
+//                        print(result)
+//                        if result == nil {
+//                            print("Not viewed")
+//                            
+//                        } else {
+//                            print("Viewed")
+//                        }
+//                }
+//            }
             
             let liked_by_user = self.myLikedAnswerArray[indexPath.row].liked_by_user
             
@@ -980,6 +1114,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func usernameTapped(sender:UIButton) {
+        print("Reached")
 //        let tag = sender.tag
 //        let profileVC = ProfileViewController()
 //        let creatorId = myLikedAnswerArray[tag].creator
@@ -1074,6 +1209,48 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         }
         
         
+    }
+    
+    func toggleProfileButton(sender: UIButton) {
+        if sender.titleLabel?.text == "EDIT PROFILE" {
+            self.performSegueWithIdentifier("segueToEditProfile", sender: self)
+        } else {
+            if sender.selected == false {
+                self.ifFollowing = true
+                sender.backgroundColor = UIColor(red:0.39, green:0.91, blue:0.61, alpha:1.0)
+                sender.layer.borderColor = UIColor(red:0.39, green:0.91, blue:0.61, alpha:1.0).CGColor
+                sender.selected = true
+                let url = globalurl + "api/user/" + userid + "/follows/" + creatorId
+                
+                Alamofire.request(.POST, url, parameters: nil)
+                    .responseJSON { response in
+                        let result = response.result.value
+                        print(result)
+                        if result == nil {
+                            print("Already Followed")
+                        } else {
+                            print("Following")
+                        }
+                }
+            } else {
+                sender.selected = false
+                self.ifFollowing = false
+                sender.backgroundColor = UIColor.clearColor()
+                sender.layer.borderColor = UIColor.blueColor().CGColor
+                let url = globalurl + "api/user/" + userid + "/unfollows/" + creatorId
+                
+                Alamofire.request(.DELETE, url, parameters: nil)
+                    .responseJSON { response in
+                        let result = response.result.value
+                        print(result)
+                        if result == nil {
+                            print("Could not remove")
+                        } else {
+                            print("Removed")
+                        }
+                }
+            }
+        }
     }
     
     func toggleLike(sender: UIButton!) {
@@ -1190,7 +1367,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         if counter == 1 {
             let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 2)) as! ProfileRelayTableViewCell
             
+            cell.likeImageView.image = UIImage(named: "Heart")
             cell.likeImageView.hidden = false
+            cell.likeImageView.alpha = 1
+            cell.player.play()
             
             UIView.animateWithDuration(1.0, delay: 0.5, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
                 cell.likeImageView.alpha = 0
@@ -1223,7 +1403,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         } else if counter == 2 {
             let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 2)) as! ProfileLikedTableViewCell
             
+            cell.likeImageView.image = UIImage(named: "Heart")
             cell.likeImageView.hidden = false
+            cell.likeImageView.alpha = 1
+            cell.player.play()
             
             UIView.animateWithDuration(1.0, delay: 0.5, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
                 cell.likeImageView.alpha = 0
@@ -1265,17 +1448,136 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 2)) as! ProfileRelayTableViewCell
             if (cell.player.rate > 0) {
                 cell.player.pause()
+                cell.likeImageView.alpha = 0.7
+                cell.likeImageView.image = UIImage(named: "playImage")
+                cell.likeImageView.hidden = false
             } else {
                 cell.player.play()
+                NSNotificationCenter.defaultCenter().addObserver(self,
+                    selector: "videoEnd",
+                    name: AVPlayerItemDidPlayToEndTimeNotification,
+                    object: nil)
+                cell.likeImageView.hidden = true
             }
         } else if counter == 2 {
             let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 2)) as! ProfileLikedTableViewCell
             if (cell.player.rate > 0) {
                 cell.player.pause()
+                cell.likeImageView.alpha = 0.7
+                cell.likeImageView.image = UIImage(named: "playImage")
+                cell.likeImageView.hidden = false
             } else {
                 cell.player.play()
+                NSNotificationCenter.defaultCenter().addObserver(self,
+                    selector: "videoEnd",
+                    name: AVPlayerItemDidPlayToEndTimeNotification,
+                    object: nil)
+                cell.likeImageView.hidden = true
             }
         }
+        
+    }
+    
+    func videoEnd() {
+        NSNotificationCenter.defaultCenter().removeObserver(self,
+            name: AVPlayerItemDidPlayToEndTimeNotification,
+            object: nil)
+        if counter == 1 {
+            for cell in tableView.visibleCells {
+                if cell.isKindOfClass(ProfileRelayTableViewCell) {
+                    let indexPath = tableView.indexPathForCell(cell)
+                    let cellRect = tableView.rectForRowAtIndexPath(indexPath!)
+                    let superView = tableView.superview
+                    let convertedRect = tableView.convertRect(cellRect, toView: superView)
+                    let intersect = CGRectIntersection(tableView.frame, convertedRect)
+                    let visibleHeight = CGRectGetHeight(intersect)
+                    let cellHeight = tableView.frame.height * 0.6
+                    let cell = cell as! ProfileRelayTableViewCell
+                    
+                    
+                    if visibleHeight > cellHeight {
+                        cell.likeImageView.image = UIImage(named: "replayImage")
+                        cell.likeImageView.hidden = false
+                        cell.likeImageView.alpha = 0.7
+                        if (cell.player.rate > 0) {
+                            
+                            
+                        } else {
+                            print("Reached")
+                            let url = globalurl + "api/answers/" + myAnswerArray[(indexPath?.row)!].id + "/viewed/"
+                            
+                            Alamofire.request(.PUT, url, parameters: nil)
+                                .responseJSON { response in
+                                    let result = response.result.value
+                                    print(result)
+                                    if result == nil {
+                                        print("Not viewed")
+                                        
+                                    } else {
+                                        print("Viewed")
+                                    }
+                            }
+                            let seconds : Int64 = 0
+                            let preferredTimeScale : Int32 = 1
+                            let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
+                            
+                            cell.player.seekToTime(seekTime)
+                            //                        cell.player.play()
+                        }
+                    } else {
+                        cell.player.pause()
+                    }
+                }
+            }
+        } else if counter == 2 {
+            for cell in tableView.visibleCells {
+                if cell.isKindOfClass(ProfileLikedTableViewCell) {
+                    let indexPath = tableView.indexPathForCell(cell)
+                    let cellRect = tableView.rectForRowAtIndexPath(indexPath!)
+                    let superView = tableView.superview
+                    let convertedRect = tableView.convertRect(cellRect, toView: superView)
+                    let intersect = CGRectIntersection(tableView.frame, convertedRect)
+                    let visibleHeight = CGRectGetHeight(intersect)
+                    let cellHeight = tableView.frame.height * 0.6
+                    let cell = cell as! ProfileLikedTableViewCell
+                    
+                    
+                    if visibleHeight > cellHeight {
+                        cell.likeImageView.image = UIImage(named: "replayImage")
+                        cell.likeImageView.hidden = false
+                        cell.likeImageView.alpha = 0.7
+                        if (cell.player.rate > 0) {
+                            
+                            
+                        } else {
+                            print("Reached")
+                            let url = globalurl + "api/answers/" + myLikedAnswerArray[(indexPath?.row)!].id + "/viewed/"
+                            
+                            Alamofire.request(.PUT, url, parameters: nil)
+                                .responseJSON { response in
+                                    let result = response.result.value
+                                    print(result)
+                                    if result == nil {
+                                        print("Not viewed")
+                                        
+                                    } else {
+                                        print("Viewed")
+                                    }
+                            }
+                            let seconds : Int64 = 0
+                            let preferredTimeScale : Int32 = 1
+                            let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
+                            
+                            cell.player.seekToTime(seekTime)
+                            //                        cell.player.play()
+                        }
+                    } else {
+                        cell.player.pause()
+                    }
+                }
+            }
+        }
+        
         
     }
     
@@ -1290,6 +1592,120 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }
         }
+    }
+    
+    func extraButtonTapped(sender: UIButton) {
+        let tag = sender.tag
+        if counter == 1 {
+            let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 2)) as! ProfileRelayTableViewCell
+            if cell.player.rate > 0 {
+                cell.player.pause()
+                cell.likeImageView.alpha = 0.7
+                cell.likeImageView.image = UIImage(named: "playImage")
+                cell.likeImageView.hidden = false
+            }
+            let creator = myAnswerArray[tag].creator
+            let answerId = myAnswerArray[tag].id
+            
+            
+            let alert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
+            let reportButton = UIAlertAction(title: "Report Video", style: UIAlertActionStyle.Default) { (alert) -> Void in
+                print("Video reported")
+                let parameters = [
+                    "type" : "reported video",
+                    "creator": userid,
+                    "relayId": answerId
+                ]
+                let url = globalurl + "api/alerts"
+                
+                Alamofire.request(.POST, url, parameters: parameters)
+                    .responseJSON { response in
+                        print(response.request)
+                        print(response.response)
+                        print(response.result)
+                        print(response.response?.statusCode)
+                }
+            }
+            let deleteButton = UIAlertAction(title: "Delete relay", style: UIAlertActionStyle.Default) { (alert) -> Void in
+                print("Video deleted")
+                
+                let url = globalurl + "api/answers/" + answerId
+                Alamofire.request(.DELETE, url, parameters: nil)
+                    .responseJSON { response in
+                        print(response.request)
+                        print(response.response)
+                        print(response.result)
+                        print(response.response?.statusCode)
+                }
+                self.myAnswerArray.removeAtIndex(tag)
+                self.tableView.reloadData()
+            }
+            let cancelButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alert) -> Void in
+                print("Cancel Pressed", terminator: "")
+            }
+            
+            alert.addAction(reportButton)
+            if creator == userid {
+                alert.addAction(deleteButton)
+            }
+            alert.addAction(cancelButton)
+            self.presentViewController(alert, animated: true, completion: nil)
+        } else if counter == 2 {
+            let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 2)) as! ProfileLikedTableViewCell
+            if cell.player.rate > 0 {
+                cell.player.pause()
+                cell.likeImageView.alpha = 0.7
+                cell.likeImageView.image = UIImage(named: "playImage")
+                cell.likeImageView.hidden = false
+            }
+            let creator = myLikedAnswerArray[tag].creator
+            let answerId = myLikedAnswerArray[tag].id
+            
+            
+            let alert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
+            let reportButton = UIAlertAction(title: "Report Video", style: UIAlertActionStyle.Default) { (alert) -> Void in
+                print("Video reported")
+                let parameters = [
+                    "type" : "reported video",
+                    "creator": userid,
+                    "relayId": answerId
+                ]
+                let url = globalurl + "api/alerts"
+                
+                Alamofire.request(.POST, url, parameters: parameters)
+                    .responseJSON { response in
+                        print(response.request)
+                        print(response.response)
+                        print(response.result)
+                        print(response.response?.statusCode)
+                }
+            }
+            let deleteButton = UIAlertAction(title: "Delete relay", style: UIAlertActionStyle.Default) { (alert) -> Void in
+                print("Video deleted")
+                
+                let url = globalurl + "api/answers/" + answerId
+                Alamofire.request(.DELETE, url, parameters: nil)
+                    .responseJSON { response in
+                        print(response.request)
+                        print(response.response)
+                        print(response.result)
+                        print(response.response?.statusCode)
+                }
+                self.myLikedAnswerArray.removeAtIndex(tag)
+                self.tableView.reloadData()
+            }
+            let cancelButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alert) -> Void in
+                print("Cancel Pressed", terminator: "")
+            }
+            
+            alert.addAction(reportButton)
+            if creator == userid {
+                alert.addAction(deleteButton)
+            }
+            alert.addAction(cancelButton)
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
+        
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -1330,6 +1746,17 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             let userListVC: UserListViewController = segue.destinationViewController as! UserListViewController
             userListVC.counter = "following"
             userListVC.id = self.id
+        } else if segue.identifier == "segueToSelf" {
+            let mytag = sender!.tag
+            print(mytag)
+            let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController
+            let creatorId = myLikedAnswerArray[mytag].creator
+            let creatorname = myLikedAnswerArray[mytag].creatorname
+            profileVC.fromOtherVC = true
+            profileVC.creatorId = creatorId
+            profileVC.creatorname = creatorname
+        } else if segue.identifier == "segueToEditProfile" {
+            
         }
     }
     
@@ -1476,7 +1903,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                         let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
                         
                         cell.player.seekToTime(seekTime)
-                        cell.player.play()
+//                        cell.player.play()
                     }
                 } else {
                     cell.player.pause()
@@ -1526,7 +1953,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                         let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
                         
                         cell.player.seekToTime(seekTime)
-                        cell.player.play()
+//                        cell.player.play()
                     }
                 } else {
                     cell.player.pause()

@@ -9,6 +9,7 @@
 import UIKit
 import Alamofire
 import Firebase
+import SwiftyJSON
 
 class LogInViewController: UIViewController {
 
@@ -70,19 +71,84 @@ class LogInViewController: UIViewController {
 //                    print("JSON: \(JSON)")
 //                }
 //        }
-        ref.authUser(emailTextField.text, password: passwordTextField.text,
-            withCompletionBlock: { error, authData in
-                if error != nil {
-                    // There was an error logging in to this account
-                } else {
-                    // We are now logged in
-                    print(authData.uid)
+//        ref.authUser(emailTextField.text, password: passwordTextField.text,
+//            withCompletionBlock: { error, authData in
+//                if error != nil {
+//                    // There was an error logging in to this account
+//                } else {
+//                    // We are now logged in
+//                    print(authData.uid)
+//                    
+//                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//                    let mainVC = storyboard.instantiateInitialViewController()
+//                    self.presentViewController(mainVC!, animated: true, completion: nil)
+//                }
+//        })
+        let email:String = emailTextField.text! as String
+        let password:String = passwordTextField.text! as String
+        
+        if ( email == "" || password == "" ) {
+            
+            let alertView:UIAlertView = UIAlertView()
+            alertView.title = "Sign in Failed!"
+            alertView.message = "Please enter Username and Password"
+            alertView.delegate = self
+            alertView.addButtonWithTitle("OK")
+            alertView.show()
+        } else {
+            
+            let parameters = [
+                "email": email,
+                "password": password
+            ]
+            
+            let url = globalurl + "login"
+            
+            Alamofire.request(.POST, url, parameters: parameters)
+                .responseJSON { response in
+                    print(response.request)
+                    print(response.response)
+                    print(response.result)
+                    print(response.response?.statusCode)
                     
-                    let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let mainVC = storyboard.instantiateInitialViewController()
-                    self.presentViewController(mainVC!, animated: true, completion: nil)
-                }
-        })
+                    let statuscode = response.response?.statusCode
+                    if statuscode == 200 {
+                        print("Log In successful")
+                        let json = JSON(response.result.value!)
+                        print("JSON: \(json)")
+                        let id = json["_id"].string
+                        var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+                        prefs.setObject(id, forKey: "ID")
+                        prefs.setInteger(1, forKey: "ISLOGGEDIN")
+                        prefs.synchronize()
+                        
+                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                        let mainVC = storyboard.instantiateInitialViewController()
+                        self.presentViewController(mainVC!, animated: true, completion: nil)
+                    } else if statuscode == 400 {
+                        var alertView:UIAlertView = UIAlertView()
+                        alertView.title = "Sign in Failed!"
+                        alertView.message = "No user found"
+                        alertView.delegate = self
+                        alertView.addButtonWithTitle("OK")
+                        alertView.show()
+                    } else if statuscode == 404 {
+                        var alertView:UIAlertView = UIAlertView()
+                        alertView.title = "Sign in Failed!"
+                        alertView.message = "Password does not match"
+                        alertView.delegate = self
+                        alertView.addButtonWithTitle("OK")
+                        alertView.show()
+                    } else {
+                        var alertView:UIAlertView = UIAlertView()
+                        alertView.title = "Sign in Failed!"
+                        alertView.message = "Connection Failed"
+                        alertView.delegate = self
+                        alertView.addButtonWithTitle("OK")
+                        alertView.show()
+                    }
+            }
+        }
         
     }
     

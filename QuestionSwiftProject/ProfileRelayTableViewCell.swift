@@ -21,7 +21,7 @@ class ProfileRelayTableViewCell: UITableViewCell {
     @IBOutlet weak var heartImageView: UIImageView!
     @IBOutlet weak var likeImageView: UIImageView!
     @IBOutlet weak var questionContentButton: UIButton!
-    
+    @IBOutlet weak var extraButton: UIButton!
     
     var player: AVPlayer!
     var playerController: AVPlayerViewController!

@@ -38,19 +38,13 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
         
         Alamofire.request(.GET, url, parameters: nil)
             .responseJSON { response in
-                let subJson = JSON(response.result.value!)
+                var value = response.result.value
+                if value == nil {
+                    value = []
+                }
+                
+                let subJson = JSON(value!)
                 print("JSON: \(subJson)")
-//                let creatorname = json["creatorname"].string
-//                let creator = json["creator"].string
-//                let video_url = json["video_url"].string
-//                var likeCount = json["likes"].int
-//                let frontCamera = json["frontCamera"].bool
-//                if likeCount == nil {
-//                    likeCount = 0
-//                }
-//                
-//
-//                self.tableView.reloadData()
                 let id = subJson["_id"].string
                 let creator = subJson["creator"].string
                 let creatorname = subJson["creatorname"].string
@@ -104,7 +98,12 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
         
         Alamofire.request(.GET, url, parameters: nil)
             .responseJSON { response in
-                let subJson = JSON(response.result.value!)
+                var value = response.result.value
+                if value == nil {
+                    value = []
+                }
+                
+                let subJson = JSON(value!)
                 print("JSON: \(subJson)")
                 let content = subJson["content"].string
                 let id = subJson["_id"].string
@@ -157,6 +156,49 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
     }
     
     override func viewWillAppear(animated: Bool) {
+        NSNotificationCenter.defaultCenter().addObserver(self,
+            selector: "videoEnd",
+            name: AVPlayerItemDidPlayToEndTimeNotification,
+            object: nil)
+    }
+    override func viewWillDisappear(animated: Bool) {
+        NSNotificationCenter.defaultCenter().removeObserver(self,
+            name: AVPlayerItemDidPlayToEndTimeNotification,
+            object: nil)
+        for cell in tableView.visibleCells {
+            if cell.isKindOfClass(AnsweredQuestionTableViewCell) {
+                let indexPath = tableView.indexPathForCell(cell)
+                let cellRect = tableView.rectForRowAtIndexPath(indexPath!)
+                let superView = tableView.superview
+                let convertedRect = tableView.convertRect(cellRect, toView: superView)
+                let intersect = CGRectIntersection(tableView.frame, convertedRect)
+                let visibleHeight = CGRectGetHeight(intersect)
+                let cellHeight = tableView.frame.height * 0.6
+                let cell = cell as! AnsweredQuestionTableViewCell
+                
+                if visibleHeight > cellHeight {
+                    // Check is playing is already playing
+                    cell.likeImageView.hidden = true
+                    
+                    if (cell.player.rate > 0) {
+                        cell.player.pause()
+                        cell.likeImageView.image = UIImage(named: "playImage")
+                        cell.likeImageView.hidden = false
+                        cell.likeImageView.alpha = 0.7
+                    } else {
+                        
+                    }
+                    
+                    
+                } else {
+                    cell.player.pause()
+                    cell.likeImageView.image = UIImage(named: "playImage")
+                    cell.likeImageView.hidden = false
+                    cell.likeImageView.alpha = 0.7
+                }
+            }
+        }
+        
     }
     
     override func viewDidLoad() {
@@ -165,6 +207,7 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
         // Do any additional setup after loading the view.
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        self.tableView.scrollsToTop = true
         
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 300
@@ -194,20 +237,13 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-//            let cell: MyQuestionTitleTableViewCell = tableView.dequeueReusableCellWithIdentifier("TitleCell", forIndexPath: indexPath) as! MyQuestionTitleTableViewCell
-//            
-//            cell.contentTextView.text = self.contentText
-//            
-//            return cell
             
             let cell = tableView.dequeueReusableCellWithIdentifier("myQuestionTitleCell", forIndexPath: indexPath) as! MyQuestionTitleTableViewCell
             
             cell.preservesSuperviewLayoutMargins = false
             cell.separatorInset = UIEdgeInsetsZero
             cell.layoutMargins = UIEdgeInsetsZero
-            
-            
-            
+        
             if question == nil {
                 
             } else {
@@ -273,23 +309,6 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 cell.player = AVPlayer(URL: newURL!)
                 cell.playerController.player = cell.player
                 
-//                let frontCamera = self.frontCamera
-//                
-//                if frontCamera {
-//                    cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
-//                }
-//                
-//                if CGAffineTransformIsIdentity(cell.playerController.view.transform) {
-//                    if frontCamera {
-//                        cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
-//                    }
-//                } else {
-//                    if frontCamera {
-//                        
-//                    } else {
-//                        cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
-//                    }
-//                }
                 //            self.addChildViewController(cell.playerController)
                 cell.videoView.addSubview(cell.playerController.view)
                 //            cell.playerController.didMoveToParentViewController(self)
@@ -385,9 +404,7 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                         cell.playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
                     }
                 }
-                //            self.addChildViewController(cell.playerController)
                 cell.videoView.addSubview(cell.playerController.view)
-                //            cell.playerController.didMoveToParentViewController(self)
                 cell.player.pause()
                 
                 if indexPath.row == 0 {
@@ -412,9 +429,6 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 
                 cell.playerController.view.userInteractionEnabled = true
                 
-                //            let view = UIView(frame: cell.playerController.view.frame)
-                //            cell.addSubview(view)
-                
                 let view = UIView(frame: CGRectMake(cell.videoView.frame.origin.x, cell.videoView.frame.origin.y, cell.videoView.frame.size.width, cell.videoView.frame.size.height))
                 cell.videoView.addSubview(view)
                 
@@ -427,6 +441,7 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 
                 cell.likeImageView.image = UIImage(named: "Heart")
                 cell.likeImageView.hidden = true
+                cell.likeImageView.contentMode = UIViewContentMode.ScaleAspectFill
                 cell.videoView.bringSubviewToFront(cell.likeImageView)
                 
                 let doubleTapGesture = UITapGestureRecognizer()
@@ -439,6 +454,8 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 cell.videoView.bringSubviewToFront(cell.likeCountTextView)
                 cell.videoView.bringSubviewToFront(cell.heartImageView)
                 
+                cell.extraButton.addTarget(self, action: "extraButtonTapped:", forControlEvents: .TouchUpInside)
+                cell.extraButton.tag = indexPath.row
                 
                 cell.likeButton.tag = indexPath.row
                 cell.likeButton.addTarget(self, action: "toggleLike:", forControlEvents: .TouchUpInside)
@@ -521,6 +538,47 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
     func nameTapped(sender:UIButton) {
         print("buttonClicked")
         self.performSegueWithIdentifier("segueFromAnsweredQuestionToProfile", sender: self)
+    }
+    
+    func extraButtonTapped(sender: UIButton) {
+        let tag = sender.tag
+        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 1)) as! AnsweredQuestionTableViewCell
+        if cell.player.rate > 0 {
+            cell.player.pause()
+            cell.likeImageView.alpha = 0.7
+            cell.likeImageView.image = UIImage(named: "playImage")
+            cell.likeImageView.hidden = false
+        }
+        
+        let creator = answer!.creator
+        let answerId = answer!.id
+        
+        
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
+        let reportButton = UIAlertAction(title: "Report Video", style: UIAlertActionStyle.Default) { (alert) -> Void in
+            print("Video reported")
+            let parameters = [
+                "type" : "reported video",
+                "creator": userid,
+                "relayId": answerId
+            ]
+            let url = globalurl + "api/alerts"
+            
+            Alamofire.request(.POST, url, parameters: parameters)
+                .responseJSON { response in
+                    print(response.request)
+                    print(response.response)
+                    print(response.result)
+                    print(response.response?.statusCode)
+            }
+        }
+        let cancelButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alert) -> Void in
+            print("Cancel Pressed", terminator: "")
+        }
+        
+        alert.addAction(reportButton)
+        alert.addAction(cancelButton)
+        self.presentViewController(alert, animated: true, completion: nil)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -654,9 +712,10 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
         print("Double Tap")
         let tag = sender.view?.tag
         let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 1)) as! AnsweredQuestionTableViewCell
-        
+        cell.likeImageView.image = UIImage(named: "Heart")
         cell.likeImageView.hidden = false
-        
+        cell.likeImageView.alpha = 1
+        cell.player.play()
         UIView.animateWithDuration(1.0, delay: 0.5, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
             cell.likeImageView.alpha = 0
             }) { (success) -> Void in
@@ -691,10 +750,40 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
         let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 1)) as! AnsweredQuestionTableViewCell
         if (cell.player.rate > 0) {
             cell.player.pause()
+            cell.likeImageView.alpha = 0.7
+            cell.likeImageView.image = UIImage(named: "playImage")
+            cell.likeImageView.hidden = false
         } else {
             cell.player.play()
+            cell.likeImageView.hidden = true
         }
         
+    }
+    
+    func videoEnd() {
+        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! AnsweredQuestionTableViewCell
+        cell.likeImageView.image = UIImage(named: "replayImage")
+        cell.likeImageView.alpha = 0.7
+        cell.likeImageView.hidden = false
+        let url = globalurl + "api/answers/" + answerId + "/viewed/"
+        
+        Alamofire.request(.PUT, url, parameters: nil)
+            .responseJSON { response in
+                let result = response.result.value
+                print(result)
+                if result == nil {
+                    print("Not viewed")
+                    
+                } else {
+                    print("Viewed")
+                }
+        }
+        
+        let seconds : Int64 = 0
+        let preferredTimeScale : Int32 = 1
+        let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
+        
+        cell.player.seekToTime(seekTime)
     }
 
     

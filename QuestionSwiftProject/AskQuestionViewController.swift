@@ -20,7 +20,6 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
     
     @IBOutlet weak var sendButton: UIButton!
     
-    var anonymous = "false"
     
     var placeholder = "What are your thoughts on fantasy sports?"
     
@@ -203,19 +202,25 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
         let url = globalurl + "api/questions"
         let parameters = [
             "content": text,
-            "creatorname": name,
+            "creatorname": myUsername,
             "creator": userid,
-            "anonymous": anonymous,
             "answercount": 0,
             "likes": 0
         ]
-        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], encoding: .JSON)
+//        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], encoding: .JSON)
+        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject])
+            .responseJSON { response in
+                print(response.request)
+                print(response.response)
+                print(response.result)
+                print(response.response?.statusCode)
+                NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                self.navigationController?.popViewControllerAnimated(true)
+        }
+//        let newUrl = globalurl + "api/users/" + userid + "/updated-at/"
+//        Alamofire.request(.PUT, newUrl, parameters: nil, encoding: .JSON)
         
-        let newUrl = globalurl + "api/users/" + userid + "/updated-at/"
-        Alamofire.request(.PUT, newUrl, parameters: nil, encoding: .JSON)
         
-        NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-        self.navigationController?.popViewControllerAnimated(true)
     }
     
     

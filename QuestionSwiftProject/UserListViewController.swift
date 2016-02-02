@@ -38,10 +38,19 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
                         let json = JSON(value!)
                         print("JSON: \(json)")
                         let userId = subJson["sender"].string
-                        let username = subJson["sendername"].string
+                        var username = subJson["recipientname"].string
                         
-                        self.userIdArray.append(userId!)
-                        self.usernameArray.append(username!)
+                        if username == nil {
+                            username = "Could not find username"
+                        }
+                        
+                        if self.userIdArray.contains(userId!) {
+                            
+                        } else {
+                            self.userIdArray.append(userId!)
+                            self.usernameArray.append(username!)
+                        }
+                        
                         
                         self.tableView.reloadData()
                     }
@@ -62,10 +71,18 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
                         let json = JSON(value!)
                         print("JSON: \(json)")
                         let userId = subJson["recipient"].string
-                        let username = subJson["recipientname"].string
+                        var username = subJson["recipientname"].string
                         
-                        self.userIdArray.append(userId!)
-                        self.usernameArray.append(username!)
+                        if username == nil {
+                            username = "Could not find username"
+                        }
+                        
+                        if self.userIdArray.contains(userId!) {
+                            
+                        } else {
+                            self.userIdArray.append(userId!)
+                            self.usernameArray.append(username!)
+                        }
                         
                         self.tableView.reloadData()
                     }
@@ -79,6 +96,7 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.tableFooterView = UIView()
         
         self.loadUsers()
     }

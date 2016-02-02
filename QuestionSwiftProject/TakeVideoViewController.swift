@@ -373,7 +373,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                         let parameters = [
                             "question_id": self.id,
                             "creator": userid,
-                            "creatorname": name,
+                            "creatorname": myUsername,
                             "video_url": amazonUrl + key,
                             "frontCamera": self.frontCamera,
                             "thumbnail_url": amazonUrl + key2
@@ -382,19 +382,6 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                     }
                     return nil
                 }
-                
-//                let url = globalurl + "api/answers"
-//                
-//                let amazonUrl = "https://s3-us-west-1.amazonaws.com/batonapp/"
-//                
-//                let parameters = [
-//                    "question_id": self.id,
-//                    "creator": userid,
-//                    "creatorname": name,
-//                    "video_url": amazonUrl + key,
-//                    "frontCamera": self.frontCamera
-//                ]
-//                Alamofire.request(.POST, url, parameters: parameters as? [String: AnyObject], encoding: .JSON)
                 
             }
             return nil
@@ -484,7 +471,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
 //            library.writeVideoAtPathToSavedPhotosAlbum(session.outputURL, completionBlock: completionBlock)
         }
         videoUrl = session.outputURL
-        getThumbnail(videoUrl!)
+//        getThumbnail(videoUrl!)
         player = AVPlayer(URL: session.outputURL!)
         playerController = AVPlayerViewController()
         playerController.player = player

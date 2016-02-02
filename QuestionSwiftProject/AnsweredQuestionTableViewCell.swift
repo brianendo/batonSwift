@@ -23,6 +23,7 @@ class AnsweredQuestionTableViewCell: UITableViewCell {
     @IBOutlet weak var timeAgoLabel: UILabel!
     @IBOutlet weak var viewCountLabel: UILabel!
     @IBOutlet weak var nameButton: UIButton!
+    @IBOutlet weak var extraButton: UIButton!
     
     var player: AVPlayer!
     var playerController: AVPlayerViewController!

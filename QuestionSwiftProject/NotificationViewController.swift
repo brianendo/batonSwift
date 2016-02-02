@@ -20,6 +20,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
     var refreshControl:UIRefreshControl!
     
     var counter = 0
+    var notificationIndex = 0
     
     func loadNotifications(){
         let url = globalurl + "api/users/" + userid + "/notifications/"
@@ -49,10 +50,6 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 for (_,subJson):(String, JSON) in json {
                     //Do something you want
                     let type = subJson["type"].string
-                    
-                    if type == "follow" {
-                        
-                    } else {
                     
                     let id = subJson["_id"].string
                     let sender = subJson["sender"].string
@@ -101,29 +98,6 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                         
                         self.tableView.reloadData()
                         
-//                        let newUrl = globalurl + "api/questions/" + question_id!
-//                        
-//                        Alamofire.request(.GET, newUrl, parameters: nil)
-//                            .responseJSON { response in
-//                                var value = response.result.value
-//                                
-//                                if value == nil {
-//                                    value = []
-//                                }
-//                                
-//                                let json = JSON(value!)
-//                                print("JSON: \(json)")
-//                                
-//                                var content = json["content"].string
-//                                if content == nil {
-//                                    content = ""
-//                                }
-//                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate, answer_id: answer_id)
-//                                self.notificationArray.append(notification)
-//                                self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-//                                
-//                                self.tableView.reloadData()
-//                        }
                     } else if type == "like"{
                         var thumbnail_url = subJson["thumbnail_url"].string
                         
@@ -136,32 +110,13 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                         self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         
                         self.tableView.reloadData()
-                        
-//                        let newUrl = globalurl + "api/answers/" + answer_id!
-//                        
-//                        Alamofire.request(.GET, newUrl, parameters: nil)
-//                            .responseJSON { response in
-//                                var value = response.result.value
-//                                
-//                                if value == nil {
-//                                    value = []
-//                                }
-//                                
-//                                let json = JSON(value!)
-//                                print("JSON: \(json)")
-//                                
-//                                var content = json["content"].string
-//                                if content == nil {
-//                                    content = ""
-//                                }
-//                                let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: content, createdAt: yourDate, answer_id: answer_id)
-//                                self.notificationArray.append(notification)
-//                                self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-//                                
-//                                self.tableView.reloadData()
-//                        }
                     }
-                    // type follow bracket
+                     else if type == "follow" {
+                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: "", read: read, content: "", createdAt: yourDate, answer_id: "", thumbnail_url: "")
+                        self.notificationArray.append(notification)
+                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+                        
+                        self.tableView.reloadData()
                     }
                 }
 
@@ -192,6 +147,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
     
     override func viewDidDisappear(animated: Bool) {
         if counter > 0 {
+            self.counter = 0
             self.readAll()
         }
     }
@@ -204,9 +160,11 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         // Do any additional setup after loading the view.
         self.tableView.delegate = self
         self.tableView.dataSource = self
+        self.tableView.scrollsToTop = true
         
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 70
+        self.tableView.tableFooterView = UIView()
         
         self.notificationArray.removeAll(keepCapacity: true)
         self.loadNotifications()
@@ -246,7 +204,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         let sendername = notificationArray[indexPath.row].sendername
         let read = notificationArray[indexPath.row].read
         let id = notificationArray[indexPath.row].id
-        
+        let sender = notificationArray[indexPath.row].sender
         
         if type == "answer" {
             let cell: NotificationAnswerTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationAnswerCell", forIndexPath: indexPath) as! NotificationAnswerTableViewCell
@@ -255,7 +213,17 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             } else if read == true {
                 cell.backgroundColor = UIColor.whiteColor()
             }
-            cell.headerTextView.text = "\(sendername) answered your question:"
+            let postedText = "\(sendername) "
+            let myFirstString = NSMutableAttributedString(string: postedText, attributes: [NSFontAttributeName:UIFont(name: "HelveticaNeue-Medium", size: 16.0)!])
+            
+            let creatornameText = "answered your question"
+            let mySecondString = NSMutableAttributedString(string: creatornameText, attributes: [NSFontAttributeName:UIFont(name: "HelveticaNeue-Light", size: 16.0)!])
+            
+            let result = NSMutableAttributedString()
+            result.appendAttributedString(myFirstString)
+            result.appendAttributedString(mySecondString)
+            
+            cell.headerTextView.attributedText = result
             let answerContent = notificationArray[indexPath.row].content
             
             cell.contentTextView.text = "\"\(answerContent)\""
@@ -266,8 +234,47 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             cell.headerTextView.userInteractionEnabled = false
             cell.contentTextView.userInteractionEnabled = false
             
+            cell.profileImageView.image = UIImage(named: "Placeholder")
+            if let cachedImageResult = imageCache[sender] {
+                print("pull from cache")
+                cell.profileImageView.image = UIImage(data: cachedImageResult!)
+            } else {
+                // 3
+                cell.profileImageView.image = UIImage(named: "Placeholder")
+                
+                // 4
+                let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
+                let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
+                let transferManager = AWSS3TransferManager.defaultS3TransferManager()
+                
+                
+                let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
+                readRequest1.bucket = S3BucketName
+                readRequest1.key =  sender
+                readRequest1.downloadingFileURL = downloadingFileURL1
+                
+                let task = transferManager.download(readRequest1)
+                task.continueWithBlock { (task) -> AnyObject! in
+                    if task.error != nil {
+                        print("No Profile Pic")
+                    } else {
+                        let image = UIImage(contentsOfFile: downloadingFilePath1)
+                        let imageData = UIImageJPEGRepresentation(image!, 1.0)
+                        imageCache[sender] = imageData
+                        dispatch_async(dispatch_get_main_queue()
+                            , { () -> Void in
+                                cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
+                                cell.setNeedsLayout()
+                                
+                        })
+                        print("Fetched image")
+                    }
+                    return nil
+                }
+            }
+            
             return cell
-        } else {
+        } else if type == "like"{
             let cell: NotificationLikedTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationLikedCell", forIndexPath: indexPath) as! NotificationLikedTableViewCell
             if read == false {
                 cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
@@ -279,8 +286,60 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             cell.preservesSuperviewLayoutMargins = false
             cell.separatorInset = UIEdgeInsetsZero
             cell.layoutMargins = UIEdgeInsetsZero
-            cell.contentTextView.text = "\(sendername) liked your answer:"
+            
+            let postedText = "\(sendername) "
+            let myFirstString = NSMutableAttributedString(string: postedText, attributes: [NSFontAttributeName:UIFont(name: "HelveticaNeue-Medium", size: 16.0)!])
+            
+            let creatornameText = "liked your answer"
+            let mySecondString = NSMutableAttributedString(string: creatornameText, attributes: [NSFontAttributeName:UIFont(name: "HelveticaNeue-Light", size: 16.0)!])
+            
+            let result = NSMutableAttributedString()
+            result.appendAttributedString(myFirstString)
+            result.appendAttributedString(mySecondString)
+            
+            cell.contentTextView.attributedText = result
+            
             cell.contentTextView.userInteractionEnabled = false
+            
+            cell.profileImageView.image = UIImage(named: "Placeholder")
+            if let cachedImageResult = imageCache[sender] {
+                print("pull from cache")
+                cell.profileImageView.image = UIImage(data: cachedImageResult!)
+            } else {
+                // 3
+                cell.profileImageView.image = UIImage(named: "Placeholder")
+                
+                // 4
+                let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
+                let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
+                let transferManager = AWSS3TransferManager.defaultS3TransferManager()
+                
+                
+                let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
+                readRequest1.bucket = S3BucketName
+                readRequest1.key =  sender
+                readRequest1.downloadingFileURL = downloadingFileURL1
+                
+                let task = transferManager.download(readRequest1)
+                task.continueWithBlock { (task) -> AnyObject! in
+                    if task.error != nil {
+                        print("No Profile Pic")
+                    } else {
+                        let image = UIImage(contentsOfFile: downloadingFilePath1)
+                        let imageData = UIImageJPEGRepresentation(image!, 1.0)
+                        imageCache[sender] = imageData
+                        dispatch_async(dispatch_get_main_queue()
+                            , { () -> Void in
+                                cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
+                                cell.setNeedsLayout()
+                                
+                        })
+                        print("Fetched image")
+                    }
+                    return nil
+                }
+            }
+            
             let thumbnail = notificationArray[indexPath.row].thumbnail_url
             
             cell.thumbnailImageView.image = UIImage(named: "Placeholder")
@@ -302,13 +361,135 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 
             }
             
+            return cell
+        } else {
+            let cell: NotificationFollowTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationFollowCell", forIndexPath: indexPath) as! NotificationFollowTableViewCell
+            if read == false {
+                cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
+            } else if read == true {
+                cell.backgroundColor = UIColor.whiteColor()
+            }
             
+            let notificationId = notificationArray[indexPath.row].id
+            cell.preservesSuperviewLayoutMargins = false
+            cell.separatorInset = UIEdgeInsetsZero
+            cell.layoutMargins = UIEdgeInsetsZero
+            let postedText = "\(sendername) "
+            let myFirstString = NSMutableAttributedString(string: postedText, attributes: [NSFontAttributeName:UIFont(name: "HelveticaNeue-Medium", size: 16.0)!])
+            
+            let creatornameText = "followed you"
+            let mySecondString = NSMutableAttributedString(string: creatornameText, attributes: [NSFontAttributeName:UIFont(name: "HelveticaNeue-Light", size: 16.0)!])
+            
+            let result = NSMutableAttributedString()
+            result.appendAttributedString(myFirstString)
+            result.appendAttributedString(mySecondString)
+            
+            cell.contentTextView.attributedText = result
+            
+            cell.contentTextView.userInteractionEnabled = false
+            
+            cell.followButton.tag = indexPath.row
+            cell.followButton.addTarget(self, action: "toggleFollow:", forControlEvents: .TouchUpInside)
+            cell.followButton.setImage(UIImage(named: "addperson"), forState: .Normal)
+            cell.followButton.setImage(UIImage(named: "addedperson"), forState: .Selected)
+            cell.followButton.selected = false
+            
+            cell.profileImageView.image = UIImage(named: "Placeholder")
+            if let cachedImageResult = imageCache[sender] {
+                print("pull from cache")
+                cell.profileImageView.image = UIImage(data: cachedImageResult!)
+            } else {
+                // 3
+                cell.profileImageView.image = UIImage(named: "Placeholder")
+                
+                // 4
+                let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
+                let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
+                let transferManager = AWSS3TransferManager.defaultS3TransferManager()
+                
+                
+                let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
+                readRequest1.bucket = S3BucketName
+                readRequest1.key =  sender
+                readRequest1.downloadingFileURL = downloadingFileURL1
+                
+                let task = transferManager.download(readRequest1)
+                task.continueWithBlock { (task) -> AnyObject! in
+                    if task.error != nil {
+                        print("No Profile Pic")
+                    } else {
+                        let image = UIImage(contentsOfFile: downloadingFilePath1)
+                        let imageData = UIImageJPEGRepresentation(image!, 1.0)
+                        imageCache[sender] = imageData
+                        dispatch_async(dispatch_get_main_queue()
+                            , { () -> Void in
+                                cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
+                                cell.setNeedsLayout()
+                                
+                        })
+                        print("Fetched image")
+                    }
+                    return nil
+                }
+            }
+            
+            let url = globalurl + "api/user/" + userid + "/follows/" + notificationArray[indexPath.row].sender
+            
+            Alamofire.request(.GET, url, parameters: nil)
+                .responseJSON { response in
+                    let result = response.result.value
+                    print(result)
+                    if result == nil {
+                        print("Not Following")
+                        cell.followButton.selected = false
+                    } else {
+                        print("Already Following")
+                        cell.followButton.selected = true
+                    }
+            }
+
             
             
             
             return cell
         }
         
+    }
+    
+    func toggleFollow(sender:UIButton!) {
+        let tag = sender.tag
+        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 0)) as! NotificationFollowTableViewCell
+        let creatorId = self.notificationArray[tag].sender
+        
+        if sender.selected == false {
+            sender.selected = true
+            let url = globalurl + "api/user/" + userid + "/follows/" + creatorId
+            
+            Alamofire.request(.POST, url, parameters: nil)
+                .responseJSON { response in
+                    let result = response.result.value
+                    print(result)
+                    if result == nil {
+                        print("Already Followed")
+                    } else {
+                        print("Following")
+                    }
+            }
+        } else {
+            sender.selected = false
+            let url = globalurl + "api/user/" + userid + "/unfollows/" + creatorId
+            
+            Alamofire.request(.DELETE, url, parameters: nil)
+                .responseJSON { response in
+                    let result = response.result.value
+                    print(result)
+                    if result == nil {
+                        print("Could not remove")
+                    } else {
+                        print("Removed")
+                    }
+            }
+        }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -341,8 +522,8 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             Alamofire.request(.PUT, url, parameters: nil)
                 .responseJSON { response in
             }
-            
-            self.performSegueWithIdentifier("notificationToThankedAnswer", sender: self)
+            notificationIndex = indexPath.row
+            self.performSegueWithIdentifier("segueFromNotificationsToProfile", sender: self)
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
     }
@@ -353,19 +534,19 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             let indexPath = self.tableView.indexPathForSelectedRow
             let questionId = self.notificationArray[indexPath!.row].question_id
             let answerId = self.notificationArray[indexPath!.row].answer_id
-//            let type = self.notificationArray[indexPath!.row].type
-//            
-//            if type == "like" {
-//                
-//            } else if type = "answer" {
-//                
-//            }
-            
             answeredQuestionVC.questionId = questionId
             answeredQuestionVC.answerId = answerId
             notificationArray[indexPath!.row].read = true
             self.tableView.reloadData()
-        } 
+        } else if segue.identifier == "segueFromNotificationsToProfile" {
+            let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController
+            let creatorId = notificationArray[notificationIndex].sender
+            let creatorname = notificationArray[notificationIndex].sendername
+            profileVC.fromOtherVC = true
+            profileVC.creatorId = creatorId
+            profileVC.creatorname = creatorname
+
+        }
     }
     
 

@@ -24,7 +24,7 @@ class ProfileLikedTableViewCell: UITableViewCell {
     @IBOutlet weak var timeAgoLabel: UILabel!
     @IBOutlet weak var questionContentTextView: UITextView!
     @IBOutlet weak var viewCountLabel: UILabel!
-    
+    @IBOutlet weak var extraButton: UIButton!
     
     var player: AVPlayer!
     var playerController: AVPlayerViewController!
