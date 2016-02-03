@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'DC9A5E7535D8E0646D1339AF'
+               BlueprintIdentifier = '221CA4959527B14F36B1CB11'
                BlueprintName = 'AWSSES'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'AWSSES.framework'>

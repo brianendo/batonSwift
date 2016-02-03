@@ -1,5 +1,11 @@
 #import <UIKit/UIKit.h>
 
+#import "AWSAbstractKinesisRecorder.h"
+#import "AWSFirehose.h"
+#import "AWSFirehoseModel.h"
+#import "AWSFirehoseRecorder.h"
+#import "AWSFirehoseResources.h"
+#import "AWSFirehoseService.h"
 #import "AWSKinesis.h"
 #import "AWSKinesisModel.h"
 #import "AWSKinesisRecorder.h"

@@ -6,6 +6,7 @@
 #import "AWSCognitoHandlers.h"
 #import "AWSCognitoRecord.h"
 #import "AWSCognitoService.h"
+#import "AWSCognitoSync.h"
 #import "AWSCognitoSyncModel.h"
 #import "AWSCognitoSyncResources.h"
 #import "AWSCognitoSyncService.h"

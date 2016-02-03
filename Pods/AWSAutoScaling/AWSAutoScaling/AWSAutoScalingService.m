@@ -1,17 +1,17 @@
-/*
- Copyright 2010-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License").
- You may not use this file except in compliance with the License.
- A copy of the License is located at
-
- http://aws.amazon.com/apache2.0
-
- or in the "license" file accompanying this file. This file is distributed
- on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- express or implied. See the License for the specific language governing
- permissions and limitations under the License.
- */
+//
+// Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License").
+// You may not use this file except in compliance with the License.
+// A copy of the License is located at
+//
+// http://aws.amazon.com/apache2.0
+//
+// or in the "license" file accompanying this file. This file is distributed
+// on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+// express or implied. See the License for the specific language governing
+// permissions and limitations under the License.
+//
 
 #import "AWSAutoScaling.h"
 
@@ -25,9 +25,6 @@
 #import "AWSURLRequestRetryHandler.h"
 #import "AWSSynchronizedMutableDictionary.h"
 #import "AWSAutoScalingResources.h"
-
-NSString *const AWSAutoScalingDefinitionFileName = @"autoscaling-2011-01-01";
-
 
 @interface AWSAutoScalingResponseSerializer : AWSXMLResponseSerializer
 
@@ -165,7 +162,9 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 + (instancetype)defaultAutoScaling {
     if (![AWSServiceManager defaultServiceManager].defaultServiceConfiguration) {
-        return nil;
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"`defaultServiceConfiguration` is `nil`. You need to set it before using this method."
+                                     userInfo:nil];
     }
 
     static AWSAutoScaling *_defaultAutoScaling = nil;
@@ -268,13 +267,50 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
-- (AWSTask *)completeLifecycleAction:(AWSAutoScalingCompleteLifecycleActionType *)request {
+- (void)attachInstances:(AWSAutoScalingAttachInstancesQuery *)request
+      completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self attachInstances:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingCompleteLifecycleActionAnswer *> *)completeLifecycleAction:(AWSAutoScalingCompleteLifecycleActionType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
                   targetPrefix:@""
                  operationName:@"CompleteLifecycleAction"
                    outputClass:[AWSAutoScalingCompleteLifecycleActionAnswer class]];
+}
+
+- (void)completeLifecycleAction:(AWSAutoScalingCompleteLifecycleActionType *)request
+              completionHandler:(void (^)(AWSAutoScalingCompleteLifecycleActionAnswer *response, NSError *error))completionHandler {
+    [[self completeLifecycleAction:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingCompleteLifecycleActionAnswer *> * _Nonnull task) {
+        AWSAutoScalingCompleteLifecycleActionAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)createAutoScalingGroup:(AWSAutoScalingCreateAutoScalingGroupType *)request {
@@ -286,6 +322,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
+- (void)createAutoScalingGroup:(AWSAutoScalingCreateAutoScalingGroupType *)request
+             completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self createAutoScalingGroup:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask *)createLaunchConfiguration:(AWSAutoScalingCreateLaunchConfigurationType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -293,6 +347,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                   targetPrefix:@""
                  operationName:@"CreateLaunchConfiguration"
                    outputClass:nil];
+}
+
+- (void)createLaunchConfiguration:(AWSAutoScalingCreateLaunchConfigurationType *)request
+                completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self createLaunchConfiguration:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)createOrUpdateTags:(AWSAutoScalingCreateOrUpdateTagsType *)request {
@@ -304,6 +376,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
+- (void)createOrUpdateTags:(AWSAutoScalingCreateOrUpdateTagsType *)request
+         completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self createOrUpdateTags:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask *)deleteAutoScalingGroup:(AWSAutoScalingDeleteAutoScalingGroupType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -311,6 +401,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                   targetPrefix:@""
                  operationName:@"DeleteAutoScalingGroup"
                    outputClass:nil];
+}
+
+- (void)deleteAutoScalingGroup:(AWSAutoScalingDeleteAutoScalingGroupType *)request
+             completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self deleteAutoScalingGroup:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)deleteLaunchConfiguration:(AWSAutoScalingLaunchConfigurationNameType *)request {
@@ -322,13 +430,50 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
-- (AWSTask *)deleteLifecycleHook:(AWSAutoScalingDeleteLifecycleHookType *)request {
+- (void)deleteLaunchConfiguration:(AWSAutoScalingLaunchConfigurationNameType *)request
+                completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self deleteLaunchConfiguration:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDeleteLifecycleHookAnswer *> *)deleteLifecycleHook:(AWSAutoScalingDeleteLifecycleHookType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
                   targetPrefix:@""
                  operationName:@"DeleteLifecycleHook"
                    outputClass:[AWSAutoScalingDeleteLifecycleHookAnswer class]];
+}
+
+- (void)deleteLifecycleHook:(AWSAutoScalingDeleteLifecycleHookType *)request
+          completionHandler:(void (^)(AWSAutoScalingDeleteLifecycleHookAnswer *response, NSError *error))completionHandler {
+    [[self deleteLifecycleHook:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDeleteLifecycleHookAnswer *> * _Nonnull task) {
+        AWSAutoScalingDeleteLifecycleHookAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)deleteNotificationConfiguration:(AWSAutoScalingDeleteNotificationConfigurationType *)request {
@@ -340,6 +485,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
+- (void)deleteNotificationConfiguration:(AWSAutoScalingDeleteNotificationConfigurationType *)request
+                      completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self deleteNotificationConfiguration:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask *)deletePolicy:(AWSAutoScalingDeletePolicyType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -347,6 +510,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                   targetPrefix:@""
                  operationName:@"DeletePolicy"
                    outputClass:nil];
+}
+
+- (void)deletePolicy:(AWSAutoScalingDeletePolicyType *)request
+   completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self deletePolicy:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)deleteScheduledAction:(AWSAutoScalingDeleteScheduledActionType *)request {
@@ -358,6 +539,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
+- (void)deleteScheduledAction:(AWSAutoScalingDeleteScheduledActionType *)request
+            completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self deleteScheduledAction:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask *)deleteTags:(AWSAutoScalingDeleteTagsType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -367,7 +566,25 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
-- (AWSTask *)describeAccountLimits:(AWSRequest *)request {
+- (void)deleteTags:(AWSAutoScalingDeleteTagsType *)request
+ completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self deleteTags:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDescribeAccountLimitsAnswer *> *)describeAccountLimits:(AWSRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -376,7 +593,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingDescribeAccountLimitsAnswer class]];
 }
 
-- (AWSTask *)describeAdjustmentTypes:(AWSRequest *)request {
+- (void)describeAccountLimits:(AWSRequest *)request
+            completionHandler:(void (^)(AWSAutoScalingDescribeAccountLimitsAnswer *response, NSError *error))completionHandler {
+    [[self describeAccountLimits:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDescribeAccountLimitsAnswer *> * _Nonnull task) {
+        AWSAutoScalingDescribeAccountLimitsAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDescribeAdjustmentTypesAnswer *> *)describeAdjustmentTypes:(AWSRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -385,7 +621,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingDescribeAdjustmentTypesAnswer class]];
 }
 
-- (AWSTask *)describeAutoScalingGroups:(AWSAutoScalingAutoScalingGroupNamesType *)request {
+- (void)describeAdjustmentTypes:(AWSRequest *)request
+              completionHandler:(void (^)(AWSAutoScalingDescribeAdjustmentTypesAnswer *response, NSError *error))completionHandler {
+    [[self describeAdjustmentTypes:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDescribeAdjustmentTypesAnswer *> * _Nonnull task) {
+        AWSAutoScalingDescribeAdjustmentTypesAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingAutoScalingGroupsType *> *)describeAutoScalingGroups:(AWSAutoScalingAutoScalingGroupNamesType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -394,7 +649,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingAutoScalingGroupsType class]];
 }
 
-- (AWSTask *)describeAutoScalingInstances:(AWSAutoScalingDescribeAutoScalingInstancesType *)request {
+- (void)describeAutoScalingGroups:(AWSAutoScalingAutoScalingGroupNamesType *)request
+                completionHandler:(void (^)(AWSAutoScalingAutoScalingGroupsType *response, NSError *error))completionHandler {
+    [[self describeAutoScalingGroups:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingAutoScalingGroupsType *> * _Nonnull task) {
+        AWSAutoScalingAutoScalingGroupsType *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingAutoScalingInstancesType *> *)describeAutoScalingInstances:(AWSAutoScalingDescribeAutoScalingInstancesType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -403,7 +677,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingAutoScalingInstancesType class]];
 }
 
-- (AWSTask *)describeAutoScalingNotificationTypes:(AWSRequest *)request {
+- (void)describeAutoScalingInstances:(AWSAutoScalingDescribeAutoScalingInstancesType *)request
+                   completionHandler:(void (^)(AWSAutoScalingAutoScalingInstancesType *response, NSError *error))completionHandler {
+    [[self describeAutoScalingInstances:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingAutoScalingInstancesType *> * _Nonnull task) {
+        AWSAutoScalingAutoScalingInstancesType *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDescribeAutoScalingNotificationTypesAnswer *> *)describeAutoScalingNotificationTypes:(AWSRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -412,7 +705,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingDescribeAutoScalingNotificationTypesAnswer class]];
 }
 
-- (AWSTask *)describeLaunchConfigurations:(AWSAutoScalingLaunchConfigurationNamesType *)request {
+- (void)describeAutoScalingNotificationTypes:(AWSRequest *)request
+                           completionHandler:(void (^)(AWSAutoScalingDescribeAutoScalingNotificationTypesAnswer *response, NSError *error))completionHandler {
+    [[self describeAutoScalingNotificationTypes:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDescribeAutoScalingNotificationTypesAnswer *> * _Nonnull task) {
+        AWSAutoScalingDescribeAutoScalingNotificationTypesAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingLaunchConfigurationsType *> *)describeLaunchConfigurations:(AWSAutoScalingLaunchConfigurationNamesType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -421,7 +733,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingLaunchConfigurationsType class]];
 }
 
-- (AWSTask *)describeLifecycleHookTypes:(AWSRequest *)request {
+- (void)describeLaunchConfigurations:(AWSAutoScalingLaunchConfigurationNamesType *)request
+                   completionHandler:(void (^)(AWSAutoScalingLaunchConfigurationsType *response, NSError *error))completionHandler {
+    [[self describeLaunchConfigurations:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingLaunchConfigurationsType *> * _Nonnull task) {
+        AWSAutoScalingLaunchConfigurationsType *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDescribeLifecycleHookTypesAnswer *> *)describeLifecycleHookTypes:(AWSRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -430,7 +761,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingDescribeLifecycleHookTypesAnswer class]];
 }
 
-- (AWSTask *)describeLifecycleHooks:(AWSAutoScalingDescribeLifecycleHooksType *)request {
+- (void)describeLifecycleHookTypes:(AWSRequest *)request
+                 completionHandler:(void (^)(AWSAutoScalingDescribeLifecycleHookTypesAnswer *response, NSError *error))completionHandler {
+    [[self describeLifecycleHookTypes:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDescribeLifecycleHookTypesAnswer *> * _Nonnull task) {
+        AWSAutoScalingDescribeLifecycleHookTypesAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDescribeLifecycleHooksAnswer *> *)describeLifecycleHooks:(AWSAutoScalingDescribeLifecycleHooksType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -439,7 +789,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingDescribeLifecycleHooksAnswer class]];
 }
 
-- (AWSTask *)describeMetricCollectionTypes:(AWSRequest *)request {
+- (void)describeLifecycleHooks:(AWSAutoScalingDescribeLifecycleHooksType *)request
+             completionHandler:(void (^)(AWSAutoScalingDescribeLifecycleHooksAnswer *response, NSError *error))completionHandler {
+    [[self describeLifecycleHooks:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDescribeLifecycleHooksAnswer *> * _Nonnull task) {
+        AWSAutoScalingDescribeLifecycleHooksAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDescribeMetricCollectionTypesAnswer *> *)describeMetricCollectionTypes:(AWSRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -448,7 +817,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingDescribeMetricCollectionTypesAnswer class]];
 }
 
-- (AWSTask *)describeNotificationConfigurations:(AWSAutoScalingDescribeNotificationConfigurationsType *)request {
+- (void)describeMetricCollectionTypes:(AWSRequest *)request
+                    completionHandler:(void (^)(AWSAutoScalingDescribeMetricCollectionTypesAnswer *response, NSError *error))completionHandler {
+    [[self describeMetricCollectionTypes:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDescribeMetricCollectionTypesAnswer *> * _Nonnull task) {
+        AWSAutoScalingDescribeMetricCollectionTypesAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDescribeNotificationConfigurationsAnswer *> *)describeNotificationConfigurations:(AWSAutoScalingDescribeNotificationConfigurationsType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -457,7 +845,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingDescribeNotificationConfigurationsAnswer class]];
 }
 
-- (AWSTask *)describePolicies:(AWSAutoScalingDescribePoliciesType *)request {
+- (void)describeNotificationConfigurations:(AWSAutoScalingDescribeNotificationConfigurationsType *)request
+                         completionHandler:(void (^)(AWSAutoScalingDescribeNotificationConfigurationsAnswer *response, NSError *error))completionHandler {
+    [[self describeNotificationConfigurations:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDescribeNotificationConfigurationsAnswer *> * _Nonnull task) {
+        AWSAutoScalingDescribeNotificationConfigurationsAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingPoliciesType *> *)describePolicies:(AWSAutoScalingDescribePoliciesType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -466,7 +873,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingPoliciesType class]];
 }
 
-- (AWSTask *)describeScalingActivities:(AWSAutoScalingDescribeScalingActivitiesType *)request {
+- (void)describePolicies:(AWSAutoScalingDescribePoliciesType *)request
+       completionHandler:(void (^)(AWSAutoScalingPoliciesType *response, NSError *error))completionHandler {
+    [[self describePolicies:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingPoliciesType *> * _Nonnull task) {
+        AWSAutoScalingPoliciesType *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingActivitiesType *> *)describeScalingActivities:(AWSAutoScalingDescribeScalingActivitiesType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -475,7 +901,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingActivitiesType class]];
 }
 
-- (AWSTask *)describeScalingProcessTypes:(AWSRequest *)request {
+- (void)describeScalingActivities:(AWSAutoScalingDescribeScalingActivitiesType *)request
+                completionHandler:(void (^)(AWSAutoScalingActivitiesType *response, NSError *error))completionHandler {
+    [[self describeScalingActivities:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingActivitiesType *> * _Nonnull task) {
+        AWSAutoScalingActivitiesType *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingProcessesType *> *)describeScalingProcessTypes:(AWSRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -484,7 +929,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingProcessesType class]];
 }
 
-- (AWSTask *)describeScheduledActions:(AWSAutoScalingDescribeScheduledActionsType *)request {
+- (void)describeScalingProcessTypes:(AWSRequest *)request
+                  completionHandler:(void (^)(AWSAutoScalingProcessesType *response, NSError *error))completionHandler {
+    [[self describeScalingProcessTypes:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingProcessesType *> * _Nonnull task) {
+        AWSAutoScalingProcessesType *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingScheduledActionsType *> *)describeScheduledActions:(AWSAutoScalingDescribeScheduledActionsType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -493,7 +957,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingScheduledActionsType class]];
 }
 
-- (AWSTask *)describeTags:(AWSAutoScalingDescribeTagsType *)request {
+- (void)describeScheduledActions:(AWSAutoScalingDescribeScheduledActionsType *)request
+               completionHandler:(void (^)(AWSAutoScalingScheduledActionsType *response, NSError *error))completionHandler {
+    [[self describeScheduledActions:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingScheduledActionsType *> * _Nonnull task) {
+        AWSAutoScalingScheduledActionsType *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingTagsType *> *)describeTags:(AWSAutoScalingDescribeTagsType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -502,7 +985,26 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingTagsType class]];
 }
 
-- (AWSTask *)describeTerminationPolicyTypes:(AWSRequest *)request {
+- (void)describeTags:(AWSAutoScalingDescribeTagsType *)request
+   completionHandler:(void (^)(AWSAutoScalingTagsType *response, NSError *error))completionHandler {
+    [[self describeTags:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingTagsType *> * _Nonnull task) {
+        AWSAutoScalingTagsType *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDescribeTerminationPolicyTypesAnswer *> *)describeTerminationPolicyTypes:(AWSRequest *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -511,13 +1013,51 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingDescribeTerminationPolicyTypesAnswer class]];
 }
 
-- (AWSTask *)detachInstances:(AWSAutoScalingDetachInstancesQuery *)request {
+- (void)describeTerminationPolicyTypes:(AWSRequest *)request
+                     completionHandler:(void (^)(AWSAutoScalingDescribeTerminationPolicyTypesAnswer *response, NSError *error))completionHandler {
+    [[self describeTerminationPolicyTypes:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDescribeTerminationPolicyTypesAnswer *> * _Nonnull task) {
+        AWSAutoScalingDescribeTerminationPolicyTypesAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingDetachInstancesAnswer *> *)detachInstances:(AWSAutoScalingDetachInstancesQuery *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
                   targetPrefix:@""
                  operationName:@"DetachInstances"
                    outputClass:[AWSAutoScalingDetachInstancesAnswer class]];
+}
+
+- (void)detachInstances:(AWSAutoScalingDetachInstancesQuery *)request
+      completionHandler:(void (^)(AWSAutoScalingDetachInstancesAnswer *response, NSError *error))completionHandler {
+    [[self detachInstances:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingDetachInstancesAnswer *> * _Nonnull task) {
+        AWSAutoScalingDetachInstancesAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)disableMetricsCollection:(AWSAutoScalingDisableMetricsCollectionQuery *)request {
@@ -529,6 +1069,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
+- (void)disableMetricsCollection:(AWSAutoScalingDisableMetricsCollectionQuery *)request
+               completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self disableMetricsCollection:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask *)enableMetricsCollection:(AWSAutoScalingEnableMetricsCollectionQuery *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -538,13 +1096,50 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
-- (AWSTask *)enterStandby:(AWSAutoScalingEnterStandbyQuery *)request {
+- (void)enableMetricsCollection:(AWSAutoScalingEnableMetricsCollectionQuery *)request
+              completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self enableMetricsCollection:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingEnterStandbyAnswer *> *)enterStandby:(AWSAutoScalingEnterStandbyQuery *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
                   targetPrefix:@""
                  operationName:@"EnterStandby"
                    outputClass:[AWSAutoScalingEnterStandbyAnswer class]];
+}
+
+- (void)enterStandby:(AWSAutoScalingEnterStandbyQuery *)request
+   completionHandler:(void (^)(AWSAutoScalingEnterStandbyAnswer *response, NSError *error))completionHandler {
+    [[self enterStandby:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingEnterStandbyAnswer *> * _Nonnull task) {
+        AWSAutoScalingEnterStandbyAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)executePolicy:(AWSAutoScalingExecutePolicyType *)request {
@@ -556,7 +1151,25 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
-- (AWSTask *)exitStandby:(AWSAutoScalingExitStandbyQuery *)request {
+- (void)executePolicy:(AWSAutoScalingExecutePolicyType *)request
+    completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self executePolicy:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingExitStandbyAnswer *> *)exitStandby:(AWSAutoScalingExitStandbyQuery *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
@@ -565,13 +1178,51 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:[AWSAutoScalingExitStandbyAnswer class]];
 }
 
-- (AWSTask *)putLifecycleHook:(AWSAutoScalingPutLifecycleHookType *)request {
+- (void)exitStandby:(AWSAutoScalingExitStandbyQuery *)request
+  completionHandler:(void (^)(AWSAutoScalingExitStandbyAnswer *response, NSError *error))completionHandler {
+    [[self exitStandby:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingExitStandbyAnswer *> * _Nonnull task) {
+        AWSAutoScalingExitStandbyAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingPutLifecycleHookAnswer *> *)putLifecycleHook:(AWSAutoScalingPutLifecycleHookType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
                   targetPrefix:@""
                  operationName:@"PutLifecycleHook"
                    outputClass:[AWSAutoScalingPutLifecycleHookAnswer class]];
+}
+
+- (void)putLifecycleHook:(AWSAutoScalingPutLifecycleHookType *)request
+       completionHandler:(void (^)(AWSAutoScalingPutLifecycleHookAnswer *response, NSError *error))completionHandler {
+    [[self putLifecycleHook:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingPutLifecycleHookAnswer *> * _Nonnull task) {
+        AWSAutoScalingPutLifecycleHookAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)putNotificationConfiguration:(AWSAutoScalingPutNotificationConfigurationType *)request {
@@ -583,13 +1234,50 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
-- (AWSTask *)putScalingPolicy:(AWSAutoScalingPutScalingPolicyType *)request {
+- (void)putNotificationConfiguration:(AWSAutoScalingPutNotificationConfigurationType *)request
+                   completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self putNotificationConfiguration:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingPolicyARNType *> *)putScalingPolicy:(AWSAutoScalingPutScalingPolicyType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
                   targetPrefix:@""
                  operationName:@"PutScalingPolicy"
                    outputClass:[AWSAutoScalingPolicyARNType class]];
+}
+
+- (void)putScalingPolicy:(AWSAutoScalingPutScalingPolicyType *)request
+       completionHandler:(void (^)(AWSAutoScalingPolicyARNType *response, NSError *error))completionHandler {
+    [[self putScalingPolicy:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingPolicyARNType *> * _Nonnull task) {
+        AWSAutoScalingPolicyARNType *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)putScheduledUpdateGroupAction:(AWSAutoScalingPutScheduledUpdateGroupActionType *)request {
@@ -601,13 +1289,50 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
-- (AWSTask *)recordLifecycleActionHeartbeat:(AWSAutoScalingRecordLifecycleActionHeartbeatType *)request {
+- (void)putScheduledUpdateGroupAction:(AWSAutoScalingPutScheduledUpdateGroupActionType *)request
+                    completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self putScheduledUpdateGroupAction:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingRecordLifecycleActionHeartbeatAnswer *> *)recordLifecycleActionHeartbeat:(AWSAutoScalingRecordLifecycleActionHeartbeatType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
                   targetPrefix:@""
                  operationName:@"RecordLifecycleActionHeartbeat"
                    outputClass:[AWSAutoScalingRecordLifecycleActionHeartbeatAnswer class]];
+}
+
+- (void)recordLifecycleActionHeartbeat:(AWSAutoScalingRecordLifecycleActionHeartbeatType *)request
+                     completionHandler:(void (^)(AWSAutoScalingRecordLifecycleActionHeartbeatAnswer *response, NSError *error))completionHandler {
+    [[self recordLifecycleActionHeartbeat:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingRecordLifecycleActionHeartbeatAnswer *> * _Nonnull task) {
+        AWSAutoScalingRecordLifecycleActionHeartbeatAnswer *result = task.result;
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)resumeProcesses:(AWSAutoScalingScalingProcessQuery *)request {
@@ -619,6 +1344,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
+- (void)resumeProcesses:(AWSAutoScalingScalingProcessQuery *)request
+      completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self resumeProcesses:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask *)setDesiredCapacity:(AWSAutoScalingSetDesiredCapacityType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -626,6 +1369,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                   targetPrefix:@""
                  operationName:@"SetDesiredCapacity"
                    outputClass:nil];
+}
+
+- (void)setDesiredCapacity:(AWSAutoScalingSetDesiredCapacityType *)request
+         completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self setDesiredCapacity:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
 }
 
 - (AWSTask *)setInstanceHealth:(AWSAutoScalingSetInstanceHealthQuery *)request {
@@ -637,6 +1398,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
+- (void)setInstanceHealth:(AWSAutoScalingSetInstanceHealthQuery *)request
+        completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self setInstanceHealth:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
 - (AWSTask *)suspendProcesses:(AWSAutoScalingScalingProcessQuery *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
@@ -646,13 +1425,50 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                    outputClass:nil];
 }
 
-- (AWSTask *)terminateInstanceInAutoScalingGroup:(AWSAutoScalingTerminateInstanceInAutoScalingGroupType *)request {
+- (void)suspendProcesses:(AWSAutoScalingScalingProcessQuery *)request
+       completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self suspendProcesses:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
+}
+
+- (AWSTask<AWSAutoScalingActivityType *> *)terminateInstanceInAutoScalingGroup:(AWSAutoScalingTerminateInstanceInAutoScalingGroupType *)request {
     return [self invokeRequest:request
                     HTTPMethod:AWSHTTPMethodPOST
                      URLString:@""
                   targetPrefix:@""
                  operationName:@"TerminateInstanceInAutoScalingGroup"
                    outputClass:[AWSAutoScalingActivityType class]];
+}
+
+- (void)terminateInstanceInAutoScalingGroup:(AWSAutoScalingTerminateInstanceInAutoScalingGroupType *)request
+                          completionHandler:(void (^)(AWSAutoScalingActivityType *response, NSError *error))completionHandler {
+    [[self terminateInstanceInAutoScalingGroup:request] continueWithBlock:^id _Nullable(AWSTask<AWSAutoScalingActivityType *> * _Nonnull task) {
+        AWSAutoScalingActivityType *result = task.result;
+        NSError *error = task.error;
+        
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+        
+        if (completionHandler) {
+            completionHandler(result, error);
+        }
+        
+        return nil;
+    }];
 }
 
 - (AWSTask *)updateAutoScalingGroup:(AWSAutoScalingUpdateAutoScalingGroupType *)request {
@@ -662,6 +1478,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                   targetPrefix:@""
                  operationName:@"UpdateAutoScalingGroup"
                    outputClass:nil];
+}
+
+- (void)updateAutoScalingGroup:(AWSAutoScalingUpdateAutoScalingGroupType *)request
+             completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self updateAutoScalingGroup:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+        
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+        
+        if (completionHandler) {
+            completionHandler(error);
+        }
+        
+        return nil;
+    }];
 }
 
 @end

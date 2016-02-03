@@ -1,6 +1,6 @@
-/*
- Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- */
+//
+// Copyright 2014-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+//
 
 #import "AWSCognitoService.h"
 #import <AWSCore/AWSCredentialsProvider.h>
@@ -15,6 +15,9 @@
 #import "AWSCognitoConflict_Internal.h"
 #import <AWSCore/AWSUICKeyChainStore.h>
 #import <AWSCore/AWSSynchronizedMutableDictionary.h>
+
+#import "FABKitProtocol.h"
+#import "Fabric+FABKits.h"
 
 NSString *const AWSCognitoDidStartSynchronizeNotification = @"com.amazon.cognito.AWSCognitoDidStartSynchronizeNotification";
 NSString *const AWSCognitoDidEndSynchronizeNotification = @"com.amazon.cognito.AWSCognitoDidEndSynchronizeNotification";
@@ -32,9 +35,7 @@ static AWSUICKeyChainStore *keychain = nil;
 
 static AWSCognitoSyncPlatform _pushPlatform;
 
-@interface AWSCognito()
-{
-}
+@interface AWSCognito() <FABKit>
 
 @property (nonatomic, strong) AWSCognitoSQLiteManager *sqliteManager;
 @property (nonatomic, strong) AWSCognitoSync *cognitoService;
@@ -43,9 +44,47 @@ static AWSCognitoSyncPlatform _pushPlatform;
 
 @end
 
+@interface AWSService()
+
++ (void)initializeIfNeededWithDefaultRegionType:(AWSRegionType)defaultRegionType
+                      cognitoIdentityRegionType:(AWSRegionType)cognitoIdentityRegionType
+                          cognitoIdentityPoolId:(NSString *)cognitoIdentityPoolId;
+
++ (AWSRegionType)regionTypeFromString:(NSString *)regionTypeString;
+
+@end
+
 @implementation AWSCognito
 
 static AWSSynchronizedMutableDictionary *_serviceClients = nil;
+
++ (NSString *)bundleIdentifier {
+    return @"com.amazonaws.sdk.ios.AWSCognito";
+}
+
++ (NSString *)kitDisplayVersion {
+    return AWSiOSSDKVersion;
+}
+
++ (void)initializeIfNeeded {
+    // Retrieves the configuration from info.plist.
+    Class fabricClass = NSClassFromString(@"Fabric");
+    if (fabricClass
+        && [fabricClass respondsToSelector:@selector(configurationDictionaryForKitClass:)]) {
+        NSDictionary *configurationDictionary = [fabricClass configurationDictionaryForKitClass:[self class]];
+        NSString *defaultRegionTypeString = configurationDictionary[@"AWSDefaultRegionType"];
+        AWSRegionType defaultRegionType = [self regionTypeFromString:defaultRegionTypeString];
+        NSString *cognitoIdentityRegionTypeString = configurationDictionary[@"AWSCognitoIdentityRegionType"];
+        AWSRegionType cognitoIdentityRegionType = [self regionTypeFromString:cognitoIdentityRegionTypeString];
+        NSString *cognitoIdentityPoolId = configurationDictionary[@"AWSCognitoIdentityPoolId"];
+
+        [AWSService initializeIfNeededWithDefaultRegionType:defaultRegionType
+                                  cognitoIdentityRegionType:cognitoIdentityRegionType
+                                      cognitoIdentityPoolId:cognitoIdentityPoolId];
+    } else {
+        AWSLogError(@"Fabric is not available.");
+    }
+}
 
 #pragma mark - Setups
 
@@ -284,7 +323,12 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 }
 
 -(AWSTask *)subscribeAll {
-    return [self subscribe:[self listDatasets]];
+    NSArray * datasets = [self listDatasets];
+    NSMutableArray * datasetNames = [NSMutableArray new];
+    for (AWSCognitoDatasetMetadata * dataset in datasets) {
+        [datasetNames addObject: dataset.name];
+    }
+    return [self subscribe:datasetNames];
 }
 
 -(AWSTask *)unsubscribe:(NSArray *) datasetNames {
@@ -296,7 +340,12 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 }
 
 -(AWSTask *)unsubscribeAll {
-    return [self unsubscribe:[self listDatasets]];
+    NSArray * datasets = [self listDatasets];
+    NSMutableArray * datasetNames = [NSMutableArray new];
+    for (AWSCognitoDatasetMetadata * dataset in datasets) {
+        [datasetNames addObject:dataset.name];
+    }
+    return [self unsubscribe:datasetNames];
 }
 
 + (AWSCognitoRecordConflictHandler) defaultConflictHandler {

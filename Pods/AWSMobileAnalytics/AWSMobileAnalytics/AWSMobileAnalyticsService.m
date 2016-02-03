@@ -1,39 +1,46 @@
-/*
- Copyright 2010-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- 
- Licensed under the Apache License, Version 2.0 (the "License").
- You may not use this file except in compliance with the License.
- A copy of the License is located at
- 
- http://aws.amazon.com/apache2.0
- 
- or in the "license" file accompanying this file. This file is distributed
- on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- express or implied. See the License for the specific language governing
- permissions and limitations under the License.
- */
+////
+// Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License").
+// You may not use this file except in compliance with the License.
+// A copy of the License is located at
+//
+// http://aws.amazon.com/apache2.0
+//
+// or in the "license" file accompanying this file. This file is distributed
+// on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+// express or implied. See the License for the specific language governing
+// permissions and limitations under the License.
+//
 
 #import "AWSMobileAnalytics.h"
 #import "AWSMobileAnalyticsDefaultContext.h"
 #import "AWSMobileAnalyticsInternalEventClient.h"
 #import "AWSMobileAnalyticsDefaultSessionClient.h"
 #import "AWSMobileAnalyticsDefaultOptions.h"
-#import "AWSMobileAnalyticsContext.h"
 #import "AWSMobileAnalyticsDefaultEventClient.h"
 #import "AWSMobileAnalyticsSessionClient.h"
-#import "AWSMobileAnalyticsRequestTimingInterceptor.h"
+#import "AWSMobileAnalyticsContext.h"
 #import "AWSMobileAnalyticsDefaultDeliveryClient.h"
 #import "AWSMobileAnalyticsConfiguration.h"
 #import "AWSClientContext.h"
 #import "AWSLogging.h"
 #import "AWSSynchronizedMutableDictionary.h"
+#import "AWSMobileAnalyticsContext.h"
+#import "AWSMobileAnalyticsERS.h"
+
+@interface AWSMobileAnalyticsERS()
+
+- (instancetype)initWithConfiguration:(AWSServiceConfiguration *)configuration;
+
+@end
 
 @interface AWSMobileAnalytics()
 
-@property (nonatomic, readonly) id<AWSMobileAnalyticsContext> mobileAnalyticsContext;
 @property (nonatomic, readonly) id<AWSMobileAnalyticsSessionClient> sessionClient;
 @property (nonatomic, readonly) id<AWSMobileAnalyticsDeliveryClient> deliveryClient;
 @property (nonatomic, strong) AWSMobileAnalyticsConfiguration *configuration;
+@property (nonatomic, readonly) id<AWSMobileAnalyticsContext> mobileAnalyticsContext;
 @property (nonatomic, strong) NSString *insightsPrivateKey;
 
 @end
@@ -160,6 +167,7 @@ static AWSSynchronizedMutableDictionary *_mobileAnalyticsForAppNamespace = nil;
                                                                   withClientConfiguration:configuration
                                                                               withSdkInfo:[AWSMobileAnalyticsSDKInfo sdkInfoFromBrazil]
                                                                 withConfigurationSettings:settings];
+        _mobileAnalyticsContext.ers = [[AWSMobileAnalyticsERS alloc] initWithConfiguration:configuration.serviceConfiguration];
 
 
         _deliveryClient = [AWSMobileAnalyticsDefaultDeliveryClient deliveryClientWithContext:_mobileAnalyticsContext
@@ -168,10 +176,6 @@ static AWSSynchronizedMutableDictionary *_mobileAnalyticsForAppNamespace = nil;
         _eventClient = [[AWSMobileAnalyticsDefaultEventClient alloc] initWithContext:_mobileAnalyticsContext
                                                                   withDeliveryClient:_deliveryClient
                                                                allowsEventCollection:options.allowEventCollection];
-
-        id<AWSMobileAnalyticsInterceptor> reqTimingInterceptor = [[AWSMobileAnalyticsRequestTimingInterceptor alloc] initWithConnectivity:[_mobileAnalyticsContext.system connectivity]
-                                                                                                                          withEventClient:(id<AWSMobileAnalyticsInternalEventClient>)_eventClient];
-        [_mobileAnalyticsContext.httpClient addInterceptor:reqTimingInterceptor];
 
         // Session Client
         _sessionClient = [[AWSMobileAnalyticsDefaultSessionClient alloc] initWithEventClient:(id<AWSMobileAnalyticsInternalEventClient>)_eventClient
@@ -184,7 +188,6 @@ static AWSSynchronizedMutableDictionary *_mobileAnalyticsForAppNamespace = nil;
         }
 
         [_sessionClient startSession];
-        [_mobileAnalyticsContext synchronize];
 
         AWSLogInfo(@"Mobile Analytics SDK(%@) Initialization successfully completed.", [_mobileAnalyticsContext sdkInfo].sdkVersion);
     }

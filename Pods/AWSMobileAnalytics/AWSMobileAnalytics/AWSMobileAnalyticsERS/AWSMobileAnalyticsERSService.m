@@ -1,17 +1,17 @@
-/*
- Copyright 2010-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
- Licensed under the Apache License, Version 2.0 (the "License").
- You may not use this file except in compliance with the License.
- A copy of the License is located at
-
- http://aws.amazon.com/apache2.0
-
- or in the "license" file accompanying this file. This file is distributed
- on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- express or implied. See the License for the specific language governing
- permissions and limitations under the License.
- */
+//
+// Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License").
+// You may not use this file except in compliance with the License.
+// A copy of the License is located at
+//
+// http://aws.amazon.com/apache2.0
+//
+// or in the "license" file accompanying this file. This file is distributed
+// on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+// express or implied. See the License for the specific language governing
+// permissions and limitations under the License.
+//
 
 #import "AWSMobileAnalyticsERS.h"
 
@@ -26,8 +26,6 @@
 #import "AWSURLRequestRetryHandler.h"
 #import "AWSSynchronizedMutableDictionary.h"
 #import "AWSMobileAnalyticsERSResources.h"
-
-NSString *const AWSERSDefinitionFileName = @"mobileanalytics-2014-06-30";
 
 @interface AWSMobileAnalyticsERSResponseSerializer : AWSJSONResponseSerializer
 
@@ -197,7 +195,9 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 + (instancetype)defaultMobileAnalyticsERS {
     if (![AWSServiceManager defaultServiceManager].defaultServiceConfiguration) {
-        return nil;
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:@"`defaultServiceConfiguration` is `nil`. You need to set it before using this method."
+                                     userInfo:nil];
     }
 
     static AWSMobileAnalyticsERS *_defaultMobileAnalyticsERS = nil;
@@ -308,6 +308,24 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
                   targetPrefix:@"AmazonMobileAnalytics"
                  operationName:@"PutEvents"
                    outputClass:nil];
+}
+
+- (void)putEvents:(AWSMobileAnalyticsERSPutEventsInput *)request
+completionHandler:(void (^)(NSError *error))completionHandler {
+    [[self putEvents:request] continueWithBlock:^id _Nullable(AWSTask * _Nonnull task) {
+        NSError *error = task.error;
+
+        if (task.exception) {
+            AWSLogError(@"Fatal exception: [%@]", task.exception);
+            kill(getpid(), SIGKILL);
+        }
+
+        if (completionHandler) {
+            completionHandler(error);
+        }
+
+        return nil;
+    }];
 }
 
 @end

@@ -1,38 +1,43 @@
 PODS:
-  - Alamofire (3.1.0)
-  - AWSAutoScaling (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSCloudWatch (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSCognito (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSCore (2.3.0)
-  - AWSDynamoDB (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSEC2 (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSElasticLoadBalancing (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSKinesis (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSLambda (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSMachineLearning (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSMobileAnalytics (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSS3 (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSSES (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSSimpleDB (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSSNS (2.3.0):
-    - AWSCore (= 2.3.0)
-  - AWSSQS (2.3.0):
-    - AWSCore (= 2.3.0)
-  - Firebase (2.4.2)
-  - SwiftyJSON (2.3.1)
+  - Alamofire (3.1.5)
+  - AWSAutoScaling (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSCloudWatch (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSCognito (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSCore (2.3.4)
+  - AWSDynamoDB (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSEC2 (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSElasticLoadBalancing (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSKinesis (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSLambda (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSMachineLearning (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSMobileAnalytics (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSS3 (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSSES (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSSimpleDB (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSSNS (2.3.4):
+    - AWSCore (= 2.3.4)
+  - AWSSQS (2.3.4):
+    - AWSCore (= 2.3.4)
+  - Fabric (1.6.4)
+  - Firebase (2.5.0)
+  - SwiftyJSON (2.3.2)
+  - TwitterCore (1.15.1):
+    - Fabric
+  - TwitterKit (1.15.1):
+    - TwitterCore (= 1.15.1)
 
 DEPENDENCIES:
   - Alamofire (~> 3.0)
@@ -52,8 +57,11 @@ DEPENDENCIES:
   - AWSSimpleDB
   - AWSSNS
   - AWSSQS
+  - Fabric
   - Firebase (>= 2.4.2)
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`)
+  - TwitterCore
+  - TwitterKit
 
 EXTERNAL SOURCES:
   SwiftyJSON:
@@ -61,28 +69,31 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SwiftyJSON:
-    :commit: 5f5d00dbdcd256600a250765d9f674964080ceee
+    :commit: 42bdb102d2624b143c07850ebdc1537d5b6579b6
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
 
 SPEC CHECKSUMS:
-  Alamofire: 415bd7f56197722978759078486689f7ef913dce
-  AWSAutoScaling: df8e90e5a9a5bd2724498b9d6858666784ee8624
-  AWSCloudWatch: c1a3eb78ff4f288129e286d602e91e8a2914dfa9
-  AWSCognito: 71454ddf2b631005292aa2cbbdcc6d079b1b65cb
-  AWSCore: dc200c885c9799f9f5d3ab9ec38a9c4b44d680f9
-  AWSDynamoDB: 015092431c25616fdc519186caa7a8802c053f42
-  AWSEC2: 9c29ffd73b9c58d6c6602640d617c67d2cd79095
-  AWSElasticLoadBalancing: c239907548fcdcd3faf3e54957c1c2542ccde026
-  AWSKinesis: cf1fd517a318d6f70b2b79816d77b3740480d494
-  AWSLambda: f161c8004b4d522fe8d6b30dcb292ec6e74ee4f1
-  AWSMachineLearning: 317732646d6058f2a1ca04407f16c5206ba65594
-  AWSMobileAnalytics: 5e6809e6339a228bd096fadfb8ccc5491b168b11
-  AWSS3: 0185482a8136da9c7542a767567ee18106b38bca
-  AWSSES: 48424b2a92cd35571fe91f2a7e80dfce6f46e60d
-  AWSSimpleDB: 798c9515722d8abc37bb44414a3dea38a75df0e8
-  AWSSNS: 44257e7fbb51d9dea04994b39ff01dda61822643
-  AWSSQS: 260ffd6da0d2ab255b903b377f2baa1e7390b3ba
-  Firebase: 5e898ed5012c81d28ca5fae1113c6b61a172bc6d
-  SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
+  Alamofire: 5f730ba29fd113b7ddd71c1e65d0c630acf5d7b0
+  AWSAutoScaling: 58757e3fae42c8ba72ca742863c7bf7db879352d
+  AWSCloudWatch: 3990aa0432b66662b10436676c3a514c4dc36ce7
+  AWSCognito: 8ea24f9261967a108131106585c832ab48f12540
+  AWSCore: 926eb781459b58d4319b0fa4f5f3bffb6b28b112
+  AWSDynamoDB: 9a823a84100dd2fb440b3d2e738489641822e4e1
+  AWSEC2: 8ec96ab79521215d281f65ad92a5484d50b9c870
+  AWSElasticLoadBalancing: 407db0d5c2965302ad6d099e158d22ecdd1f9827
+  AWSKinesis: d9bc7858c01a4ba7f201abf2d0129c0beaa921ea
+  AWSLambda: 6932d78bb67eb9b659ac30bb0631bad75d774430
+  AWSMachineLearning: 1ccb5fd051acae788bd861d31a7714c40f9a7f7f
+  AWSMobileAnalytics: f4fc6b1e36f6c2fe70ebedff989835433e4ca142
+  AWSS3: f49fde807d6cfc373f1bdb8150c9770d470ca2fd
+  AWSSES: 3c976fc58abfc92bc301b0af2d8f1164bf8ecf62
+  AWSSimpleDB: 4fe05ca1f857d7b7e9c03504f1140ff7c713ce5c
+  AWSSNS: f00c29631df2c3a37653f9f1d3d0f736daf95133
+  AWSSQS: 96d02b4c65dc518af539dff0e751e595d48ee904
+  Fabric: ed41fd62173c6bdea24ab02c9d7707161eabb750
+  Firebase: 744617c0733b45198f9486ebd5cac64ec2d10d79
+  SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
+  TwitterCore: 12983a7464e34afbbf18881347898a9db526ac71
+  TwitterKit: b5821570887ec2d77650fa232eaec175665dc443
 
 COCOAPODS: 0.39.0
