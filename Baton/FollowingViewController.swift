@@ -133,7 +133,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                     }
                     
                     if frontCamera == nil {
-                        frontCamera = true
+                        frontCamera = false
                     }
                     
                     if likeCount == nil {

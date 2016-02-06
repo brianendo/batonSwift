@@ -11,9 +11,12 @@ import Alamofire
 import SwiftyJSON
 import Firebase
 import AWSS3
+import KeychainSwift
+import JWTDecode
 
 class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    let keychain = KeychainSwift()
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -42,7 +45,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
                 
                 let json = JSON(value!)
-                print("JSON: \(json)")
+//                print("JSON: \(json)")
                 for (_,subJson):(String, JSON) in json {
                     //Do something you want
                     let content = subJson["content"].string
@@ -102,7 +105,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
                 
                 let json = JSON(value!)
-                print("JSON: \(json)")
+//                print("JSON: \(json)")
                 for (_,subJson):(String, JSON) in json {
                     //Do something you want
                     let content = subJson["content"].string
@@ -307,38 +310,187 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //        }
         let url = globalurl + "api/users/" + userid
         
-        Alamofire.request(.GET, url, parameters: nil)
-            .responseJSON { response in
-                var value = response.result.value
+        var token = keychain.get("JWT")
+        print(token)
+        
+        do {
+            
+            let jwt = try decode(token!)
+            print(jwt)
+            print(jwt.body)
+            print(jwt.expiresAt)
+            print(jwt.expired)
+            if jwt.expired == true {
+                var refresh_token = keychain.get("refresh_token")
                 
-                if value == nil {
-                    value = []
-                } else {
-                    let json = JSON(value!)
-                    print("JSON: \(json)")
-                    let firstname = json["firstname"].string
-                    let lastname = json["lastname"].string
-                    var username = json["username"].string
-                    let email = json["email"].string
-                    
-                    name = firstname! + " " + lastname!
-                    
-                    if username == nil {
-                        username = firstname! + lastname!
-                    } else {
-                        username = username!
-                    }
-                    
-                    myfirstname = firstname!
-                    mylastname = lastname!
-                    myUsername = username!
-                    myemail = email!
-                    
-                    self.tableView.reloadData()
-                    self.loadData()
-                    self.loadHotQuestionData()
+                if refresh_token == nil {
+                    refresh_token = ""
                 }
+                
+                let url = globalurl + "api/changetoken/"
+                let parameters = [
+                    "refresh_token": refresh_token! as String
+                ]
+                
+                Alamofire.request(.POST, url, parameters: parameters)
+                    .responseJSON { response in
+                        var value = response.result.value
+                        
+                        if value == nil {
+                            value = []
+                        } else {
+                            let json = JSON(value!)
+                            print("JSON: \(json)")
+                            print(json["token"].string)
+                            let newtoken = json["token"].string
+                            self.keychain.set(newtoken!, forKey: "JWT")
+                            token = newtoken
+                            let headers = [
+                                "Authorization": "\(token!)"
+                            ]
+                            
+                            let url = globalurl + "api/users/" + userid
+                            
+                            Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                                .responseJSON { response in
+                                    var value = response.result.value
+                                    
+                                    let statuscode = (response.response?.statusCode)!
+                                    print(statuscode)
+                                    
+                                    if value == nil {
+                                        value = []
+                                    } else {
+                                        let json = JSON(value!)
+                                        print("JSON: \(json)")
+                                        let firstname = json["firstname"].string
+                                        let lastname = json["lastname"].string
+                                        var username = json["username"].string
+                                        let email = json["email"].string
+                                        
+                                        name = firstname! + " " + lastname!
+                                        
+                                        if username == nil {
+                                            username = firstname! + lastname!
+                                        } else {
+                                            username = username!
+                                        }
+                                        
+                                        myfirstname = firstname!
+                                        mylastname = lastname!
+                                        myUsername = username!
+                                        
+                                        if email ==  nil {
+                                            myemail = ""
+                                        } else {
+                                            myemail = email!
+                                        }
+                                        
+                                        self.tableView.reloadData()
+                                        self.loadData()
+                                        self.loadHotQuestionData()
+                                    }
+                            }
+                        }
+                        
+                        
+                }
+            } else {
+                let headers = [
+                    "Authorization": "\(token!)"
+                ]
+                
+                let url = globalurl + "api/users/" + userid
+                
+                Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                    .responseJSON { response in
+                        var value = response.result.value
+                        
+                        let statuscode = response.response?.statusCode
+                        print(statuscode)
+                        
+                        if value == nil {
+                            value = []
+                        } else {
+                            let json = JSON(value!)
+                            print("JSON: \(json)")
+                            let firstname = json["firstname"].string
+                            let lastname = json["lastname"].string
+                            var username = json["username"].string
+                            let email = json["email"].string
+                            
+                            name = firstname! + " " + lastname!
+                            
+                            if username == nil {
+                                username = firstname! + lastname!
+                            } else {
+                                username = username!
+                            }
+                            
+                            myfirstname = firstname!
+                            mylastname = lastname!
+                            myUsername = username!
+                            
+                            if email ==  nil {
+                                myemail = ""
+                            } else {
+                                myemail = email!
+                            }
+                            
+                            self.tableView.reloadData()
+                            self.loadData()
+                            self.loadHotQuestionData()
+                        }
+                }
+            }
+        } catch {
+            print("Failed to decode JWT: \(error)")
         }
+        
+//        let headers = [
+//            "Authorization": "\(token!)"
+//        ]
+//        
+//        Alamofire.request(.GET, url, parameters: nil, headers: headers)
+//            .responseJSON { response in
+//                var value = response.result.value
+//                
+//                let statuscode = response.response?.statusCode
+//                print(statuscode)
+//                
+//                if value == nil {
+//                    value = []
+//                } else {
+//                    let json = JSON(value!)
+//                    print("JSON: \(json)")
+//                    let firstname = json["firstname"].string
+//                    let lastname = json["lastname"].string
+//                    var username = json["username"].string
+//                    let email = json["email"].string
+//                    
+//                    name = firstname! + " " + lastname!
+//                    
+//                    if username == nil {
+//                        username = firstname! + lastname!
+//                    } else {
+//                        username = username!
+//                    }
+//                    
+//                    myfirstname = firstname!
+//                    mylastname = lastname!
+//                    myUsername = username!
+//                    
+//                    if email ==  nil {
+//                        myemail = ""
+//                    } else {
+//                        myemail = email!
+//                    }
+//                    
+//                    self.tableView.reloadData()
+//                    self.loadData()
+//                    self.loadHotQuestionData()
+//                }
+//        }
     }
     
     func updateFollow() {
@@ -391,31 +543,39 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-        let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
-        if (isLoggedIn != 1) {
+//        let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+//        let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
+        let isLoggedIn = keychain.get("ISLOGGEDIN")
+        if (isLoggedIn != "1") {
             let login = UIStoryboard(name: "LogIn", bundle: nil)
             let loginVC = login.instantiateInitialViewController()
             self.presentViewController(loginVC!, animated: true, completion: nil)
         } else {
-            let id = prefs.valueForKey("ID") as? String
-            userid = id!
-            
-            self.tableView.dataSource = self
-            self.tableView.delegate = self
-            self.tableView.tableFooterView = UIView()
-            self.tableView.rowHeight = UITableViewAutomaticDimension
-            self.tableView.estimatedRowHeight = 80
-            self.tableView.scrollsToTop = true
-            
-            self.questionArray.removeAll(keepCapacity: true)
-            self.myQuestionArray.removeAll(keepCapacity: true)
-            self.updateFollow()
-            self.loadUserInfo()
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: "changeFeed", name: "submittedAnswer", object: nil)
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "askedQuestion", object: nil)
-            
-            self.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
+//            let id = prefs.valueForKey("ID") as? String
+//            print(id)
+            let id = keychain.get("ID")
+            if id == nil {
+                let login = UIStoryboard(name: "LogIn", bundle: nil)
+                let loginVC = login.instantiateInitialViewController()
+                self.presentViewController(loginVC!, animated: true, completion: nil)
+            } else {
+                userid = id!
+                self.tableView.dataSource = self
+                self.tableView.delegate = self
+                self.tableView.tableFooterView = UIView()
+                self.tableView.rowHeight = UITableViewAutomaticDimension
+                self.tableView.estimatedRowHeight = 80
+                self.tableView.scrollsToTop = true
+                
+                self.questionArray.removeAll(keepCapacity: true)
+                self.myQuestionArray.removeAll(keepCapacity: true)
+                self.updateFollow()
+                self.loadUserInfo()
+                NSNotificationCenter.defaultCenter().addObserver(self, selector: "changeFeed", name: "submittedAnswer", object: nil)
+                NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "askedQuestion", object: nil)
+                
+                self.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
+            }
         }
         
         

@@ -16,7 +16,7 @@ class ProfileTableViewCell: UITableViewCell {
     @IBOutlet weak var profileButton: UIButton!
     @IBOutlet weak var profileDescriptionLabel: UILabel!
     @IBOutlet weak var viewButton: UIButton!
-    
+    @IBOutlet weak var twitterButton: UIButton!
     
     override func awakeFromNib() {
         super.awakeFromNib()

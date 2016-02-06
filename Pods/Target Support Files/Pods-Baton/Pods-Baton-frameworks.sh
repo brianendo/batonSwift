@@ -102,6 +102,8 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "Pods-Baton/AWSSimpleDB.framework"
   install_framework "Pods-Baton/Alamofire.framework"
   install_framework "Pods-Baton/Firebase.framework"
+  install_framework "Pods-Baton/JWTDecode.framework"
+  install_framework "Pods-Baton/KeychainSwift.framework"
   install_framework "Pods-Baton/SwiftyJSON.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
@@ -123,5 +125,7 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "Pods-Baton/AWSSimpleDB.framework"
   install_framework "Pods-Baton/Alamofire.framework"
   install_framework "Pods-Baton/Firebase.framework"
+  install_framework "Pods-Baton/JWTDecode.framework"
+  install_framework "Pods-Baton/KeychainSwift.framework"
   install_framework "Pods-Baton/SwiftyJSON.framework"
 fi

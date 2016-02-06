@@ -12,9 +12,14 @@ import AVKit
 import AVFoundation
 import Alamofire
 import SwiftyJSON
+import KeychainSwift
+import JWTDecode
 
 class AnswersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    
+    let keychain = KeychainSwift()
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var relayButton: UIButton!
     @IBOutlet weak var bottomLayoutConstraint: NSLayoutConstraint!
@@ -190,7 +195,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                     
                     if frontCamera == nil {
-                        frontCamera = true
+                        frontCamera = false
                     }
                     
                     let createdAt = subJson["created_at"].string
@@ -520,16 +525,93 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         let deleteButton = UIAlertAction(title: "Delete relay", style: UIAlertActionStyle.Default) { (alert) -> Void in
             print("Video deleted")
             
-            let url = globalurl + "api/answers/" + answerId
-            Alamofire.request(.DELETE, url, parameters: nil)
-                .responseJSON { response in
-                    print(response.request)
-                    print(response.response)
-                    print(response.result)
-                    print(response.response?.statusCode)
+            var token = self.keychain.get("JWT")
+            print(token)
+            
+            do {
+                
+                let jwt = try decode(token!)
+                print(jwt)
+                print(jwt.body)
+                print(jwt.expiresAt)
+                print(jwt.expired)
+                if jwt.expired == true {
+                    var refresh_token = self.keychain.get("refresh_token")
+                    
+                    if refresh_token == nil {
+                        refresh_token = ""
+                    }
+                    
+                    let url = globalurl + "api/changetoken/"
+                    
+                    let parameters = [
+                        "refresh_token": refresh_token! as String
+                    ]
+                    
+                    Alamofire.request(.POST, url, parameters: parameters)
+                        .responseJSON { response in
+                            var value = response.result.value
+                            
+                            if value == nil {
+                                value = []
+                            } else {
+                                let json = JSON(value!)
+                                print("JSON: \(json)")
+                                print(json["token"].string)
+                                let newtoken = json["token"].string
+                                self.keychain.set(newtoken!, forKey: "JWT")
+                                token = newtoken
+                                
+                                let headers = [
+                                    "Authorization": "\(token!)"
+                                ]
+                                
+                                let url = globalurl + "api/answers/" + answerId + "/creator/" + userid
+                                Alamofire.request(.DELETE, url, parameters: nil, headers: headers)
+                                    .responseJSON { response in
+                                        print(response.request)
+                                        print(response.response)
+                                        print(response.result)
+                                        print(response.response?.statusCode)
+                                        self.answerArray.removeAtIndex(tag)
+                                        self.tableView.reloadData()
+                                }
+                                
+                            }
+                            
+                            
+                    }
+                } else {
+                    let headers = [
+                        "Authorization": "\(token!)"
+                    ]
+                    
+                    let url = globalurl + "api/answers/" + answerId + "/creator/" + userid
+                    Alamofire.request(.DELETE, url, parameters: nil, headers: headers)
+                        .responseJSON { response in
+                            print(response.request)
+                            print(response.response)
+                            print(response.result)
+                            print(response.response?.statusCode)
+                            self.answerArray.removeAtIndex(tag)
+                            self.tableView.reloadData()
+                    }
+                    
+                }
+            } catch {
+                print("Failed to decode JWT: \(error)")
             }
-            self.answerArray.removeAtIndex(tag)
-            self.tableView.reloadData()
+            
+//            let url = globalurl + "api/answers/" + answerId + "/creator/" + userid
+//            Alamofire.request(.DELETE, url, parameters: nil)
+//                .responseJSON { response in
+//                    print(response.request)
+//                    print(response.response)
+//                    print(response.result)
+//                    print(response.response?.statusCode)
+//            }
+//            self.answerArray.removeAtIndex(tag)
+//            self.tableView.reloadData()
         }
         let cancelButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alert) -> Void in
             print("Cancel Pressed", terminator: "")
@@ -923,16 +1005,91 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         let deleteButton = UIAlertAction(title: "Delete Post", style: UIAlertActionStyle.Default) { (alert) -> Void in
             print("Post deleted")
             
-            let url = globalurl + "api/questions/" + questionId
-            Alamofire.request(.DELETE, url, parameters: nil)
-                .responseJSON { response in
-                    print(response.request)
-                    print(response.response)
-                    print(response.result)
-                    print(response.response?.statusCode)
-                    NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                    self.navigationController?.popViewControllerAnimated(true)
+            var token = self.keychain.get("JWT")
+            print(token)
+            
+            do {
+                
+                let jwt = try decode(token!)
+                print(jwt)
+                print(jwt.body)
+                print(jwt.expiresAt)
+                print(jwt.expired)
+                if jwt.expired == true {
+                    var refresh_token = self.keychain.get("refresh_token")
+                    
+                    if refresh_token == nil {
+                        refresh_token = ""
+                    }
+                    
+                    let url = globalurl + "api/changetoken/"
+                    
+                    let parameters = [
+                        "refresh_token": refresh_token! as String
+                    ]
+                    
+                    Alamofire.request(.POST, url, parameters: parameters)
+                        .responseJSON { response in
+                            var value = response.result.value
+                            
+                            if value == nil {
+                                value = []
+                            } else {
+                                let json = JSON(value!)
+                                print("JSON: \(json)")
+                                print(json["token"].string)
+                                let newtoken = json["token"].string
+                                self.keychain.set(newtoken!, forKey: "JWT")
+                                token = newtoken
+                                
+                                let headers = [
+                                    "Authorization": "\(token!)"
+                                ]
+                                
+                                let url = globalurl + "api/questions/" + questionId + "/creator/" + userid
+                                Alamofire.request(.DELETE, url, parameters: nil, headers: headers)
+                                    .responseJSON { response in
+                                        print(response.request)
+                                        print(response.response)
+                                        print(response.result)
+                                        print(response.response?.statusCode)
+                                        NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                        self.navigationController?.popViewControllerAnimated(true)
+                                }
+                            }
+                            
+                            
+                    }
+                } else {
+                    let headers = [
+                        "Authorization": "\(token!)"
+                    ]
+                    
+                    let url = globalurl + "api/questions/" + questionId + "/creator/" + userid
+                    Alamofire.request(.DELETE, url, parameters: nil, headers: headers)
+                        .responseJSON { response in
+                            print(response.request)
+                            print(response.response)
+                            print(response.result)
+                            print(response.response?.statusCode)
+                            NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                            self.navigationController?.popViewControllerAnimated(true)
+                    }
+                }
+            } catch {
+                print("Failed to decode JWT: \(error)")
             }
+            
+//            let url = globalurl + "api/questions/" + questionId + "/creator/" + userid
+//            Alamofire.request(.DELETE, url, parameters: nil)
+//                .responseJSON { response in
+//                    print(response.request)
+//                    print(response.response)
+//                    print(response.result)
+//                    print(response.response?.statusCode)
+//                    NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+//                    self.navigationController?.popViewControllerAnimated(true)
+//            }
         }
         let cancelButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alert) -> Void in
             print("Cancel Pressed", terminator: "")

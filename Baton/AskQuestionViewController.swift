@@ -9,8 +9,12 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import KeychainSwift
+import JWTDecode
 
 class AskQuestionViewController: UIViewController, UITextViewDelegate {
+    
+    let keychain = KeychainSwift()
     
     @IBOutlet weak var contentTextView: UITextView!
     
@@ -142,7 +146,7 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
             contentTextView.text = placeholder
             contentTextView.textColor = UIColor.lightGrayColor()
             
-            self.charRemainingLabel.text = "200"
+            self.charRemainingLabel.text = "150"
             contentTextView.selectedTextRange = textView.textRangeFromPosition(textView.beginningOfDocument, toPosition: textView.beginningOfDocument)
             
             self.sendButton.enabled = false
@@ -160,18 +164,18 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
             
         }
         
-        // Limit character limit to 200
+        // Limit character limit to 150
         let newLength: Int = (contentTextView.text as NSString).length + (text as NSString).length - range.length
-        let remainingChar: Int = 200 - newLength
+        let remainingChar: Int = 150 - newLength
         
         if contentTextView.text == placeholder {
-            charRemainingLabel.text = "200"
+            charRemainingLabel.text = "150"
         } else {
             // Make label show remaining characters
             charRemainingLabel.text = "\(remainingChar)"
         }
-        // Once text > 100 chars, stop ability to change text
-        return (newLength == 200) ? false : true
+        // Once text > 150 chars, stop ability to change text
+        return (newLength == 150) ? false : true
         
         
         
@@ -199,26 +203,113 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
     
     @IBAction func sendButtonPressed(sender: UIButton) {
         let text = self.contentTextView.text
-        let url = globalurl + "api/questions"
-        let parameters = [
-            "content": text,
-            "creatorname": myUsername,
-            "creator": userid,
-            "answercount": 0,
-            "likes": 0
-        ]
-//        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], encoding: .JSON)
-        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject])
-            .responseJSON { response in
-                print(response.request)
-                print(response.response)
-                print(response.result)
-                print(response.response?.statusCode)
-                NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                self.navigationController?.popViewControllerAnimated(true)
+        
+//        let url = globalurl + "api/questions"
+//        let parameters = [
+//            "content": text,
+//            "creatorname": myUsername,
+//            "creator": userid,
+//            "answercount": 0,
+//            "likes": 0
+//        ]
+//        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject])
+//            .responseJSON { response in
+//                print(response.request)
+//                print(response.response)
+//                print(response.result)
+//                print(response.response?.statusCode)
+//                NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+//                self.navigationController?.popViewControllerAnimated(true)
+//        }
+        
+        var token = keychain.get("JWT")
+        print(token)
+        
+        do {
+            
+            let jwt = try decode(token!)
+            print(jwt)
+            print(jwt.body)
+            print(jwt.expiresAt)
+            print(jwt.expired)
+            if jwt.expired == true {
+                var refresh_token = keychain.get("refresh_token")
+                
+                if refresh_token == nil {
+                    refresh_token = ""
+                }
+                
+                let url = globalurl + "api/changetoken/"
+                
+                let parameters = [
+                    "refresh_token": refresh_token! as String
+                ]
+                
+                Alamofire.request(.POST, url, parameters: parameters)
+                    .responseJSON { response in
+                        var value = response.result.value
+                        
+                        if value == nil {
+                            value = []
+                        } else {
+                            let json = JSON(value!)
+                            print("JSON: \(json)")
+                            print(json["token"].string)
+                            let newtoken = json["token"].string
+                            self.keychain.set(newtoken!, forKey: "JWT")
+                            token = newtoken
+                            
+                            let headers = [
+                                "Authorization": "\(token!)"
+                            ]
+                            
+                            let url = globalurl + "api/questions"
+                            let parameters = [
+                                "content": text,
+                                "creatorname": myUsername,
+                                "creator": userid,
+                                "answercount": 0,
+                                "likes": 0
+                            ]
+                            Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                                .responseJSON { response in
+                                    print(response.request)
+                                    print(response.response)
+                                    print(response.result)
+                                    print(response.response?.statusCode)
+                                    NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                    self.navigationController?.popViewControllerAnimated(true)
+                            }
+                        }
+                        
+                        
+                }
+            } else {
+                let headers = [
+                    "Authorization": "\(token!)"
+                ]
+                
+                let url = globalurl + "api/questions"
+                let parameters = [
+                    "content": text,
+                    "creatorname": myUsername,
+                    "creator": userid,
+                    "answercount": 0,
+                    "likes": 0
+                ]
+                Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                    .responseJSON { response in
+                        print(response.request)
+                        print(response.response)
+                        print(response.result)
+                        print(response.response?.statusCode)
+                        NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                        self.navigationController?.popViewControllerAnimated(true)
+                }
+            }
+        } catch {
+            print("Failed to decode JWT: \(error)")
         }
-//        let newUrl = globalurl + "api/users/" + userid + "/updated-at/"
-//        Alamofire.request(.PUT, newUrl, parameters: nil, encoding: .JSON)
         
         
     }

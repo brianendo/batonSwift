@@ -94,6 +94,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>JWTDecode.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>KeychainSwift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-Baton.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -117,12 +127,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>12D38A8ABD2468AB36847EB5B7C6900C</key>
+		<key>12C71A8491B595A4CF3992124DB31C8C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2066729867C05010492FEFF16D138470</key>
+		<key>12D38A8ABD2468AB36847EB5B7C6900C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -133,6 +143,11 @@
 			<true/>
 		</dict>
 		<key>432ECC54282C84882B482CCB4CF227FC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4C698C648EE4D43C6B8BE0BE1FE91737</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -172,12 +187,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>BB33D84CAB81349FB6DA8A86D12CC538</key>
+		<key>BC279E1A4A79751E826180F63A851E07</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>BC279E1A4A79751E826180F63A851E07</key>
+		<key>BC2B1C0B77B0E372A1EB7953DD07906D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -193,6 +208,11 @@
 			<true/>
 		</dict>
 		<key>D1B3D231EED9AD3B2A77C4CE93023F11</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>DC6B1B1B818143821BE3858B13A81A61</key>
 		<dict>
 			<key>primary</key>
 			<true/>

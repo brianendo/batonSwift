@@ -15,6 +15,8 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var bottomLayoutConstraint: NSLayoutConstraint!
+    @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var signUpButton: UIButton!
     
     func registerForKeyboardNotifications ()-> Void   {
         
@@ -38,8 +40,33 @@ class SignUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.signUpButton.enabled = false
         // Do any additional setup after loading the view.
+        self.emailTextField.addTarget(self, action: "emailTextFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
+        self.passwordTextField.addTarget(self, action: "textFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
+    }
+    
+    func emailTextFieldDidChange(textField: UITextField) {
+        
+        let email = self.emailTextField.text!
+        let check = isValidEmail(email)
+        
+        if check {
+            self.signUpButton.enabled = true
+        } else {
+            self.signUpButton.enabled = false
+        }
+    }
+    
+    func textFieldDidChange(textField: UITextField) {
+        
+        if self.passwordTextField.text!.characters.count > 5  {
+            self.statusLabel.text = ""
+            self.signUpButton.enabled = true
+        } else {
+            self.statusLabel.text = "Password must be at least 6 characters"
+            self.signUpButton.enabled = false
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -172,7 +199,12 @@ class SignUpViewController: UIViewController {
 //                }
 //        })
 
-    
-    
+}
 
+func isValidEmail(testStr:String) -> Bool {
+    // println("validate calendar: \(testStr)")
+    let emailRegEx = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+    
+    let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+    return emailTest.evaluateWithObject(testStr)
 }

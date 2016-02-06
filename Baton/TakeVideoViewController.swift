@@ -15,9 +15,13 @@ import AssetsLibrary
 import AWSS3
 import Alamofire
 import SwiftyJSON
+import KeychainSwift
+import JWTDecode
 
 class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
 
+    let keychain = KeychainSwift()
+    
     @IBOutlet weak var cameraView: UIView!
     @IBOutlet var switchCameraButton: UIButton!
     @IBOutlet var flashLightButton: UIButton!
@@ -98,7 +102,6 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         try! captureSession.addInput(AVCaptureDeviceInput(device: frontCameraVideoCapture!))
         
         output = AVCaptureMovieFileOutput()
-        
         // Allow audio and movie to be longer than 10 seconds
         output!.movieFragmentInterval = kCMTimeInvalid
         
@@ -108,11 +111,9 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let connection = output!.connectionWithMediaType(AVMediaTypeVideo)
         connection.videoOrientation = AVCaptureVideoOrientation.Portrait
         captureSession.sessionPreset = AVCaptureSessionPreset640x480
-//        if connection!.supportsVideoMirroring {
-//            connection.automaticallyAdjustsVideoMirroring = false
-//            connection!.videoMirrored = true
-//        }
-
+        if connection!.supportsVideoMirroring {
+            connection.automaticallyAdjustsVideoMirroring = false
+        }
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         previewLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
         previewLayer!.connection?.videoOrientation = AVCaptureVideoOrientation.Portrait
@@ -286,6 +287,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
             print("Reach")
             self.player.pause()
             self.doneButton.hidden = true
+            self.switchCameraButton.hidden = false
             self.playerController.view.removeFromSuperview()
             self.playerController.removeFromParentViewController()
             self.recordButton.titleLabel!.text = ""
@@ -304,12 +306,14 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                 self.animateProgressView(20)
                 self.recordButton.setTitle("", forState: .Normal)
                 self.recordButton.setImage(UIImage(named: "StopButton"), forState: .Normal)
+                self.switchCameraButton.hidden = true
                 let formatter = NSDateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
                 let date = NSDate()
                 let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString
                 let outputPath = "\(documentPath)/\(formatter.stringFromDate(date)).mp4"
                 let outputURL = NSURL(fileURLWithPath: outputPath)
+                
                 output!.startRecordingToOutputFileURL(outputURL, recordingDelegate: self)
             }
             recordingInProgress = !recordingInProgress
@@ -328,7 +332,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
         let date = NSDate()
-        let key = "\(self.id)/\(formatter.stringFromDate(date)).mp4"
+        let key = "\(self.id)/\(userid)/\(formatter.stringFromDate(date)).mp4"
         
         uploadRequest1.bucket = S3BucketName
         uploadRequest1.key =  key
@@ -346,15 +350,15 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                 let cgImage = try! imgGenerator.copyCGImageAtTime(CMTimeMake(0,1), actualTime: nil)
                 var uiImage = UIImage(CGImage: cgImage)
                 
-                var flip = true
-                
-                if self.frontCamera {
-                    flip = true
-                } else {
-                    flip = false
-                }
-                
-                uiImage = uiImage.imageRotatedByDegrees(0, flip: flip)
+//                var flip = true
+//                
+//                if self.frontCamera {
+//                    flip = true
+//                } else {
+//                    flip = false
+//                }
+//                
+//                uiImage = uiImage.imageRotatedByDegrees(0, flip: flip)
                 
                 // Save video in S3 with the userID
                 let transferManager2 = AWSS3TransferManager.defaultS3TransferManager()
@@ -367,7 +371,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                 let formatter2 = NSDateFormatter()
                 formatter2.dateFormat = "yyyy-MM-dd-HH-mm-ss"
                 let date2 = NSDate()
-                let key2 = "\(self.id)/\(formatter2.stringFromDate(date2))"
+                let key2 = "\(self.id)/\(userid)/\(formatter2.stringFromDate(date2))"
                 
                 uploadRequest2.bucket = S3BucketName
                 uploadRequest2.key =  key2
@@ -379,19 +383,101 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                         print("Error: \(task.error)", terminator: "")
                     } else {
                         print("Upload successful", terminator: "")
-                        let url = globalurl + "api/answers"
+                        
                         
                         let amazonUrl = "https://s3-us-west-1.amazonaws.com/batonapp/"
                         
-                        let parameters = [
-                            "question_id": self.id,
-                            "creator": userid,
-                            "creatorname": myUsername,
-                            "video_url": amazonUrl + key,
-                            "frontCamera": self.frontCamera,
-                            "thumbnail_url": amazonUrl + key2
-                        ]
-                        Alamofire.request(.POST, url, parameters: parameters as? [String: AnyObject], encoding: .JSON)
+                        
+//                        let url = globalurl + "api/answers"
+//                        Alamofire.request(.POST, url, parameters: parameters as? [String: String], encoding: .JSON)
+                        
+                        var token = self.keychain.get("JWT")
+                        print(token)
+                        
+                        do {
+                            
+                            let jwt = try decode(token!)
+                            print(jwt)
+                            print(jwt.body)
+                            print(jwt.expiresAt)
+                            print(jwt.expired)
+                            if jwt.expired == true {
+                                var refresh_token = self.keychain.get("refresh_token")
+                                
+                                if refresh_token == nil {
+                                    refresh_token = ""
+                                }
+                                
+                                let url = globalurl + "api/changetoken/"
+                                
+                                let parameters = [
+                                    "refresh_token": refresh_token! as String
+                                ]
+                                
+                                Alamofire.request(.POST, url, parameters: parameters)
+                                    .responseJSON { response in
+                                        var value = response.result.value
+                                        
+                                        if value == nil {
+                                            value = []
+                                        } else {
+                                            let json = JSON(value!)
+                                            print("JSON: \(json)")
+                                            print(json["token"].string)
+                                            let newtoken = json["token"].string
+                                            self.keychain.set(newtoken!, forKey: "JWT")
+                                            token = newtoken
+                                            
+                                            let headers = [
+                                                "Authorization": "\(token!)"
+                                            ]
+                                            
+                                            let parameters = [
+                                                "question_id": self.id,
+                                                "creator": userid,
+                                                "creatorname": myUsername,
+                                                "video_url": amazonUrl + key,
+                                                "thumbnail_url": amazonUrl + key2
+                                            ]
+                                            
+                                            let url = globalurl + "api/answers"
+                                            Alamofire.request(.POST, url, parameters: parameters, headers: headers)
+                                                .responseJSON { response in
+                                                    print(response.request)
+                                                    print(response.response)
+                                                    print(response.result)
+                                                    print(response.response?.statusCode)
+                                            }
+                                        }
+                                        
+                                        
+                                }
+                            } else {
+                                let headers = [
+                                    "Authorization": "\(token!)"
+                                ]
+                                
+                                let parameters = [
+                                    "question_id": self.id,
+                                    "creator": userid,
+                                    "creatorname": myUsername,
+                                    "video_url": amazonUrl + key,
+                                    "thumbnail_url": amazonUrl + key2
+                                ]
+                                
+                                let url = globalurl + "api/answers"
+                                Alamofire.request(.POST, url, parameters: parameters, headers: headers)
+                                    .responseJSON { response in
+                                        print(response.request)
+                                        print(response.response)
+                                        print(response.result)
+                                        print(response.response?.statusCode)
+                                }
+                            }
+                        } catch {
+                            print("Failed to decode JWT: \(error)")
+                        }
+
                     }
                     return nil
                 }
@@ -416,6 +502,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     
     func captureOutput(captureOutput: AVCaptureFileOutput!, didStartRecordingToOutputFileAtURL fileURL: NSURL!, fromConnections connections: [AnyObject]!) {
         print("Started")
+        
     }
     
     func cropVideo(outputFileURL: NSURL) {
@@ -436,11 +523,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         instruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(20, 30))
         
         let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
-        var transform1:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, -(clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height)/2)
-        //        transform1 = CGAffineTransformMakeScale(-1.0, 1.0)
-//        let transform3 = CGAffineTransformScale(transform1, -1, 1)
+        let transform1:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, -(clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height)/2)
         let transform2 = CGAffineTransformRotate(transform1, CGFloat(M_PI_2))
-        
         
         let finalTransform = transform2
         transformer.setTransform(finalTransform, atTime: kCMTimeZero)
@@ -453,7 +537,58 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
         let date = NSDate()
         let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString
-        let outputPath = "\(documentPath)/\(formatter.stringFromDate(date)).mp4"
+        let outputPath = "\(documentPath)/\(formatter.stringFromDate(date))\(userid).mp4"
+        let outputURL = NSURL(fileURLWithPath: outputPath)
+        
+        let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetMediumQuality)!
+        exporter.videoComposition = videoComposition
+        exporter.outputURL = outputURL
+        exporter.outputFileType = AVFileTypeMPEG4
+        
+        exporter.exportAsynchronouslyWithCompletionHandler({ () -> Void in
+            dispatch_async(dispatch_get_main_queue(), {
+                if self.frontCamera {
+                    self.flipVideo(exporter.outputURL!)
+                } else {
+                    self.handleExportCompletion(exporter)
+                }
+            })
+        })
+    }
+    
+    // Used to flip video horizontally if using the Front Facing Camera
+    func flipVideo(outputFileURL: NSURL) {
+        let videoAsset: AVAsset = AVAsset(URL: outputFileURL) as AVAsset
+        
+        let clipVideoTrack = videoAsset.tracksWithMediaType(AVMediaTypeVideo).first! as AVAssetTrack
+        
+        let composition = AVMutableComposition()
+        composition.addMutableTrackWithMediaType(AVMediaTypeVideo, preferredTrackID: CMPersistentTrackID())
+        
+        let videoComposition = AVMutableVideoComposition()
+        
+        videoComposition.renderSize = CGSizeMake(clipVideoTrack.naturalSize.height, clipVideoTrack.naturalSize.height)
+        videoComposition.frameDuration = CMTimeMake(1, 30)
+        
+        let instruction = AVMutableVideoCompositionInstruction()
+        instruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(20, 30))
+        
+        let transformer2 = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
+        let transform1:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, -(clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height)/2)
+        let transform3 = CGAffineTransformScale(transform1, -1, 1)
+        
+        let finalTransform2 = transform3
+        transformer2.setTransform(finalTransform2, atTime: kCMTimeZero)
+        
+        instruction.layerInstructions = [transformer2]
+        videoComposition.instructions = [instruction]
+        
+        
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+        let date = NSDate()
+        let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString
+        let outputPath = "\(documentPath)/\(formatter.stringFromDate(date))\(userid)f.mp4"
         let outputURL = NSURL(fileURLWithPath: outputPath)
         
         let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetMediumQuality)!
@@ -484,7 +619,6 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
 //            library.writeVideoAtPathToSavedPhotosAlbum(session.outputURL, completionBlock: completionBlock)
         }
         videoUrl = session.outputURL
-//        getThumbnail(videoUrl!)
         player = AVPlayer(URL: session.outputURL!)
         playerController = AVPlayerViewController()
         playerController.player = player
@@ -492,9 +626,9 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         playerController.view.frame = CGRectMake(self.previewLayer!.frame.origin.x, self.previewLayer!.frame.origin.x, self.previewLayer!.frame.size.width, self.previewLayer!.frame.size.height)
         
         // Mirrors video
-        if frontCamera {
-            playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
-        }
+//        if frontCamera {
+//            playerController.view.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+//        }
         
         playerController.showsPlaybackControls = false
         playerController.videoGravity = AVLayerVideoGravityResizeAspectFill

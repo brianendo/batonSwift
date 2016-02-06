@@ -56,6 +56,11 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                     views = 0
                 }
                 
+                if frontCamera == nil {
+                    frontCamera = false
+                }
+                
+                
                 if video_url != nil {
                     print(video_url)
                     self.videoUrl = video_url!
@@ -66,9 +71,7 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 }
 
                 
-                if frontCamera == nil {
-                    frontCamera = true
-                }
+                
                 
                 let createdAt = subJson["created_at"].string
                 let dateFor: NSDateFormatter = NSDateFormatter()

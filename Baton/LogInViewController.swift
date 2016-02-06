@@ -11,10 +11,12 @@ import Alamofire
 import Firebase
 import SwiftyJSON
 import TwitterKit
-
+import JWTDecode
+import KeychainSwift
 
 class LogInViewController: UIViewController {
-
+    
+    let keychain = KeychainSwift()
     
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
@@ -23,7 +25,7 @@ class LogInViewController: UIViewController {
     func registerForKeyboardNotifications ()-> Void   {
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardDidShowNotification, object: nil)
-        
+
     }
     
     
@@ -45,49 +47,6 @@ class LogInViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         self.emailTextField.becomeFirstResponder()
-        
-        let logInButton = TWTRLogInButton { (session, error) in
-            if let unwrappedSession = session {
-                let alert = UIAlertController(title: "Logged In",
-                    message: "User \(unwrappedSession.userName) has logged in",
-                    preferredStyle: UIAlertControllerStyle.Alert
-                )
-                print(unwrappedSession)
-                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-                self.presentViewController(alert, animated: true, completion: nil)
-            } else {
-                NSLog("Login error: %@", error!.localizedDescription);
-            }
-        }
-        
-        // Log In Code
-        Twitter.sharedInstance().logInWithCompletion { session, error in
-            if (session != nil) {
-                print("signed in as \(session!.userName)")
-                print(session?.userID)
-                let userID = (session?.userID)!
-                let client = TWTRAPIClient()
-                client.loadUserWithID(userID) { (user, error) -> Void in
-                    // handle the response or error
-                    print(user?.name)
-                    print(user?.profileImageURL)
-                    print(user?.profileImageLargeURL)
-                    let url = "http://twitter.com/" + session!.userName
-                    print(url)
-                }
-//                if let userID = Twitter.sharedInstance().sessionStore.session()!.userID {
-//                    let client = TWTRAPIClient(userID: userID)
-//                    print(userID)
-//                    // make requests with client
-//                }
-            } else {
-                print("error: \(error!.localizedDescription)")
-            }
-        }
-        
-        // TODO: Change where the log in button is positioned in your view
-        logInButton.center = self.view.center
-        self.view.addSubview(logInButton)
 
     }
 
@@ -148,7 +107,7 @@ class LogInViewController: UIViewController {
                 "password": password
             ]
             
-            let url = globalurl + "login"
+            let url = globalurl + "api/login"
             
             Alamofire.request(.POST, url, parameters: parameters)
                 .responseJSON { response in
@@ -162,11 +121,47 @@ class LogInViewController: UIViewController {
                         print("Log In successful")
                         let json = JSON(response.result.value!)
                         print("JSON: \(json)")
-                        let id = json["_id"].string
-                        var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-                        prefs.setObject(id, forKey: "ID")
-                        prefs.setInteger(1, forKey: "ISLOGGEDIN")
-                        prefs.synchronize()
+                        print(json["data"]["_id"].string)
+                        print(json["token"].string)
+                        let id = json["data"]["_id"].string
+                        let token = json["token"].string
+                        var refresh_token = json["data"]["token"].string
+                        do {
+                            let jwt = try decode(token!)
+                            print(jwt)
+                            print(jwt.body)
+                            print(jwt.expiresAt)
+                        } catch {
+                            print("Failed to decode JWT: \(error)")
+                        }
+                        
+                        if refresh_token == nil {
+                            // Generate refresh token if user does not have one
+                            let url = globalurl + "api/users/" + id! + "/addtoken/"
+                            
+                            Alamofire.request(.PUT, url, parameters: nil)
+                                .responseJSON { response in
+                                    let result = response.result.value
+                                    print(result)
+                                    if result == nil {
+                                        
+                                    } else {
+                                        let json = JSON(response.result.value!)
+                                        print("JSON: \(json)")
+                                        let token = json["token"].string
+                                        self.keychain.set(token!, forKey: "refresh_token")
+                                    }
+                            }
+                        } else {
+                            self.keychain.set(refresh_token!, forKey: "refresh_token")
+                        }
+                        self.keychain.set(id!, forKey: "ID")
+                        self.keychain.set("1", forKey: "ISLOGGEDIN")
+                        self.keychain.set(token!, forKey: "JWT")
+//                        var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+//                        prefs.setObject(id, forKey: "ID")
+//                        prefs.setInteger(1, forKey: "ISLOGGEDIN")
+//                        prefs.synchronize()
                         
                         let storyboard = UIStoryboard(name: "Main", bundle: nil)
                         let mainVC = storyboard.instantiateInitialViewController()

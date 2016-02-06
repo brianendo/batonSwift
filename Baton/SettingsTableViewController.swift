@@ -9,9 +9,12 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import KeychainSwift
 
 class SettingsTableViewController: UITableViewController {
 
+    let keychain = KeychainSwift()
+    
     override func viewDidAppear(animated: Bool) {
         self.tabBarController!.tabBar.hidden = false
     }
@@ -92,8 +95,9 @@ class SettingsTableViewController: UITableViewController {
         }
         
         if indexPath.section == 2 {
-            let appDomain = NSBundle.mainBundle().bundleIdentifier
-            NSUserDefaults.standardUserDefaults().removePersistentDomainForName(appDomain!)
+//            let appDomain = NSBundle.mainBundle().bundleIdentifier
+//            NSUserDefaults.standardUserDefaults().removePersistentDomainForName(appDomain!)
+            keychain.clear()
             
             let login = UIStoryboard(name: "LogIn", bundle: nil)
             let loginVC = login.instantiateInitialViewController()

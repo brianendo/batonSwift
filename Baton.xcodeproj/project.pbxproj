@@ -16,6 +16,8 @@
 		8E146C601C5C334800468A1C /* FollowingSearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C5F1C5C334800468A1C /* FollowingSearchTableViewCell.swift */; };
 		8E146C621C5FE42D00468A1C /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C611C5FE42D00468A1C /* ChangePasswordViewController.swift */; };
 		8E146C641C5FEFC800468A1C /* ChangeEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C631C5FEFC800468A1C /* ChangeEmailViewController.swift */; };
+		8E146C671C62901000468A1C /* TwitterSignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */; };
+		8E146C691C62B5EE00468A1C /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C681C62B5EE00468A1C /* WebViewController.swift */; };
 		8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */; };
 		8E9D70E31C164A280073CA17 /* AnsweredQuestionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */; };
 		8E9D70E51C164A920073CA17 /* AnsweredQuestionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */; };
@@ -26,7 +28,6 @@
 		8EA960F61C110A3F00371C77 /* AnswersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F51C110A3F00371C77 /* AnswersViewController.swift */; };
 		8EA960F81C11185A00371C77 /* AnswerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */; };
 		8EA960FA1C12277900371C77 /* QuestionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */; };
-		8EB945631C4825AE00FA01E2 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB945621C4825AD00FA01E2 /* ProgressView.swift */; };
 		8EB945651C487B1100FA01E2 /* UserListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB945641C487B1000FA01E2 /* UserListViewController.swift */; };
 		8EB945671C487BA000FA01E2 /* UserTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB945661C487BA000FA01E2 /* UserTableViewCell.swift */; };
 		8EB945691C49820100FA01E2 /* NotificationLikedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB945681C49820000FA01E2 /* NotificationLikedTableViewCell.swift */; };
@@ -86,6 +87,8 @@
 		8E146C5F1C5C334800468A1C /* FollowingSearchTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowingSearchTableViewCell.swift; sourceTree = "<group>"; };
 		8E146C611C5FE42D00468A1C /* ChangePasswordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewController.swift; sourceTree = "<group>"; };
 		8E146C631C5FEFC800468A1C /* ChangeEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeEmailViewController.swift; sourceTree = "<group>"; };
+		8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterSignupViewController.swift; sourceTree = "<group>"; };
+		8E146C681C62B5EE00468A1C /* WebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TakeVideoViewController.swift; sourceTree = "<group>"; };
 		8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionViewController.swift; sourceTree = "<group>"; };
 		8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionTableViewCell.swift; sourceTree = "<group>"; };
@@ -96,7 +99,6 @@
 		8EA960F51C110A3F00371C77 /* AnswersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnswersViewController.swift; sourceTree = "<group>"; };
 		8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnswerTableViewCell.swift; sourceTree = "<group>"; };
 		8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionTitleTableViewCell.swift; sourceTree = "<group>"; };
-		8EB945621C4825AD00FA01E2 /* ProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		8EB945641C487B1000FA01E2 /* UserListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserListViewController.swift; sourceTree = "<group>"; };
 		8EB945661C487BA000FA01E2 /* UserTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserTableViewCell.swift; sourceTree = "<group>"; };
 		8EB945681C49820000FA01E2 /* NotificationLikedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationLikedTableViewCell.swift; sourceTree = "<group>"; };
@@ -171,6 +173,53 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8E146C6A1C656D2B00468A1C /* Following */ = {
+			isa = PBXGroup;
+			children = (
+				8EB9456A1C498B3000FA01E2 /* FollowingViewController.swift */,
+				8EB9456C1C498B5200FA01E2 /* FollowingAnswerTableViewCell.swift */,
+				8EB9456E1C49B00D00FA01E2 /* FollowingQuestionTableViewCell.swift */,
+				8E146C5F1C5C334800468A1C /* FollowingSearchTableViewCell.swift */,
+				8EB945721C53151100FA01E2 /* FollowHeaderTableViewCell.swift */,
+			);
+			name = Following;
+			sourceTree = "<group>";
+		};
+		8E146C6B1C656D4900468A1C /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				8EE04B231BE973500040D5A5 /* ProfileViewController.swift */,
+				8EE04B251BE974630040D5A5 /* ProfileQuestionTableViewCell.swift */,
+				8E9D70E81C1776860073CA17 /* ProfileRelayTableViewCell.swift */,
+				8EE04B2D1BEABBD10040D5A5 /* ProfileTableViewCell.swift */,
+				8E9D70EC1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift */,
+				8EB945701C4DA46900FA01E2 /* ProfileLikedTableViewCell.swift */,
+				8EB945741C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift */,
+				8E146C681C62B5EE00468A1C /* WebViewController.swift */,
+				8EB945641C487B1000FA01E2 /* UserListViewController.swift */,
+				8EB945661C487BA000FA01E2 /* UserTableViewCell.swift */,
+				8E146C5B1C5BE89200468A1C /* SettingsTableViewController.swift */,
+				8E146C5D1C5BEE8500468A1C /* EditProfileTableViewController.swift */,
+				8E146C611C5FE42D00468A1C /* ChangePasswordViewController.swift */,
+				8E146C631C5FEFC800468A1C /* ChangeEmailViewController.swift */,
+			);
+			name = Profile;
+			sourceTree = "<group>";
+		};
+		8E146C6C1C65756600468A1C /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				8EE04B1D1BE95D7B0040D5A5 /* NotificationViewController.swift */,
+				8EE04B1F1BE95F140040D5A5 /* NotificationAnswerTableViewCell.swift */,
+				8EB945681C49820000FA01E2 /* NotificationLikedTableViewCell.swift */,
+				8E146C591C5AC1FE00468A1C /* NotificationFollowTableViewCell.swift */,
+				8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */,
+				8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */,
+				8E9D70E61C167A960073CA17 /* MyQuestionTitleTableViewCell.swift */,
+			);
+			name = Notification;
+			sourceTree = "<group>";
+		};
 		8EE04AC11BE299890040D5A5 = {
 			isa = PBXGroup;
 			children = (
@@ -205,33 +254,10 @@
 				8EA960F51C110A3F00371C77 /* AnswersViewController.swift */,
 				8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */,
 				8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */,
-				8EE04B1D1BE95D7B0040D5A5 /* NotificationViewController.swift */,
-				8EE04B1F1BE95F140040D5A5 /* NotificationAnswerTableViewCell.swift */,
-				8EB945681C49820000FA01E2 /* NotificationLikedTableViewCell.swift */,
-				8E146C591C5AC1FE00468A1C /* NotificationFollowTableViewCell.swift */,
-				8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */,
-				8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */,
-				8E9D70E61C167A960073CA17 /* MyQuestionTitleTableViewCell.swift */,
-				8EE04B231BE973500040D5A5 /* ProfileViewController.swift */,
-				8EE04B251BE974630040D5A5 /* ProfileQuestionTableViewCell.swift */,
-				8E9D70E81C1776860073CA17 /* ProfileRelayTableViewCell.swift */,
-				8EE04B2D1BEABBD10040D5A5 /* ProfileTableViewCell.swift */,
-				8E9D70EC1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift */,
-				8EB945701C4DA46900FA01E2 /* ProfileLikedTableViewCell.swift */,
-				8EB945741C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift */,
-				8EB945641C487B1000FA01E2 /* UserListViewController.swift */,
-				8EB945661C487BA000FA01E2 /* UserTableViewCell.swift */,
-				8EB9456A1C498B3000FA01E2 /* FollowingViewController.swift */,
-				8EB9456C1C498B5200FA01E2 /* FollowingAnswerTableViewCell.swift */,
-				8EB9456E1C49B00D00FA01E2 /* FollowingQuestionTableViewCell.swift */,
-				8E146C5F1C5C334800468A1C /* FollowingSearchTableViewCell.swift */,
-				8EB945721C53151100FA01E2 /* FollowHeaderTableViewCell.swift */,
+				8E146C6C1C65756600468A1C /* Notification */,
+				8E146C6B1C656D4900468A1C /* Profile */,
+				8E146C6A1C656D2B00468A1C /* Following */,
 				8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */,
-				8E146C5B1C5BE89200468A1C /* SettingsTableViewController.swift */,
-				8E146C5D1C5BEE8500468A1C /* EditProfileTableViewController.swift */,
-				8E146C611C5FE42D00468A1C /* ChangePasswordViewController.swift */,
-				8E146C631C5FEFC800468A1C /* ChangeEmailViewController.swift */,
-				8EB945621C4825AD00FA01E2 /* ProgressView.swift */,
 				8EE04AD11BE2998A0040D5A5 /* Main.storyboard */,
 				8EE04B1A1BE861FE0040D5A5 /* Models */,
 				8EE04AD41BE2998A0040D5A5 /* Assets.xcassets */,
@@ -264,6 +290,7 @@
 			children = (
 				8EE04B021BE2A6E20040D5A5 /* LogIn.storyboard */,
 				8EE04B041BE2A77D0040D5A5 /* StartViewController.swift */,
+				8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */,
 				8EE04B061BE2A7A30040D5A5 /* LogInViewController.swift */,
 				8EE04B081BE2A7AD0040D5A5 /* SignUpViewController.swift */,
 				8E146C551C5AA55500468A1C /* NameViewController.swift */,
@@ -522,6 +549,8 @@
 				8EE04B261BE974630040D5A5 /* ProfileQuestionTableViewCell.swift in Sources */,
 				8EB945671C487BA000FA01E2 /* UserTableViewCell.swift in Sources */,
 				8E9D70EB1C17A0300073CA17 /* TabBarViewController.swift in Sources */,
+				8E146C691C62B5EE00468A1C /* WebViewController.swift in Sources */,
+				8E146C671C62901000468A1C /* TwitterSignupViewController.swift in Sources */,
 				8E146C621C5FE42D00468A1C /* ChangePasswordViewController.swift in Sources */,
 				8E146C561C5AA55500468A1C /* NameViewController.swift in Sources */,
 				8E9D70E91C1776860073CA17 /* ProfileRelayTableViewCell.swift in Sources */,
@@ -536,7 +565,6 @@
 				8EB945651C487B1100FA01E2 /* UserListViewController.swift in Sources */,
 				8EE04B2E1BEABBD10040D5A5 /* ProfileTableViewCell.swift in Sources */,
 				8E9D70E31C164A280073CA17 /* AnsweredQuestionViewController.swift in Sources */,
-				8EB945631C4825AE00FA01E2 /* ProgressView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

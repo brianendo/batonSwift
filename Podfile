@@ -25,6 +25,8 @@ target 'Baton' do
     	pod 'Fabric'
     	pod 'TwitterKit'
     	pod 'TwitterCore'
+        pod 'KeychainSwift', '~> 3.0'
+        pod 'JWTDecode', '~> 1.0'
 end
 
 target 'BatonTests' do

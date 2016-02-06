@@ -33,6 +33,8 @@ PODS:
     - AWSCore (= 2.3.4)
   - Fabric (1.6.4)
   - Firebase (2.5.0)
+  - JWTDecode (1.0.0)
+  - KeychainSwift (3.0.11)
   - SwiftyJSON (2.3.2)
   - TwitterCore (1.15.1):
     - Fabric
@@ -59,6 +61,8 @@ DEPENDENCIES:
   - AWSSQS
   - Fabric
   - Firebase (>= 2.4.2)
+  - JWTDecode (~> 1.0)
+  - KeychainSwift (~> 3.0)
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`)
   - TwitterCore
   - TwitterKit
@@ -92,6 +96,8 @@ SPEC CHECKSUMS:
   AWSSQS: 96d02b4c65dc518af539dff0e751e595d48ee904
   Fabric: ed41fd62173c6bdea24ab02c9d7707161eabb750
   Firebase: 744617c0733b45198f9486ebd5cac64ec2d10d79
+  JWTDecode: d172edcb1607cc15aed85d58eceedcbb675a4534
+  KeychainSwift: 0a4214c910423543a42b0f30f25987d46178b6a5
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
   TwitterCore: 12983a7464e34afbbf18881347898a9db526ac71
   TwitterKit: b5821570887ec2d77650fa232eaec175665dc443

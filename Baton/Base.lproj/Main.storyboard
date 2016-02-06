@@ -11,7 +11,7 @@
         <!--Feed View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="FeedViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="FeedViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -24,7 +24,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="QuestionCell" rowHeight="71" id="yvX-JU-t40" customClass="QuestionTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="QuestionCell" rowHeight="71" id="yvX-JU-t40" customClass="QuestionTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="92" width="600" height="71"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yvX-JU-t40" id="qL7-yB-6C7">
@@ -151,7 +151,7 @@
         <!--Ask Question View Controller-->
         <scene sceneID="Ra7-rn-Wm9">
             <objects>
-                <viewController id="ven-gB-br4" customClass="AskQuestionViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="ven-gB-br4" customClass="AskQuestionViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="fQm-Ye-mJK"/>
                         <viewControllerLayoutGuide type="bottom" id="ier-Ci-YGF"/>
@@ -163,8 +163,8 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="b2r-Nq-2ph">
                                 <rect key="frame" x="0.0" y="550" width="600" height="50"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="200" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SNa-D8-joI">
-                                        <rect key="frame" x="17" y="14" width="28.5" height="20"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="150" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SNa-D8-joI">
+                                        <rect key="frame" x="16.5" y="14" width="29" height="20"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
@@ -230,7 +230,7 @@
         <!--Answers View Controller-->
         <scene sceneID="1JN-6g-ZgL">
             <objects>
-                <viewController id="I70-UL-z0M" customClass="AnswersViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="I70-UL-z0M" customClass="AnswersViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ll9-2P-d4V"/>
                         <viewControllerLayoutGuide type="bottom" id="vsk-Ca-Vsx"/>
@@ -256,7 +256,7 @@
                                 <rect key="frame" x="0.0" y="64" width="600" height="1150"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AnswerCell" rowHeight="698" id="opw-yY-dhv" customClass="AnswerTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AnswerCell" rowHeight="698" id="opw-yY-dhv" customClass="AnswerTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="600" height="698"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="opw-yY-dhv" id="Wmk-Qj-RFy">
@@ -509,7 +509,7 @@
                                             <outlet property="viewCountLabel" destination="qd6-Mz-vjW" id="GYM-iD-gFd"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TitleCell" rowHeight="97" id="qwt-e7-UR2" customClass="QuestionTitleTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="TitleCell" rowHeight="97" id="qwt-e7-UR2" customClass="QuestionTitleTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="726" width="600" height="97"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qwt-e7-UR2" id="YRL-DV-G3j">
@@ -665,7 +665,7 @@
         <!--Take Video View Controller-->
         <scene sceneID="86q-oE-yAf">
             <objects>
-                <viewController id="16q-ww-Dfp" customClass="TakeVideoViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="16q-ww-Dfp" customClass="TakeVideoViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="SXo-L1-trD"/>
                         <viewControllerLayoutGuide type="bottom" id="CCJ-H6-CJK"/>
@@ -814,7 +814,7 @@
         <!--Profile View Controller-->
         <scene sceneID="zfo-My-yKM">
             <objects>
-                <viewController id="6Yc-Eu-rQ8" customClass="ProfileViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="6Yc-Eu-rQ8" customClass="ProfileViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y1t-Kr-m9Z"/>
                         <viewControllerLayoutGuide type="bottom" id="Pmu-Ya-HKi"/>
@@ -827,7 +827,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="2800"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="profileQuestionCell" rowHeight="65" id="kZk-Yv-9Jb" customClass="ProfileQuestionTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="profileQuestionCell" rowHeight="65" id="kZk-Yv-9Jb" customClass="ProfileQuestionTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="92" width="600" height="65"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="kZk-Yv-9Jb" id="pNa-UJ-BG7">
@@ -907,11 +907,11 @@
                                             <outlet property="timeAgoLabel" destination="tUi-oI-Kga" id="dFy-hl-Y1b"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="profileCell" rowHeight="119" id="I0Y-SC-Oom" customClass="ProfileTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="157" width="600" height="119"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="profileCell" rowHeight="145" id="I0Y-SC-Oom" customClass="ProfileTableViewCell" customModule="Baton" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="157" width="600" height="145"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="I0Y-SC-Oom" id="Bai-oJ-jI6">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="118.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="144.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="l4a-Mg-oBS">
@@ -923,7 +923,7 @@
                                                     </constraints>
                                                 </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="tul-vc-bcJ">
-                                                    <rect key="frame" x="420.5" y="13" width="146.5" height="40"/>
+                                                    <rect key="frame" x="420" y="13" width="146.5" height="40"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="30" id="AwM-SE-4DN"/>
                                                         <constraint firstAttribute="width" constant="72" id="OXY-V4-uIO"/>
@@ -943,8 +943,8 @@
                                                         <segue destination="Mee-Ql-FtW" kind="show" identifier="segueFromProfileToFollowing" id="Zh2-oF-BCR"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XM5-BI-OzU">
-                                                    <rect key="frame" x="265.5" y="57" width="266.5" height="20"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XM5-BI-OzU">
+                                                    <rect key="frame" x="117" y="57" width="449.5" height="20"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="qI4-ZI-8Vh"/>
                                                     </constraints>
@@ -954,7 +954,7 @@
                                                     </state>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Label" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uCk-PC-Lh5">
-                                                    <rect key="frame" x="41" y="85" width="536" height="25.5"/>
+                                                    <rect key="frame" x="41" y="85" width="536" height="29.5"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="Hfa-0o-vvn"/>
                                                     </constraints>
@@ -981,8 +981,8 @@
                                                 <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="6Le-f3-0E6">
                                                     <rect key="frame" x="117" y="13" width="146.5" height="40"/>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="S25-fw-lEd">
-                                                    <rect key="frame" x="270" y="13" width="144" height="40"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="S25-fw-lEd">
+                                                    <rect key="frame" x="268.5" y="13" width="146.5" height="40"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="40" id="GqH-9C-o5w"/>
                                                         <constraint firstAttribute="width" constant="200" id="LNb-k9-v81"/>
@@ -1005,6 +1005,20 @@
                                                         <segue destination="Mee-Ql-FtW" kind="show" identifier="segueFromProfileToFollowers" id="Dpp-YJ-CSh"/>
                                                     </connections>
                                                 </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RHi-p9-Ff1">
+                                                    <rect key="frame" x="285" y="114" width="30" height="22"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="RHi-p9-Ff1" secondAttribute="height" multiplier="42:31" id="8ZA-ER-VPu"/>
+                                                        <constraint firstAttribute="width" secondItem="RHi-p9-Ff1" secondAttribute="height" multiplier="92:31" id="EXr-ah-rEf"/>
+                                                        <constraint firstAttribute="width" constant="30" id="zpd-sX-7TY"/>
+                                                    </constraints>
+                                                    <state key="normal" image="TwitterLogIn"/>
+                                                    <variation key="default">
+                                                        <mask key="constraints">
+                                                            <exclude reference="EXr-ah-rEf"/>
+                                                        </mask>
+                                                    </variation>
+                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" red="0.90196078431372551" green="0.90196078431372551" blue="0.92941176470588238" alpha="1" colorSpace="calibratedRGB"/>
                                             <constraints>
@@ -1017,6 +1031,7 @@
                                                 <constraint firstAttribute="bottomMargin" secondItem="DzH-Vz-eN5" secondAttribute="bottom" constant="21.5" id="6N6-WC-elE"/>
                                                 <constraint firstItem="S25-fw-lEd" firstAttribute="top" secondItem="Bai-oJ-jI6" secondAttribute="topMargin" constant="5" id="8wx-Eg-sCm"/>
                                                 <constraint firstItem="6Le-f3-0E6" firstAttribute="leading" secondItem="DzH-Vz-eN5" secondAttribute="trailing" constant="25" id="B6A-IO-ckt"/>
+                                                <constraint firstItem="RHi-p9-Ff1" firstAttribute="centerX" secondItem="Bai-oJ-jI6" secondAttribute="centerX" id="BuT-HP-bSL"/>
                                                 <constraint firstItem="XM5-BI-OzU" firstAttribute="top" secondItem="S25-fw-lEd" secondAttribute="bottom" id="BxQ-8N-fuV"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="DzH-Vz-eN5" secondAttribute="bottom" priority="750" constant="22" id="EIz-iD-tIV"/>
                                                 <constraint firstItem="tul-vc-bcJ" firstAttribute="width" secondItem="S25-fw-lEd" secondAttribute="width" id="EwU-mI-i2b"/>
@@ -1051,7 +1066,9 @@
                                                 <constraint firstItem="S25-fw-lEd" firstAttribute="baseline" secondItem="tul-vc-bcJ" secondAttribute="baseline" id="nef-b2-0wv"/>
                                                 <constraint firstItem="6Le-f3-0E6" firstAttribute="width" secondItem="S25-fw-lEd" secondAttribute="width" id="pz3-bF-Ku5"/>
                                                 <constraint firstItem="S25-fw-lEd" firstAttribute="leading" secondItem="Bai-oJ-jI6" secondAttribute="leadingMargin" constant="54" id="qEh-uI-daq"/>
+                                                <constraint firstItem="RHi-p9-Ff1" firstAttribute="top" secondItem="uCk-PC-Lh5" secondAttribute="bottom" id="qxz-L8-Gio"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="uCk-PC-Lh5" secondAttribute="bottom" id="rn7-Bp-VXO"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="RHi-p9-Ff1" secondAttribute="bottom" id="skW-aD-hdc"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="tul-vc-bcJ" secondAttribute="trailing" constant="50" id="u5r-kQ-D0x"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="uCk-PC-Lh5" secondAttribute="trailing" constant="15" id="vv1-na-gYz"/>
                                                 <constraint firstItem="XM5-BI-OzU" firstAttribute="leading" secondItem="S25-fw-lEd" secondAttribute="leading" id="xVl-Uw-tC7"/>
@@ -1064,6 +1081,13 @@
                                                     <exclude reference="EIz-iD-tIV"/>
                                                     <exclude reference="Gr4-kq-pcH"/>
                                                     <exclude reference="hsg-zh-I46"/>
+                                                    <exclude reference="rn7-Bp-VXO"/>
+                                                    <exclude reference="0Eu-8M-etd"/>
+                                                    <exclude reference="BxQ-8N-fuV"/>
+                                                    <exclude reference="ZWd-jO-Nch"/>
+                                                    <exclude reference="h9z-Sb-GH3"/>
+                                                    <exclude reference="ktC-gw-rIk"/>
+                                                    <exclude reference="xVl-Uw-tC7"/>
                                                     <exclude reference="55T-Vi-I9Q"/>
                                                     <exclude reference="Pvj-Qf-0sL"/>
                                                     <exclude reference="WEU-1Z-DTc"/>
@@ -1072,12 +1096,6 @@
                                                     <exclude reference="fEO-ki-TwU"/>
                                                     <exclude reference="nef-b2-0wv"/>
                                                     <exclude reference="qEh-uI-daq"/>
-                                                    <exclude reference="0Eu-8M-etd"/>
-                                                    <exclude reference="BxQ-8N-fuV"/>
-                                                    <exclude reference="ZWd-jO-Nch"/>
-                                                    <exclude reference="h9z-Sb-GH3"/>
-                                                    <exclude reference="ktC-gw-rIk"/>
-                                                    <exclude reference="xVl-Uw-tC7"/>
                                                     <exclude reference="0SH-8E-9iQ"/>
                                                     <exclude reference="2Sb-y2-EXb"/>
                                                     <exclude reference="EwU-mI-i2b"/>
@@ -1096,11 +1114,12 @@
                                             <outlet property="profileButton" destination="XM5-BI-OzU" id="X4x-E9-gzg"/>
                                             <outlet property="profileDescriptionLabel" destination="uCk-PC-Lh5" id="wo2-x7-tU4"/>
                                             <outlet property="profileImageView" destination="l4a-Mg-oBS" id="rhq-8k-ZQ8"/>
+                                            <outlet property="twitterButton" destination="RHi-p9-Ff1" id="kcs-aV-uud"/>
                                             <outlet property="viewButton" destination="6Le-f3-0E6" id="vn8-ts-CG4"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SegmentedCell" rowHeight="46" id="gUf-dD-glK" customClass="ProfileSegmentedTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="276" width="600" height="46"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SegmentedCell" rowHeight="46" id="gUf-dD-glK" customClass="ProfileSegmentedTableViewCell" customModule="Baton" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="302" width="600" height="46"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gUf-dD-glK" id="GCU-Xx-vM2">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="45.5"/>
@@ -1126,8 +1145,8 @@
                                             <outlet property="profileSegmentedControl" destination="pIJ-hB-WpK" id="HG9-bI-a5Q"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="profileLikedCell" rowHeight="765" id="YNL-Vh-1xL" customClass="ProfileLikedTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="322" width="600" height="765"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="profileLikedCell" rowHeight="765" id="YNL-Vh-1xL" customClass="ProfileLikedTableViewCell" customModule="Baton" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="348" width="600" height="765"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="YNL-Vh-1xL" id="T1H-Ua-BBE">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="764.5"/>
@@ -1343,8 +1362,8 @@
                                             <outlet property="viewCountLabel" destination="4tY-91-wKt" id="VDV-Yr-zK4"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="RelayCell" rowHeight="710" id="SnC-Uy-bqH" customClass="ProfileRelayTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="1087" width="600" height="710"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="RelayCell" rowHeight="710" id="SnC-Uy-bqH" customClass="ProfileRelayTableViewCell" customModule="Baton" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="1113" width="600" height="710"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="SnC-Uy-bqH" id="p1I-Kj-7FW">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="709.5"/>
@@ -1521,8 +1540,8 @@
                                             <outlet property="viewCountLabel" destination="jwH-7W-QIN" id="eCG-tE-5Hd"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="profileButtonsCell" rowHeight="50" id="6r8-H8-kgX" customClass="ProfileButtonsTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="1797" width="600" height="50"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="profileButtonsCell" rowHeight="50" id="6r8-H8-kgX" customClass="ProfileButtonsTableViewCell" customModule="Baton" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="1823" width="600" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="6r8-H8-kgX" id="TK4-1P-ygc">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="49.5"/>
@@ -1594,6 +1613,7 @@
                         <outlet property="tableView" destination="spy-gh-52e" id="66D-eP-CTC"/>
                         <segue destination="I70-UL-z0M" kind="show" identifier="segueFromProfileToAnswers" id="5vZ-Jx-KBu"/>
                         <segue destination="kle-f0-Yt1" kind="presentation" identifier="segueToEditProfile" id="Cip-bi-fdA"/>
+                        <segue destination="KXN-dn-5iz" kind="presentation" identifier="segueToWebView" id="NUx-qK-Zu2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tbT-Jp-cXV" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1603,7 +1623,7 @@
         <!--Settings Table View Controller-->
         <scene sceneID="hcC-fW-hiv">
             <objects>
-                <tableViewController id="cfW-Je-o5x" customClass="SettingsTableViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="cfW-Je-o5x" customClass="SettingsTableViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="5dl-eC-dfp">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1730,7 +1750,7 @@
         <!--Change Password View Controller-->
         <scene sceneID="nuw-69-LwB">
             <objects>
-                <viewController id="L6k-er-wJf" customClass="ChangePasswordViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="L6k-er-wJf" customClass="ChangePasswordViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="NdC-DB-hIp"/>
                         <viewControllerLayoutGuide type="bottom" id="J71-J6-9N5"/>
@@ -1740,9 +1760,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Current password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="CC5-SU-iTY">
-                                <rect key="frame" x="20" y="113.5" width="560" height="30"/>
+                                <rect key="frame" x="20" y="113" width="560" height="30"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Change password:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K3I-xX-kM7">
                                 <rect key="frame" x="20" y="78" width="154" height="20.5"/>
@@ -1783,13 +1803,20 @@
                                 </constraints>
                             </view>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="New password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="eLX-1p-0Da">
-                                <rect key="frame" x="20" y="158.5" width="560" height="30"/>
+                                <rect key="frame" x="20" y="158" width="560" height="30"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hpH-E6-h6z">
+                                <rect key="frame" x="20" y="201" width="560" height="0.0"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="hpH-E6-h6z" firstAttribute="leading" secondItem="eLX-1p-0Da" secondAttribute="leading" id="0Q8-da-lBx"/>
                             <constraint firstItem="K3I-xX-kM7" firstAttribute="top" secondItem="NdC-DB-hIp" secondAttribute="bottom" constant="14" id="8av-KJ-D9W"/>
                             <constraint firstItem="CC5-SU-iTY" firstAttribute="top" secondItem="K3I-xX-kM7" secondAttribute="bottom" constant="15" id="928-NH-53c"/>
                             <constraint firstAttribute="leadingMargin" secondItem="eLX-1p-0Da" secondAttribute="leading" id="B5I-II-NJo"/>
@@ -1797,7 +1824,9 @@
                             <constraint firstItem="J71-J6-9N5" firstAttribute="top" secondItem="6X6-Cg-k8h" secondAttribute="bottom" id="HXu-7M-Y76"/>
                             <constraint firstAttribute="trailingMargin" secondItem="CC5-SU-iTY" secondAttribute="trailing" id="QCJ-Qu-xTS"/>
                             <constraint firstAttribute="leadingMargin" secondItem="K3I-xX-kM7" secondAttribute="leading" id="Tct-eG-Tkn"/>
+                            <constraint firstItem="hpH-E6-h6z" firstAttribute="trailing" secondItem="eLX-1p-0Da" secondAttribute="trailing" id="UvR-DY-Qag"/>
                             <constraint firstItem="eLX-1p-0Da" firstAttribute="top" secondItem="CC5-SU-iTY" secondAttribute="bottom" constant="15" id="YVk-gl-a2X"/>
+                            <constraint firstItem="hpH-E6-h6z" firstAttribute="top" secondItem="eLX-1p-0Da" secondAttribute="bottom" constant="12.5" id="Zx3-yp-J8e"/>
                             <constraint firstAttribute="trailingMargin" secondItem="6X6-Cg-k8h" secondAttribute="trailing" constant="-20" id="aoj-WJ-ygS"/>
                             <constraint firstAttribute="leadingMargin" secondItem="CC5-SU-iTY" secondAttribute="leading" id="dgB-aB-IrB"/>
                             <constraint firstItem="6X6-Cg-k8h" firstAttribute="leading" secondItem="oQT-Fe-AZJ" secondAttribute="leadingMargin" constant="-20" id="xQP-PE-HQF"/>
@@ -1815,6 +1844,7 @@
                         <outlet property="bottomLayoutConstraint" destination="HXu-7M-Y76" id="CLe-Qn-ViF"/>
                         <outlet property="currentPasswordTextField" destination="CC5-SU-iTY" id="FNb-7q-Jzc"/>
                         <outlet property="newPasswordTextField" destination="eLX-1p-0Da" id="zNu-RM-iV0"/>
+                        <outlet property="statusLabel" destination="hpH-E6-h6z" id="nue-XK-BqE"/>
                         <outlet property="submitButton" destination="bh6-mD-jKc" id="K0j-Dp-qhw"/>
                     </connections>
                 </viewController>
@@ -1825,7 +1855,7 @@
         <!--Edit Profile Table View Controller-->
         <scene sceneID="LTH-iZ-vPm">
             <objects>
-                <tableViewController id="yl2-Lc-aYq" customClass="EditProfileTableViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="yl2-Lc-aYq" customClass="EditProfileTableViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="Kqr-xo-c1e">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1856,7 +1886,7 @@
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Jvg-KS-znZ">
                                                     <rect key="frame" x="96" y="12" width="496" height="20"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -1884,7 +1914,7 @@
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ylm-Js-a5R">
                                                     <rect key="frame" x="98.5" y="12" width="493.5" height="20"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" spellCheckingType="no"/>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -1912,7 +1942,7 @@
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="BzI-1J-cob">
                                                     <rect key="frame" x="96" y="8" width="487" height="30"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" spellCheckingType="no"/>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -1924,12 +1954,40 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="ggH-nG-zJZ">
+                                        <rect key="frame" x="0.0" y="240" width="600" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ggH-nG-zJZ" id="L17-g9-Z33">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="username" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="1Mp-EK-AbB">
+                                                    <rect key="frame" x="100.5" y="11.5" width="491.5" height="21"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
+                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                                </textField>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="twitter.com/" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="clg-mV-y8B">
+                                                    <rect key="frame" x="8" y="11.5" width="86.5" height="20.5"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="clg-mV-y8B" firstAttribute="centerY" secondItem="L17-g9-Z33" secondAttribute="centerY" id="YVh-hi-yzq"/>
+                                                <constraint firstItem="1Mp-EK-AbB" firstAttribute="centerY" secondItem="L17-g9-Z33" secondAttribute="centerY" id="fxv-2C-Loo"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="1Mp-EK-AbB" secondAttribute="trailing" id="j0b-Td-FFi"/>
+                                                <constraint firstItem="1Mp-EK-AbB" firstAttribute="leading" secondItem="clg-mV-y8B" secondAttribute="trailing" constant="6" id="wIF-QM-OLY"/>
+                                                <constraint firstAttribute="leadingMargin" secondItem="clg-mV-y8B" secondAttribute="leading" id="zYn-xS-n1Y"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="BIO" id="qJ1-wT-3EQ">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="114" id="1FY-0v-5jy">
-                                        <rect key="frame" x="0.0" y="290" width="600" height="114"/>
+                                        <rect key="frame" x="0.0" y="334" width="600" height="114"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1FY-0v-5jy" id="EHM-8E-th4">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="113.5"/>
@@ -1981,6 +2039,7 @@
                         <outlet property="firstNameTextField" destination="ylm-Js-a5R" id="O8s-35-YuK"/>
                         <outlet property="lastNameTextField" destination="BzI-1J-cob" id="LcA-JM-Czs"/>
                         <outlet property="saveBarButton" destination="4ED-BF-Zvm" id="1gA-fN-TpE"/>
+                        <outlet property="twitterTextField" destination="1Mp-EK-AbB" id="6yk-9Q-fsD"/>
                         <outlet property="usernameStatusLabel" destination="GlS-oU-KQv" id="cPc-Ic-hvT"/>
                         <outlet property="usernameTextField" destination="Jvg-KS-znZ" id="sfX-Zf-cch"/>
                     </connections>
@@ -1992,10 +2051,52 @@
             </objects>
             <point key="canvasLocation" x="2171" y="-4182"/>
         </scene>
+        <!--Web View Controller-->
+        <scene sceneID="jtd-oY-RH2">
+            <objects>
+                <viewController id="Z0s-Vw-s0L" customClass="WebViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="lrL-kz-Xbo"/>
+                        <viewControllerLayoutGuide type="bottom" id="c43-Gn-jt4"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="heB-bu-qmC">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QIj-hx-Na0">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="QIj-hx-Na0" firstAttribute="top" secondItem="lrL-kz-Xbo" secondAttribute="bottom" id="Klb-1I-R00"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="QIj-hx-Na0" secondAttribute="trailing" constant="-20" id="YDb-5l-Tx8"/>
+                            <constraint firstItem="c43-Gn-jt4" firstAttribute="top" secondItem="QIj-hx-Na0" secondAttribute="bottom" id="p2E-Am-KYX"/>
+                            <constraint firstItem="QIj-hx-Na0" firstAttribute="leading" secondItem="heB-bu-qmC" secondAttribute="leadingMargin" constant="-20" id="zrT-1T-vUL"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="rha-hG-1yw">
+                        <barButtonItem key="leftBarButtonItem" title="X" id="4Sg-7C-cbC">
+                            <connections>
+                                <action selector="exitButtonPressed:" destination="Z0s-Vw-s0L" id="exH-qd-Y6r"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="600" height="600"/>
+                    <connections>
+                        <outlet property="webView" destination="QIj-hx-Na0" id="SYG-LO-Fx1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SFs-aa-fuH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3626" y="-3642"/>
+        </scene>
         <!--User List View Controller-->
         <scene sceneID="hXi-Hy-Qsl">
             <objects>
-                <viewController id="Mee-Ql-FtW" customClass="UserListViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Mee-Ql-FtW" customClass="UserListViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="2ip-qc-Q3s"/>
                         <viewControllerLayoutGuide type="bottom" id="FG9-Nx-4Co"/>
@@ -2008,7 +2109,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="2751"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="userCell" rowHeight="57" id="P1V-q3-T8C" customClass="UserTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="userCell" rowHeight="57" id="P1V-q3-T8C" customClass="UserTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="92" width="600" height="57"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="P1V-q3-T8C" id="hVk-D2-acW">
@@ -2074,7 +2175,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GYP-2h-SnW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2714" y="-1937"/>
+            <point key="canvasLocation" x="2912" y="-1657"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="bnI-Ir-G1W">
@@ -2101,7 +2202,7 @@
         <!--Tab Bar View Controller-->
         <scene sceneID="Ldk-tZ-mtW">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="RWb-2q-v82" customClass="TabBarViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="RWb-2q-v82" customClass="TabBarViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="55g-rL-Vqw">
                         <autoresizingMask key="autoresizingMask"/>
@@ -2121,7 +2222,7 @@
         <!--Notification View Controller-->
         <scene sceneID="mmS-YW-7X2">
             <objects>
-                <viewController id="oWR-80-DIq" customClass="NotificationViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="oWR-80-DIq" customClass="NotificationViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="asi-zX-s3C"/>
                         <viewControllerLayoutGuide type="bottom" id="z5V-vF-LUJ"/>
@@ -2134,7 +2235,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationAnswerCell" rowHeight="74" id="Jp9-tW-tY9" customClass="NotificationAnswerTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationAnswerCell" rowHeight="74" id="Jp9-tW-tY9" customClass="NotificationAnswerTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="92" width="600" height="74"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Jp9-tW-tY9" id="pro-a9-OY5">
@@ -2191,7 +2292,7 @@
                                             <outlet property="profileImageView" destination="aqX-p8-ex3" id="23w-dy-K9X"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationLikedCell" id="jan-rH-ADo" customClass="NotificationLikedTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationLikedCell" id="jan-rH-ADo" customClass="NotificationLikedTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="166" width="600" height="74"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jan-rH-ADo" id="Ftw-eF-189">
@@ -2245,7 +2346,7 @@
                                             <outlet property="thumbnailImageView" destination="1i6-HQ-G74" id="vFn-hb-uvG"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationFollowCell" id="mTH-xT-nng" customClass="NotificationFollowTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationFollowCell" id="mTH-xT-nng" customClass="NotificationFollowTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="240" width="600" height="74"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="mTH-xT-nng" id="QFJ-Kc-ckC">
@@ -2332,7 +2433,7 @@
         <!--Following View Controller-->
         <scene sceneID="aut-jE-muW">
             <objects>
-                <viewController id="eHP-Mk-Ify" customClass="FollowingViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="eHP-Mk-Ify" customClass="FollowingViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1Zr-n1-f3a"/>
                         <viewControllerLayoutGuide type="bottom" id="2Nn-5w-ghk"/>
@@ -2345,7 +2446,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="1800"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="followingAnswerCell" rowHeight="765" id="2dP-2g-IvW" customClass="FollowingAnswerTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="followingAnswerCell" rowHeight="765" id="2dP-2g-IvW" customClass="FollowingAnswerTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="92" width="600" height="765"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2dP-2g-IvW" id="d7l-Uh-MPZ">
@@ -2565,7 +2666,7 @@
                                             <outlet property="viewCountLabel" destination="ksc-wO-AWt" id="eqn-Jc-ERi"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="followingQuestionCell" rowHeight="107" id="uzw-sO-m4h" customClass="FollowingQuestionTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="followingQuestionCell" rowHeight="107" id="uzw-sO-m4h" customClass="FollowingQuestionTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="857" width="600" height="107"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uzw-sO-m4h" id="xtV-37-LtV">
@@ -2637,7 +2738,7 @@
                                             <outlet property="usernameButton" destination="yca-W7-3kR" id="5vo-Vi-bYc"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="followingHeaderCell" rowHeight="65" id="gYz-Xs-iKQ" customClass="FollowHeaderTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="followingHeaderCell" rowHeight="65" id="gYz-Xs-iKQ" customClass="FollowHeaderTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="964" width="600" height="65"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="gYz-Xs-iKQ" id="Mtv-XI-siF">
@@ -2691,7 +2792,7 @@
                                             <outlet property="relayButton" destination="4Xe-CQ-xVx" id="enX-1b-hUK"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="searchCell" rowHeight="60" id="Bjq-dt-Xtg" customClass="FollowingSearchTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="searchCell" rowHeight="60" id="Bjq-dt-Xtg" customClass="FollowingSearchTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="1029" width="600" height="60"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="Bjq-dt-Xtg" id="SSZ-8x-kWo">
@@ -2764,7 +2865,7 @@
         <!--Answered Question View Controller-->
         <scene sceneID="yh9-WN-ZpQ">
             <objects>
-                <viewController id="ydN-Q1-4GF" customClass="AnsweredQuestionViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="ydN-Q1-4GF" customClass="AnsweredQuestionViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1j4-ot-21z"/>
                         <viewControllerLayoutGuide type="bottom" id="xQb-EN-xcv"/>
@@ -2777,7 +2878,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="1200"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="answeredQuestionCell" rowHeight="698" id="Ey0-U2-TfV" customClass="AnsweredQuestionTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="answeredQuestionCell" rowHeight="698" id="Ey0-U2-TfV" customClass="AnsweredQuestionTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="92" width="600" height="698"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ey0-U2-TfV" id="WFX-7b-ucr">
@@ -3025,7 +3126,7 @@
                                             <outlet property="viewCountLabel" destination="j4W-0g-oMp" id="eDP-Vd-gyg"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="myQuestionTitleCell" rowHeight="97" id="PHj-lg-laH" customClass="MyQuestionTitleTableViewCell" customModule="QuestionSwiftProject" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="myQuestionTitleCell" rowHeight="97" id="PHj-lg-laH" customClass="MyQuestionTitleTableViewCell" customModule="Baton" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="790" width="600" height="97"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PHj-lg-laH" id="u6N-G8-D6R">
@@ -3260,7 +3361,7 @@
         <!--Change Email View Controller-->
         <scene sceneID="mzR-gm-Thu">
             <objects>
-                <viewController id="TRB-bs-1bj" customClass="ChangeEmailViewController" customModule="QuestionSwiftProject" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="TRB-bs-1bj" customClass="ChangeEmailViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="oHY-fl-e2e"/>
                         <viewControllerLayoutGuide type="bottom" id="rDb-Jc-KqC"/>
@@ -3278,7 +3379,7 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sa9-jN-aOh">
                                 <rect key="frame" x="20" y="106.5" width="560" height="30"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                             </textField>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="m9a-Ac-hxh">
                                 <rect key="frame" x="0.0" y="550" width="600" height="50"/>
@@ -3353,6 +3454,24 @@
             </objects>
             <point key="canvasLocation" x="3823" y="-4565"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="DYZ-KF-He6">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="KXN-dn-5iz" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NYS-7D-jfP">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Z0s-Vw-s0L" kind="relationship" relationship="rootViewController" id="6SF-6v-UcH"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0yU-jr-kMM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2924" y="-3642"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Flash" width="21" height="32"/>
@@ -3361,6 +3480,7 @@
         <image name="Profile" width="30" height="30"/>
         <image name="RecordButton" width="106" height="106"/>
         <image name="Search" width="30" height="30"/>
+        <image name="TwitterLogIn" width="38" height="31"/>
         <image name="VideoRecorder" width="21" height="13"/>
         <image name="addperson" width="37" height="26"/>
         <image name="grayHeartOutline" width="22" height="20"/>
@@ -3376,9 +3496,9 @@
         <image name="view" width="27" height="15"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="S7y-wc-ghI"/>
         <segue reference="ds5-wl-Py7"/>
-        <segue reference="tX2-5R-MTY"/>
+        <segue reference="B5p-fT-ati"/>
         <segue reference="Dpp-YJ-CSh"/>
-        <segue reference="1rb-zg-BdG"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -13,9 +13,13 @@ import MobileCoreServices
 import AWSS3
 import AVFoundation
 import AVKit
+import KeychainSwift
+import JWTDecode
 
 class ProfileViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
+    let keychain = KeychainSwift()
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var settingsBarButton: UIBarButtonItem!
     
@@ -36,46 +40,187 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
     var creatorname = ""
     var views = 0
     var ifFollowing = false
+    var twitterUsername = ""
     
     var refreshControl:UIRefreshControl!
     let label = UILabel(frame: CGRectMake(0, 0, 400, 400))
     
     func loadFollowInfo() {
         
-        let url = globalurl + "api/users/" + id
+        var token = keychain.get("JWT")
+        print(token)
         
-        Alamofire.request(.GET, url, parameters: nil)
-            .responseJSON { response in
-                var value = response.result.value
+        do {
+            
+            let jwt = try decode(token!)
+            print(jwt)
+            print(jwt.body)
+            print(jwt.expiresAt)
+            print(jwt.expired)
+            if jwt.expired == true {
+                let url = globalurl + "api/changetoken/"
+                let parameters = [
+                    "token": "token"
+                ]
                 
-                if value == nil {
-                    value = []
-                } else {
-                    let json = JSON(value!)
-                    print("JSON: \(json)")
-                    var followerCount = json["followerCount"].number?.integerValue
-                    var followingCount = json["followingCount"].number?.integerValue
-                    var bio = json["bio"].string
-                    
-                    if bio == nil {
-                        bio = ""
-                    }
-                    
-                    if followerCount == nil {
-                        followerCount = 0
-                    }
-                    
-                    if followingCount == nil {
-                        followingCount = 0
-                    }
-                    
-                    mybio = bio!
-                    self.followerCount = followerCount!
-                    self.followingCount = followingCount!
-                    
-                    self.tableView.reloadData()
+                Alamofire.request(.POST, url, parameters: parameters)
+                    .responseJSON { response in
+                        var value = response.result.value
+                        
+                        if value == nil {
+                            value = []
+                        } else {
+                            let json = JSON(value!)
+                            print("JSON: \(json)")
+                            print(json["token"].string)
+                            let newtoken = json["token"].string
+                            self.keychain.set(newtoken!, forKey: "JWT")
+                            token = newtoken
+                            let headers = [
+                                "Authorization": "\(token!)"
+                            ]
+                            
+                            let url = globalurl + "api/users/" + self.id
+                            
+                            Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                                .responseJSON { response in
+                                    var value = response.result.value
+                                    
+                                    if value == nil {
+                                        value = []
+                                    } else {
+                                        let json = JSON(value!)
+                                        print("JSON: \(json)")
+                                        var followerCount = json["followerCount"].number?.integerValue
+                                        var followingCount = json["followingCount"].number?.integerValue
+                                        var bio = json["bio"].string
+                                        let twitterUsername = json["twitter_username"].string
+                                        
+                                        if bio == nil {
+                                            bio = ""
+                                        }
+                                        
+                                        if twitterUsername == nil {
+                                            
+                                        } else {
+                                            self.twitterUsername = twitterUsername!
+                                        }
+                                        
+                                        if followerCount == nil {
+                                            followerCount = 0
+                                        }
+                                        
+                                        if followingCount == nil {
+                                            followingCount = 0
+                                        }
+                                        
+                                        mybio = bio!
+                                        self.followerCount = followerCount!
+                                        self.followingCount = followingCount!
+                                        
+                                        self.tableView.reloadData()
+                                    }
+                            }
+                        }
+                        
+                        
                 }
+            } else {
+                let headers = [
+                    "Authorization": "\(token!)"
+                ]
+                
+                let url = globalurl + "api/users/" + id
+                
+                Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                    .responseJSON { response in
+                        var value = response.result.value
+                        
+                        if value == nil {
+                            value = []
+                        } else {
+                            let json = JSON(value!)
+                            print("JSON: \(json)")
+                            var followerCount = json["followerCount"].number?.integerValue
+                            var followingCount = json["followingCount"].number?.integerValue
+                            var bio = json["bio"].string
+                            let twitterUsername = json["twitter_username"].string
+                            
+                            if bio == nil {
+                                bio = ""
+                            }
+                            
+                            if twitterUsername == nil {
+                                
+                            } else {
+                                self.twitterUsername = twitterUsername!
+                            }
+                            
+                            if followerCount == nil {
+                                followerCount = 0
+                            }
+                            
+                            if followingCount == nil {
+                                followingCount = 0
+                            }
+                            
+                            mybio = bio!
+                            self.followerCount = followerCount!
+                            self.followingCount = followingCount!
+                            
+                            self.tableView.reloadData()
+                        }
+                }
+            }
+        } catch {
+            print("Failed to decode JWT: \(error)")
         }
+        
+//        let headers = [
+//            "Authorization": "\(token!)"
+//        ]
+//        
+//        let url = globalurl + "api/users/" + id
+//        
+//        Alamofire.request(.GET, url, parameters: nil, headers: headers)
+//            .responseJSON { response in
+//                var value = response.result.value
+//                
+//                if value == nil {
+//                    value = []
+//                } else {
+//                    let json = JSON(value!)
+//                    print("JSON: \(json)")
+//                    var followerCount = json["followerCount"].number?.integerValue
+//                    var followingCount = json["followingCount"].number?.integerValue
+//                    var bio = json["bio"].string
+//                    let twitterUsername = json["twitter_username"].string
+//                    
+//                    if bio == nil {
+//                        bio = ""
+//                    }
+//                    
+//                    if twitterUsername == nil {
+//                        
+//                    } else {
+//                        self.twitterUsername = twitterUsername!
+//                    }
+//                    
+//                    if followerCount == nil {
+//                        followerCount = 0
+//                    }
+//                    
+//                    if followingCount == nil {
+//                        followingCount = 0
+//                    }
+//                    
+//                    mybio = bio!
+//                    self.followerCount = followerCount!
+//                    self.followingCount = followingCount!
+//                    
+//                    self.tableView.reloadData()
+//                }
+//        }
     }
     
     func loadIfFollowing() {
@@ -222,7 +367,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
                     
                     if frontCamera == nil {
-                        frontCamera = true
+                        frontCamera = false
                     }
                     
                     if content == nil {
@@ -310,7 +455,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     }
                     
                     if frontCamera == nil {
-                        frontCamera = true
+                        frontCamera = false
                     }
                     
                     if content == nil {
@@ -626,6 +771,13 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             } else {
                 cell.profileDescriptionLabel.hidden = false
                 cell.profileDescriptionLabel.text = mybio
+            }
+            
+            if twitterUsername == "" {
+                cell.twitterButton.hidden = true
+            } else {
+                cell.twitterButton.hidden = false
+                cell.twitterButton.addTarget(self, action: "twitterButtonPressed:", forControlEvents: .TouchUpInside)
             }
             
             cell.followersButton.titleLabel?.textAlignment = .Center
@@ -1114,6 +1266,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         
         
         
+    }
+    
+    func twitterButtonPressed(sender: UIButton) {
+        self.performSegueWithIdentifier("segueToWebView", sender: self)
     }
     
     func usernameTapped(sender:UIButton) {
@@ -1759,7 +1915,15 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             profileVC.creatorId = creatorId
             profileVC.creatorname = creatorname
         } else if segue.identifier == "segueToEditProfile" {
+            let nav = segue.destinationViewController as! UINavigationController
+            let editProfileVC: EditProfileTableViewController = nav.topViewController as! EditProfileTableViewController
+            editProfileVC.twitterUsername = twitterUsername
+        } else if segue.identifier == "segueToWebView" {
+            let nav = segue.destinationViewController as! UINavigationController
+            let webVC: WebViewController = nav.topViewController as! WebViewController
+            let url = "http://twitter.com/" + twitterUsername
             
+            webVC.urlToLoad = NSURL(string: url)
         }
     }
     
@@ -1965,28 +2129,26 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+
+}
+func RBSquareImage(image: UIImage) -> UIImage {
+    let originalWidth  = image.size.width
+    let originalHeight = image.size.height
     
-    func RBSquareImage(image: UIImage) -> UIImage {
-        let originalWidth  = image.size.width
-        let originalHeight = image.size.height
-        
-        var edge: CGFloat
-        if originalWidth > originalHeight {
-            edge = originalHeight
-        } else {
-            edge = originalWidth
-        }
-        
-        let posX = (originalWidth  - edge) / 2.0
-        let posY = (originalHeight - edge) / 2.0
-        
-        let cropSquare = CGRectMake(posX, posY, edge, edge)
-        
-        let imageRef = CGImageCreateWithImageInRect(image.CGImage, cropSquare);
-        return UIImage(CGImage: imageRef!, scale: UIScreen.mainScreen().scale, orientation: image.imageOrientation)
+    var edge: CGFloat
+    if originalWidth > originalHeight {
+        edge = originalHeight
+    } else {
+        edge = originalWidth
     }
     
-
+    let posX = (originalWidth  - edge) / 2.0
+    let posY = (originalHeight - edge) / 2.0
+    
+    let cropSquare = CGRectMake(posX, posY, edge, edge)
+    
+    let imageRef = CGImageCreateWithImageInRect(image.CGImage, cropSquare);
+    return UIImage(CGImage: imageRef!, scale: UIScreen.mainScreen().scale, orientation: image.imageOrientation)
 }
 
 extension Int {
