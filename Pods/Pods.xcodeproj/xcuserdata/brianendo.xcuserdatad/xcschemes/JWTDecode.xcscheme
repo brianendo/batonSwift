@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'ACB29F66A81893F64AA57976'
+               BlueprintIdentifier = '96BD28A3D666738C8236FE2D'
                BlueprintName = 'JWTDecode'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'JWTDecode.framework'>

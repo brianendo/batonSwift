@@ -50,10 +50,10 @@ class ChangeEmailViewController: UIViewController {
     }
     
     func textFieldDidChange(textField: UITextField) {
-        if textField.text == myemail {
+        if textField.text?.lowercaseString == myemail {
             self.saveButton.enabled = false
         } else {
-            let email = self.emailTextField.text!
+            let email = self.emailTextField.text!.lowercaseString
             let check = isValidEmail(email)
             
             if check {
@@ -76,7 +76,7 @@ class ChangeEmailViewController: UIViewController {
     
     
     @IBAction func saveButtonPressed(sender: UIButton) {
-        let email = emailTextField.text! as String
+        let email = emailTextField.text!.lowercaseString as String
         
         var token = keychain.get("JWT")
         print(token)

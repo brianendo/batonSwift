@@ -21,8 +21,9 @@ class Answer: NSObject {
     var frontCamera: Bool
     var createdAt: NSDate
     var views: Int
+    var featuredQuestion: Bool
     
-    init(content: String?, creator: String?, creatorname: String?, id: String?, question_id: String?, question_content: String?, video_url: String?, likeCount: Int?, liked_by_user: Bool?, frontCamera: Bool?, createdAt: NSDate?, views: Int?) {
+    init(content: String?, creator: String?, creatorname: String?, id: String?, question_id: String?, question_content: String?, video_url: String?, likeCount: Int?, liked_by_user: Bool?, frontCamera: Bool?, createdAt: NSDate?, views: Int?, featuredQuestion: Bool?) {
         self.content = content!
         self.creator = creator!
         self.creatorname = creatorname!
@@ -35,5 +36,6 @@ class Answer: NSObject {
         self.frontCamera = frontCamera!
         self.createdAt = createdAt!
         self.views = views!
+        self.featuredQuestion = featuredQuestion!
     }
 }

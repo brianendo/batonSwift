@@ -50,6 +50,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     var content = ""
     var id = ""
     var videoUrl: NSURL?
+    var answerId = ""
+    var fromFeatured = false
     
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -210,6 +212,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         
         //This is basic animation, quite a few other methods exist to handle animation see the reference site answers
         let pathAnimation = CABasicAnimation(keyPath: "strokeEnd")
+        pathAnimation.delegate = self
         pathAnimation.fromValue = CGFloat(0.0)
         pathAnimation.toValue = CGFloat(1.0)
         pathAnimation.duration = duration
@@ -219,6 +222,13 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         pathAnimation.fillMode = kCAFillModeForwards
         //Animation will happen right away
         pathLayer.addAnimation(pathAnimation, forKey: "strokeEnd")
+    }
+    
+    override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+        self.progressView.layer.sublayers?.removeAll()
+        output!.stopRecording()
+        self.recordButton.setTitle("Re-take", forState: .Normal)
+        self.recordButton.setImage(nil, forState: .Normal)
     }
     
     func hideProgressView() {
@@ -297,12 +307,15 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
             if recordingInProgress {
                 output!.stopRecording()
                 print("Stop")
-                self.hideProgressView()
-                self.progressView.hidden = true
+//                self.hideProgressView()
+//                self.progressView.hidden = true
+                self.progressView.layer.sublayers?.removeAll()
+//                self.progressView.layer.removeAllAnimations()
                 self.recordButton.setTitle("Re-take", forState: .Normal)
                 self.recordButton.setImage(nil, forState: .Normal)
             } else {
                 print("Recording")
+                self.progressView.hidden = false
                 self.animateProgressView(20)
                 self.recordButton.setTitle("", forState: .Normal)
                 self.recordButton.setImage(UIImage(named: "StopButton"), forState: .Normal)
@@ -313,6 +326,13 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                 let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString
                 let outputPath = "\(documentPath)/\(formatter.stringFromDate(date)).mp4"
                 let outputURL = NSURL(fileURLWithPath: outputPath)
+                print(output!.connectionWithMediaType(AVMediaTypeVideo).supportsVideoMirroring)
+                output!.connectionWithMediaType(AVMediaTypeVideo).automaticallyAdjustsVideoMirroring = false
+                if frontCamera {
+                    output!.connectionWithMediaType(AVMediaTypeVideo).videoMirrored = true
+                } else {
+                    output!.connectionWithMediaType(AVMediaTypeVideo).videoMirrored = false
+                }
                 
                 output!.startRecordingToOutputFileURL(outputURL, recordingDelegate: self)
             }
@@ -437,16 +457,30 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                                                 "creator": userid,
                                                 "creatorname": myUsername,
                                                 "video_url": amazonUrl + key,
-                                                "thumbnail_url": amazonUrl + key2
+                                                "thumbnail_url": amazonUrl + key2,
+                                                "featuredQuestion": self.fromFeatured
                                             ]
                                             
                                             let url = globalurl + "api/answers"
-                                            Alamofire.request(.POST, url, parameters: parameters, headers: headers)
+                                            Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
                                                 .responseJSON { response in
                                                     print(response.request)
                                                     print(response.response)
                                                     print(response.result)
                                                     print(response.response?.statusCode)
+                                                    var value = response.result.value
+                                                    
+                                                    if value == nil {
+                                                        value = []
+                                                    }
+                                                    let json = JSON(value!)
+                                                    print("JSON: \(json)")
+                                                    print(json["_id"].string)
+                                                    let answerId = json["_id"].string
+                                                    
+                                                    self.answerId = answerId!
+                                                    self.performSegueWithIdentifier("segueToShareVideo", sender: self)
+                                                    
                                             }
                                         }
                                         
@@ -462,16 +496,29 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                                     "creator": userid,
                                     "creatorname": myUsername,
                                     "video_url": amazonUrl + key,
-                                    "thumbnail_url": amazonUrl + key2
+                                    "thumbnail_url": amazonUrl + key2,
+                                    "featuredQuestion": self.fromFeatured
                                 ]
                                 
                                 let url = globalurl + "api/answers"
-                                Alamofire.request(.POST, url, parameters: parameters, headers: headers)
+                                Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
                                     .responseJSON { response in
                                         print(response.request)
                                         print(response.response)
                                         print(response.result)
                                         print(response.response?.statusCode)
+                                        var value = response.result.value
+                                        
+                                        if value == nil {
+                                            value = []
+                                        }
+                                        let json = JSON(value!)
+                                        print("JSON: \(json)")
+                                        print(json["_id"].string)
+                                        let answerId = json["_id"].string
+                                        
+                                        self.answerId = answerId!
+                                        self.performSegueWithIdentifier("segueToShareVideo", sender: self)
                                 }
                             }
                         } catch {
@@ -488,7 +535,14 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         if player.rate > 0 {
             player.pause()
         }
-        self.dismissViewControllerAnimated(true, completion: nil)
+//        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "segueToShareVideo" {
+            let shareVideoVC: ShareVideoViewController = segue.destinationViewController as! ShareVideoViewController
+            shareVideoVC.answerId = self.answerId
+        }
     }
     
     
@@ -532,7 +586,6 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         instruction.layerInstructions = [transformer]
         videoComposition.instructions = [instruction]
         
-        
         let formatter = NSDateFormatter()
         formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
         let date = NSDate()
@@ -541,17 +594,18 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let outputURL = NSURL(fileURLWithPath: outputPath)
         
         let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetMediumQuality)!
-        exporter.videoComposition = videoComposition
+//        exporter.videoComposition = videoComposition
         exporter.outputURL = outputURL
         exporter.outputFileType = AVFileTypeMPEG4
         
         exporter.exportAsynchronouslyWithCompletionHandler({ () -> Void in
             dispatch_async(dispatch_get_main_queue(), {
-                if self.frontCamera {
-                    self.flipVideo(exporter.outputURL!)
-                } else {
-                    self.handleExportCompletion(exporter)
-                }
+//                if self.frontCamera {
+//                    self.flipVideo(exporter.outputURL!)
+//                } else {
+//                    self.handleExportCompletion(exporter)
+//                }
+                self.handleExportCompletion(exporter)
             })
         })
     }
@@ -591,7 +645,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let outputPath = "\(documentPath)/\(formatter.stringFromDate(date))\(userid)f.mp4"
         let outputURL = NSURL(fileURLWithPath: outputPath)
         
-        let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetMediumQuality)!
+        let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetPassthrough)!
         exporter.videoComposition = videoComposition
         exporter.outputURL = outputURL
         exporter.outputFileType = AVFileTypeMPEG4

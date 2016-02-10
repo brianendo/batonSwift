@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'B087CE0903C1825FF63A7AF9'
+               BlueprintIdentifier = 'ADBE57C120205DB5D45D2E34'
                BlueprintName = 'AWSSimpleDB'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'AWSSimpleDB.framework'>

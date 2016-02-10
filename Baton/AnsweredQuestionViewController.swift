@@ -32,6 +32,7 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
     var question: Question?
     var answer: Answer?
     var postedBy = false
+    var fromFeatured = false
     
     func loadAnswer() {
         let url = globalurl + "api/answers/" + answerId
@@ -55,6 +56,12 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 if views == nil {
                     views = 0
                 }
+                var featuredQuestion = subJson["featuredQuestion"].bool
+                
+                if featuredQuestion == nil {
+                    featuredQuestion = false
+                }
+                
                 
                 if frontCamera == nil {
                     frontCamera = false
@@ -85,7 +92,7 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 if video_url != nil {
                     print(video_url)
                     
-                    let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views)
+                    let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion)
                     self.answer = answer
                     
                 }
@@ -110,13 +117,15 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 print("JSON: \(subJson)")
                 let content = subJson["content"].string
                 let id = subJson["_id"].string
-                let anonymous = subJson["anonymous"].string
                 var answercount = subJson["answercount"].number?.integerValue
                 var creatorname = subJson["creatorname"].string
-                let answeredBy = subJson["answered_by"]
-                let creator = subJson["creator"].string
-                var answered = false
-                var user = false
+                if creatorname == nil {
+                    creatorname = ""
+                }
+                var creator = subJson["creator"].string
+                if creator == nil {
+                    creator = ""
+                }
                 let createdAt = subJson["created_at"].string
                 var likecount = subJson["likes"].number?.integerValue
                 
@@ -128,28 +137,12 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
                 let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
                 
-                if creator == userid {
-                    user = true
-                }
-                
-                for (_,subJson):(String, JSON) in answeredBy {
-                    let answerer = subJson.string
-                    if answerer == userid {
-                        answered = true
-                    }
-                }
                 
                 if answercount == nil {
                     answercount = 0
                 }
                 
-                if creatorname == nil {
-                    creatorname = "Anonymous"
-                } else if anonymous == "true" {
-                    creatorname = "Anonymous"
-                }
-                
-                let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
+                let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount)
                 
                 self.question = question
                 
@@ -292,6 +285,16 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 
                 cell.postedByButton.addTarget(self, action: "postedByTapped:", forControlEvents: .TouchUpInside)
                 cell.contentView.bringSubviewToFront(cell.postedByButton)
+                
+                if fromFeatured {
+                    cell.postedByTextView.hidden = true
+                    cell.timeAgoLabel.hidden = true
+                    cell.contentView.backgroundColor = UIColor(red:1.0, green:0.97, blue:0.61, alpha:1.0)
+                } else {
+                    cell.postedByTextView.hidden = false
+                    cell.timeAgoLabel.hidden = false
+                    cell.contentView.backgroundColor = UIColor.clearColor()
+                }
             }
             
             

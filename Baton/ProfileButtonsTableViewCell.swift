@@ -13,10 +13,16 @@ class ProfileButtonsTableViewCell: UITableViewCell {
     @IBOutlet weak var pencilButton: UIButton!
     @IBOutlet weak var recorderButton: UIButton!
     @IBOutlet weak var heartButton: UIButton!
+    @IBOutlet weak var personalButton: UIButton!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        personalButton.setImage(UIImage(named: "bluePersonal"), forState: .Selected)
+        personalButton.setImage(UIImage(named: "grayPersonal"), forState: .Normal)
+        personalButton.layer.borderWidth = 0.5
+        personalButton.layer.borderColor = UIColor(white:0.79, alpha:1.0).CGColor
         
         pencilButton.setImage(UIImage(named: "pencilSelected"), forState: .Selected)
         pencilButton.setImage(UIImage(named: "grayPencilProfile"), forState: .Normal)

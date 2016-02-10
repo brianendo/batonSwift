@@ -31,7 +31,19 @@ PODS:
     - AWSCore (= 2.3.4)
   - AWSSQS (2.3.4):
     - AWSCore (= 2.3.4)
+  - Bolts (1.6.0):
+    - Bolts/AppLinks (= 1.6.0)
+    - Bolts/Tasks (= 1.6.0)
+  - Bolts/AppLinks (1.6.0):
+    - Bolts/Tasks
+  - Bolts/Tasks (1.6.0)
   - Fabric (1.6.4)
+  - FBSDKCoreKit (4.9.1):
+    - Bolts (~> 1.5)
+  - FBSDKLoginKit (4.9.1):
+    - FBSDKCoreKit
+  - FBSDKShareKit (4.9.1):
+    - FBSDKCoreKit
   - Firebase (2.5.0)
   - JWTDecode (1.0.0)
   - KeychainSwift (3.0.11)
@@ -60,6 +72,9 @@ DEPENDENCIES:
   - AWSSNS
   - AWSSQS
   - Fabric
+  - FBSDKCoreKit
+  - FBSDKLoginKit
+  - FBSDKShareKit
   - Firebase (>= 2.4.2)
   - JWTDecode (~> 1.0)
   - KeychainSwift (~> 3.0)
@@ -94,7 +109,11 @@ SPEC CHECKSUMS:
   AWSSimpleDB: 4fe05ca1f857d7b7e9c03504f1140ff7c713ce5c
   AWSSNS: f00c29631df2c3a37653f9f1d3d0f736daf95133
   AWSSQS: 96d02b4c65dc518af539dff0e751e595d48ee904
+  Bolts: f52a250053bb517ca874523c3913776359ab3def
   Fabric: ed41fd62173c6bdea24ab02c9d7707161eabb750
+  FBSDKCoreKit: aee20b6d9855f15b618d4fddd1a5ad45f5a4a59d
+  FBSDKLoginKit: ec22dc49bd372b064e93d6773df4ffefb3a552a2
+  FBSDKShareKit: b8c8ef0ed173f9fc1b3c8df384a0202ce53008d4
   Firebase: 744617c0733b45198f9486ebd5cac64ec2d10d79
   JWTDecode: d172edcb1607cc15aed85d58eceedcbb675a4534
   KeychainSwift: 0a4214c910423543a42b0f30f25987d46178b6a5

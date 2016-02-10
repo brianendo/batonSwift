@@ -18,6 +18,10 @@
 		8E146C641C5FEFC800468A1C /* ChangeEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C631C5FEFC800468A1C /* ChangeEmailViewController.swift */; };
 		8E146C671C62901000468A1C /* TwitterSignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */; };
 		8E146C691C62B5EE00468A1C /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C681C62B5EE00468A1C /* WebViewController.swift */; };
+		8E146C6E1C69221400468A1C /* ShareVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C6D1C69221400468A1C /* ShareVideoViewController.swift */; };
+		8E146C711C69356100468A1C /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E146C6F1C69356000468A1C /* FBSDKCoreKit.framework */; };
+		8E146C721C69356100468A1C /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E146C701C69356100468A1C /* FBSDKLoginKit.framework */; };
+		8E146C741C69356A00468A1C /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E146C731C69356A00468A1C /* FBSDKShareKit.framework */; };
 		8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */; };
 		8E9D70E31C164A280073CA17 /* AnsweredQuestionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */; };
 		8E9D70E51C164A920073CA17 /* AnsweredQuestionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */; };
@@ -89,6 +93,10 @@
 		8E146C631C5FEFC800468A1C /* ChangeEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeEmailViewController.swift; sourceTree = "<group>"; };
 		8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterSignupViewController.swift; sourceTree = "<group>"; };
 		8E146C681C62B5EE00468A1C /* WebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		8E146C6D1C69221400468A1C /* ShareVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareVideoViewController.swift; sourceTree = "<group>"; };
+		8E146C6F1C69356000468A1C /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = "../../Downloads/FacebookSDKs-iOS-20160115/FBSDKCoreKit.framework"; sourceTree = "<group>"; };
+		8E146C701C69356100468A1C /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = "../../Downloads/FacebookSDKs-iOS-20160115/FBSDKLoginKit.framework"; sourceTree = "<group>"; };
+		8E146C731C69356A00468A1C /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKShareKit.framework; path = "../../Downloads/FacebookSDKs-iOS-20160115/FBSDKShareKit.framework"; sourceTree = "<group>"; };
 		8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TakeVideoViewController.swift; sourceTree = "<group>"; };
 		8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionViewController.swift; sourceTree = "<group>"; };
 		8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionTableViewCell.swift; sourceTree = "<group>"; };
@@ -144,7 +152,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E146C741C69356A00468A1C /* FBSDKShareKit.framework in Frameworks */,
 				58FEA2CEC2F6ECCB5095338B /* Pods_Baton.framework in Frameworks */,
+				8E146C711C69356100468A1C /* FBSDKCoreKit.framework in Frameworks */,
+				8E146C721C69356100468A1C /* FBSDKLoginKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,6 +179,9 @@
 		61993B9FC3A7A0CC749A0065 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8E146C731C69356A00468A1C /* FBSDKShareKit.framework */,
+				8E146C6F1C69356000468A1C /* FBSDKCoreKit.framework */,
+				8E146C701C69356100468A1C /* FBSDKLoginKit.framework */,
 				2D3DEE78048E361BDFF5588A /* Pods_Baton.framework */,
 			);
 			name = Frameworks;
@@ -251,6 +265,7 @@
 				8EE04AFD1BE29C3A0040D5A5 /* QuestionTableViewCell.swift */,
 				8EE04AFF1BE2A14F0040D5A5 /* AskQuestionViewController.swift */,
 				8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */,
+				8E146C6D1C69221400468A1C /* ShareVideoViewController.swift */,
 				8EA960F51C110A3F00371C77 /* AnswersViewController.swift */,
 				8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */,
 				8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */,
@@ -552,6 +567,7 @@
 				8E146C691C62B5EE00468A1C /* WebViewController.swift in Sources */,
 				8E146C671C62901000468A1C /* TwitterSignupViewController.swift in Sources */,
 				8E146C621C5FE42D00468A1C /* ChangePasswordViewController.swift in Sources */,
+				8E146C6E1C69221400468A1C /* ShareVideoViewController.swift in Sources */,
 				8E146C561C5AA55500468A1C /* NameViewController.swift in Sources */,
 				8E9D70E91C1776860073CA17 /* ProfileRelayTableViewCell.swift in Sources */,
 				8EB945731C53151200FA01E2 /* FollowHeaderTableViewCell.swift in Sources */,

@@ -34,6 +34,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     var fromFollowing = false
     var nameIndex = 0
     var questionName = false
+    var fromFeatured = false
     
     var answerArray = [Answer]()
     
@@ -94,7 +95,12 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         self.tableView.addSubview(label)
         label.hidden = true
         
-        self.loadAnswers()
+        if fromFeatured {
+            self.loadFeaturedAnswers()
+        } else {
+            self.loadAnswers()
+        }
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -117,13 +123,15 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 print("JSON: \(subJson)")
                 let content = subJson["content"].string
                 let id = subJson["_id"].string
-                let anonymous = subJson["anonymous"].string
                 var answercount = subJson["answercount"].number?.integerValue
                 var creatorname = subJson["creatorname"].string
-                let answeredBy = subJson["answered_by"]
-                let creator = subJson["creator"].string
-                var answered = false
-                var user = false
+                if creatorname == nil {
+                    creatorname = ""
+                }
+                var creator = subJson["creator"].string
+                if creator == nil {
+                    creator = ""
+                }
                 let createdAt = subJson["created_at"].string
                 var likecount = subJson["likes"].number?.integerValue
                 
@@ -135,28 +143,12 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
                 let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
                 
-                if creator == userid {
-                    user = true
-                }
-                
-                for (_,subJson):(String, JSON) in answeredBy {
-                    let answerer = subJson.string
-                    if answerer == userid {
-                        answered = true
-                    }
-                }
-                
                 if answercount == nil {
                     answercount = 0
                 }
                 
-                if creatorname == nil {
-                    creatorname = "Anonymous"
-                } else if anonymous == "true" {
-                    creatorname = "Anonymous"
-                }
                 
-                let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
+                let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount)
                 
                 self.question = question
                 
@@ -185,13 +177,21 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     
                     let id = subJson["_id"].string
                     let creator = subJson["creator"].string
+                    
                     let creatorname = subJson["creatorname"].string
+                    
                     let video_url = subJson["video_url"].string
                     var likeCount = subJson["likes"].int
                     var frontCamera = subJson["frontCamera"].bool
                     var views = subJson["views"].number?.integerValue
                     if views == nil {
                         views = 0
+                    }
+                    
+                    var featuredQuestion = subJson["featuredQuestion"].bool
+                    
+                    if featuredQuestion == nil {
+                        featuredQuestion = false
                     }
                     
                     if frontCamera == nil {
@@ -210,9 +210,74 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     if video_url != nil {
                         print(video_url)
                         
-                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views)
+                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion)
                         self.answerArray.append(answer)
                         self.answerArray.sortInPlace({ $0.likeCount > $1.likeCount })
+                    }
+                    
+                    self.tableView.reloadData()
+                }
+                
+        }
+        
+    }
+    
+    func loadFeaturedAnswers(){
+        let url = globalurl + "api/featuredquestions/" + id + "/answers/"
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                if value == nil {
+                    value = []
+                }
+                
+                let json = JSON(value!)
+                print("JSON: \(json)")
+                if json == [] {
+                    print("No answers")
+                }
+                for (_,subJson):(String, JSON) in json {
+                    //Do something you want
+                    
+                    let id = subJson["_id"].string
+                    let creator = subJson["creator"].string
+                    
+                    let creatorname = subJson["creatorname"].string
+                    
+                    let video_url = subJson["video_url"].string
+                    var likeCount = subJson["likes"].int
+                    var frontCamera = subJson["frontCamera"].bool
+                    var views = subJson["views"].number?.integerValue
+                    if views == nil {
+                        views = 0
+                    }
+                    
+                    var featuredQuestion = subJson["featuredQuestion"].bool
+                    
+                    if featuredQuestion == nil {
+                        featuredQuestion = false
+                    }
+                    
+                    if frontCamera == nil {
+                        frontCamera = false
+                    }
+                    
+                    let createdAt = subJson["created_at"].string
+                    let dateFor: NSDateFormatter = NSDateFormatter()
+                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+                    
+                    if likeCount == nil {
+                        likeCount = 0
+                    }
+                    
+                    if video_url != nil {
+                        print(video_url)
+                        
+                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion)
+                        self.answerArray.append(answer)
+                        self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                     }
                     
                     self.tableView.reloadData()
@@ -270,6 +335,8 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 result.appendAttributedString(myFirstString)
                 result.appendAttributedString(mySecondString)
                 
+                
+                
                 cell.postedByTextView.attributedText = result
                 cell.postedByTextView.textColor = UIColor(red:0.63, green:0.63, blue:0.62, alpha:1.0)
                 
@@ -278,11 +345,23 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 
                 cell.postedByButton.addTarget(self, action: "postedByTapped:", forControlEvents: .TouchUpInside)
                 cell.contentView.bringSubviewToFront(cell.postedByButton)
+                
+                if fromFeatured {
+                    cell.postedByTextView.hidden = true
+                    cell.timeAgoLabel.hidden = true
+                    cell.contentView.backgroundColor = UIColor(red:1.0, green:0.97, blue:0.61, alpha:1.0)
+                } else {
+                    cell.postedByTextView.hidden = false
+                    cell.timeAgoLabel.hidden = false
+                    cell.contentView.backgroundColor = UIColor.clearColor()
+                }
             }
             
             return cell
         } else {
             let cell = tableView.dequeueReusableCellWithIdentifier("AnswerCell", forIndexPath: indexPath) as! AnswerTableViewCell
+            
+            cell.selectionStyle = UITableViewCellSelectionStyle.None
             
             cell.preservesSuperviewLayoutMargins = false
             cell.separatorInset = UIEdgeInsetsZero
@@ -299,43 +378,43 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.viewCountLabel.text = "\(views) views"
             
             cell.profileImageView.image = UIImage(named: "Placeholder")
-            if let cachedImageResult = imageCache[creator] {
-                print("pull from cache")
-                cell.profileImageView.image = UIImage(data: cachedImageResult!)
-            } else {
-                // 3
-                cell.profileImageView.image = UIImage(named: "Placeholder")
-                
-                // 4
-                let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
-                let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
-                let transferManager = AWSS3TransferManager.defaultS3TransferManager()
-                
-                
-                let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
-                readRequest1.bucket = S3BucketName
-                readRequest1.key =  creator
-                readRequest1.downloadingFileURL = downloadingFileURL1
-                
-                let task = transferManager.download(readRequest1)
-                task.continueWithBlock { (task) -> AnyObject! in
-                    if task.error != nil {
-                        print("No Profile Pic")
-                    } else {
-                        let image = UIImage(contentsOfFile: downloadingFilePath1)
-                        let imageData = UIImageJPEGRepresentation(image!, 1.0)
-                        imageCache[creator] = imageData
-                        dispatch_async(dispatch_get_main_queue()
-                            , { () -> Void in
-                                cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
-                                cell.setNeedsLayout()
-                                
-                        })
-                        print("Fetched image")
-                    }
-                    return nil
-                }
-            }
+//            if let cachedImageResult = imageCache[creator] {
+//                print("pull from cache")
+//                cell.profileImageView.image = UIImage(data: cachedImageResult!)
+//            } else {
+//                // 3
+//                cell.profileImageView.image = UIImage(named: "Placeholder")
+//                
+//                // 4
+//                let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
+//                let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
+//                let transferManager = AWSS3TransferManager.defaultS3TransferManager()
+//                
+//                
+//                let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
+//                readRequest1.bucket = S3BucketName
+//                readRequest1.key =  creator
+//                readRequest1.downloadingFileURL = downloadingFileURL1
+//                
+//                let task = transferManager.download(readRequest1)
+//                task.continueWithBlock { (task) -> AnyObject! in
+//                    if task.error != nil {
+//                        print("No Profile Pic")
+//                    } else {
+//                        let image = UIImage(contentsOfFile: downloadingFilePath1)
+//                        let imageData = UIImageJPEGRepresentation(image!, 1.0)
+//                        imageCache[creator] = imageData
+//                        dispatch_async(dispatch_get_main_queue()
+//                            , { () -> Void in
+//                                cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
+//                                cell.setNeedsLayout()
+//                                
+//                        })
+//                        print("Fetched image")
+//                    }
+//                    return nil
+//                }
+//            }
             
             cell.nameTextView.text = answerArray[indexPath.row].creatorname
             cell.nameTextView.selectable = false
@@ -344,10 +423,13 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.nameButton.tag = indexPath.row
             cell.contentView.bringSubviewToFront(cell.nameButton)
             
+            
             let videoUrl = answerArray[indexPath.row].video_url
             let cloudUrl = cloudfrontUrl + "video.m3u8"
             
+            
             let newURL = NSURL(string: videoUrl)
+            
             cell.player = AVPlayer(URL: newURL!)
             cell.playerController.player = cell.player
             
@@ -393,7 +475,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
             }
             
-            cell.selectionStyle = UITableViewCellSelectionStyle.None
+            
             
             cell.playerController.view.userInteractionEnabled = true
             
@@ -429,6 +511,134 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             
             cell.followButton.hidden = true
             
+//            if creator == userid {
+//                cell.followButton.hidden = true
+//            } else {
+//                cell.followButton.tag = indexPath.row
+//                cell.followButton.addTarget(self, action: "toggleFollow:", forControlEvents: .TouchUpInside)
+//                cell.followButton.setImage(UIImage(named: "addperson"), forState: .Normal)
+//                cell.followButton.setImage(UIImage(named: "addedperson"), forState: .Selected)
+//                cell.followButton.selected = false
+//                
+//                let url = globalurl + "api/user/" + userid + "/follows/" + answerArray[indexPath.row].creator
+//                
+//                Alamofire.request(.GET, url, parameters: nil)
+//                    .responseJSON { response in
+//                        let result = response.result.value
+//                        print(result)
+//                        if result == nil {
+//                            print("Not Following")
+//                            cell.followButton.selected = false
+//                            cell.followButton.hidden = false
+//                        } else {
+//                            print("Already Following")
+//                            cell.followButton.selected = true
+//                        }
+//                }
+//            }
+            
+            cell.extraButton.addTarget(self, action: "extraButtonTapped:", forControlEvents: .TouchUpInside)
+            cell.extraButton.tag = indexPath.row
+            
+//            let liked_by_user = self.answerArray[indexPath.row].liked_by_user
+            
+//            if liked_by_user == true {
+//                cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
+//                cell.heartImageView.image = UIImage(named: "redHeartOutline")
+//            } else {
+//                let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/likecheck/" + userid
+//                
+//                Alamofire.request(.GET, url, parameters: nil)
+//                    .responseJSON { response in
+//                        let result = response.result.value
+//                        print(result)
+//                        if result == nil {
+//                            print("Gobi")
+//                            cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
+//                            cell.heartImageView.image = UIImage(named: "grayHeartOutline")
+//                        } else {
+//                            print("Liked")
+//                            cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
+//                            cell.heartImageView.image = UIImage(named: "redHeartOutline")
+//                            self.answerArray[indexPath.row].liked_by_user = true
+//                        }
+//                }
+//            }
+            
+            
+            
+            return cell
+        }
+        
+    }
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 1 {
+            let cell = cell as! AnswerTableViewCell
+            
+            let creator = answerArray[indexPath.row].creator
+            
+            if let cachedImageResult = imageCache[creator] {
+                print("pull from cache")
+                cell.profileImageView.image = UIImage(data: cachedImageResult!)
+            } else {
+                // 3
+                cell.profileImageView.image = UIImage(named: "Placeholder")
+                
+                // 4
+                let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
+                let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
+                let transferManager = AWSS3TransferManager.defaultS3TransferManager()
+                
+                
+                let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
+                readRequest1.bucket = S3BucketName
+                readRequest1.key =  creator
+                readRequest1.downloadingFileURL = downloadingFileURL1
+                
+                let task = transferManager.download(readRequest1)
+                task.continueWithBlock { (task) -> AnyObject! in
+                    if task.error != nil {
+                        print("No Profile Pic")
+                    } else {
+                        let image = UIImage(contentsOfFile: downloadingFilePath1)
+                        let imageData = UIImageJPEGRepresentation(image!, 1.0)
+                        imageCache[creator] = imageData
+                        dispatch_async(dispatch_get_main_queue()
+                            , { () -> Void in
+                                cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
+                                cell.setNeedsLayout()
+                                
+                        })
+                        print("Fetched image")
+                    }
+                    return nil
+                }
+            }
+            
+            if indexPath.row == 0 {
+                cell.player.play()
+                NSNotificationCenter.defaultCenter().addObserver(self,
+                    selector: "videoEnd",
+                    name: AVPlayerItemDidPlayToEndTimeNotification,
+                    object: nil)
+                
+                let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/viewed/"
+                
+                Alamofire.request(.PUT, url, parameters: nil)
+                    .responseJSON { response in
+                        let result = response.result.value
+                        print(result)
+                        if result == nil {
+                            print("Not viewed")
+                            
+                        } else {
+                            print("Viewed")
+                        }
+                }
+            }
+            
+            
             if creator == userid {
                 cell.followButton.hidden = true
             } else {
@@ -454,12 +664,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                         }
                 }
             }
-            cell.extraButton.addTarget(self, action: "extraButtonTapped:", forControlEvents: .TouchUpInside)
-            cell.extraButton.tag = indexPath.row
-            
             let liked_by_user = self.answerArray[indexPath.row].liked_by_user
-            
-            print(cell.subviews)
             
             if liked_by_user == true {
                 cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
@@ -483,12 +688,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                         }
                 }
             }
-            
-            
-            
-            return cell
         }
-        
     }
     
     func extraButtonTapped(sender: UIButton) {
@@ -946,6 +1146,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             }
             takeVideoVC.content = self.content
             takeVideoVC.id = self.id
+            takeVideoVC.fromFeatured = self.fromFeatured
         } else if segue.identifier == "segueFromAnswersToProfile" {
             if questionName {
                 let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController

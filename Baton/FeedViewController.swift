@@ -25,13 +25,68 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var questionArray = [Question]()
     var myQuestionArray = [Question]()
     var hotQuestionArray = [Question]()
+    var featuredQuestionArray = [Question]()
     var selectedIndexPath = 0
     var currentPage = 0
     private var lastContentOffset: CGFloat = 0
     var isLoading = false
     var counter = 0
+    var selectedRow = 1
+    var recordedRow = 1
     
     var refreshControl:UIRefreshControl!
+    
+    func loadFeaturedData() {
+        let url = globalurl + "api/questions-featured/" + userid
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                } else {
+                    let json = JSON(value!)
+                    //                print("JSON: \(json)")
+                    for (_,subJson):(String, JSON) in json {
+                        //Do something you want
+                        let content = subJson["content"].string
+                        let id = subJson["_id"].string
+                        var answercount = subJson["answercount"].number?.integerValue
+                        //                    var creatorname = subJson["creatorname"].string
+                        //                    let creator = subJson["creator"].string
+                        let createdAt = subJson["created_at"].string
+                        var likecount = subJson["likes"].number?.integerValue
+                        let inactive = subJson["inactive"].bool
+                        
+                        if inactive == true {
+                            continue
+                        }
+                        
+                        if likecount == nil {
+                            likecount = 0
+                        }
+                        
+                        let dateFor: NSDateFormatter = NSDateFormatter()
+                        dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                        let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+                        
+                        if answercount == nil {
+                            answercount = 0
+                        }
+                        
+                        let question = Question(content: content, creatorname: "", id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: "", likecount: likecount)
+                        self.featuredQuestionArray.append(question)
+                        self.featuredQuestionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+                        
+                        
+                        self.tableView.reloadData()
+                }
+                
+                
+                }
+        }
+    }
     
     func loadData() {
         let url = globalurl + "api/questions-ordered/" + userid
@@ -59,6 +114,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     var user = false
                     let createdAt = subJson["created_at"].string
                     var likecount = subJson["likes"].number?.integerValue
+                    let featured = subJson["featured"].bool
+                    
+                    if featured == true {
+                        continue
+                    }
                     
                     if likecount == nil {
                         likecount = 0
@@ -119,6 +179,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     var user = false
                     let createdAt = subJson["created_at"].string
                     var likecount = subJson["likes"].number?.integerValue
+                    let featured = subJson["featured"].bool
+                    
+                    if featured == true {
+                        continue
+                    }
                     
                     if likecount == nil {
                         likecount = 0
@@ -158,128 +223,128 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    func loadPaginatedData() {
-        let url = globalurl + "api/questions/page/" + "\(self.currentPage)"
-        
-        Alamofire.request(.GET, url, parameters: nil)
-            .responseJSON { response in
-                var value = response.result.value
-                
-                if value == nil {
-                    value = []
-                }
-                
-                let json = JSON(value!)
-                print("JSON: \(json)")
-                for (_,subJson):(String, JSON) in json {
-                    //Do something you want
-
-                    let id = subJson["_id"].string
-                    let content = subJson["content"].string
-                    var answercount = subJson["answercount"].number?.integerValue
-                    var creatorname = subJson["creatorname"].string
-                    let answeredBy = subJson["answered_by"]
-                    let creator = subJson["creator"].string
-                    var answered = false
-                    var user = false
-                    let createdAt = subJson["created_at"].string
-                    
-                    var likecount = subJson["likes"].number?.integerValue
-                    
-                    if likecount == nil {
-                        likecount = 0
-                    }
-                    
-                    let dateFor: NSDateFormatter = NSDateFormatter()
-                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
-                    
-                    if creator == userid {
-                        user = true
-                    }
-                    
-                    for (_,subJson):(String, JSON) in answeredBy {
-                        let answerer = subJson.string
-                        if answerer == userid {
-                            answered = true
-                        }
-                    }
-                    
-                    if answercount == nil {
-                        answercount = 0
-                    }
-                    
-                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
-                    self.questionArray.append(question)
-                    
-                    self.tableView.reloadData()
-                }
-        }
-    }
-    
-    func loadMyQuestions() {
-        let url = globalurl + "api/myquestions/" + userid
-        
-        Alamofire.request(.GET, url, parameters: nil)
-            .responseJSON { response in
-                var value = response.result.value
-                
-                if value == nil {
-                    value = []
-                }
-                
-                let json = JSON(value!)
-                print("JSON: \(json)")
-                for (_,subJson):(String, JSON) in json {
-                    //Do something you want
-                    let content = subJson["content"].string
-                    let id = subJson["_id"].string
-                    let anonymous = subJson["anonymous"].string
-                    var answercount = subJson["answercount"].number?.integerValue
-                    var creatorname = subJson["creatorname"].string
-                    let answeredBy = subJson["answered_by"]
-                    let creator = subJson["creator"].string
-                    var answered = false
-                    var user = false
-                    let createdAt = subJson["created_at"].string
-                    var likecount = subJson["likes"].number?.integerValue
-                    
-                    if likecount == nil {
-                        likecount = 0
-                    }
-                    
-                    let dateFor: NSDateFormatter = NSDateFormatter()
-                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
-                    
-                    if creator == userid{
-                        user = true
-                    }
-                    
-                    for (_,subJson):(String, JSON) in answeredBy {
-                        let answerer = subJson.string
-                        if answerer == userid {
-                            answered = true
-                        }
-                    }
-                    
-                    if answercount == nil {
-                        answercount = 0
-                    }
-                    
-                    if creatorname == nil {
-                        creatorname = "Anonymous"
-                    } else if anonymous == "true" {
-                        creatorname = "Anonymous"
-                    }
-                    
-                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
-                    self.myQuestionArray.append(question)
-
-                    self.tableView.reloadData()
-                }
-        }
-    }
+//    func loadPaginatedData() {
+//        let url = globalurl + "api/questions/page/" + "\(self.currentPage)"
+//        
+//        Alamofire.request(.GET, url, parameters: nil)
+//            .responseJSON { response in
+//                var value = response.result.value
+//                
+//                if value == nil {
+//                    value = []
+//                }
+//                
+//                let json = JSON(value!)
+//                print("JSON: \(json)")
+//                for (_,subJson):(String, JSON) in json {
+//                    //Do something you want
+//
+//                    let id = subJson["_id"].string
+//                    let content = subJson["content"].string
+//                    var answercount = subJson["answercount"].number?.integerValue
+//                    var creatorname = subJson["creatorname"].string
+//                    let answeredBy = subJson["answered_by"]
+//                    let creator = subJson["creator"].string
+//                    var answered = false
+//                    var user = false
+//                    let createdAt = subJson["created_at"].string
+//                    
+//                    var likecount = subJson["likes"].number?.integerValue
+//                    
+//                    if likecount == nil {
+//                        likecount = 0
+//                    }
+//                    
+//                    let dateFor: NSDateFormatter = NSDateFormatter()
+//                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+//                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+//                    
+//                    if creator == userid {
+//                        user = true
+//                    }
+//                    
+//                    for (_,subJson):(String, JSON) in answeredBy {
+//                        let answerer = subJson.string
+//                        if answerer == userid {
+//                            answered = true
+//                        }
+//                    }
+//                    
+//                    if answercount == nil {
+//                        answercount = 0
+//                    }
+//                    
+//                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
+//                    self.questionArray.append(question)
+//                    
+//                    self.tableView.reloadData()
+//                }
+//        }
+//    }
+//    
+//    func loadMyQuestions() {
+//        let url = globalurl + "api/myquestions/" + userid
+//        
+//        Alamofire.request(.GET, url, parameters: nil)
+//            .responseJSON { response in
+//                var value = response.result.value
+//                
+//                if value == nil {
+//                    value = []
+//                }
+//                
+//                let json = JSON(value!)
+//                print("JSON: \(json)")
+//                for (_,subJson):(String, JSON) in json {
+//                    //Do something you want
+//                    let content = subJson["content"].string
+//                    let id = subJson["_id"].string
+//                    let anonymous = subJson["anonymous"].string
+//                    var answercount = subJson["answercount"].number?.integerValue
+//                    var creatorname = subJson["creatorname"].string
+//                    let answeredBy = subJson["answered_by"]
+//                    let creator = subJson["creator"].string
+//                    var answered = false
+//                    var user = false
+//                    let createdAt = subJson["created_at"].string
+//                    var likecount = subJson["likes"].number?.integerValue
+//                    
+//                    if likecount == nil {
+//                        likecount = 0
+//                    }
+//                    
+//                    let dateFor: NSDateFormatter = NSDateFormatter()
+//                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+//                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+//                    
+//                    if creator == userid{
+//                        user = true
+//                    }
+//                    
+//                    for (_,subJson):(String, JSON) in answeredBy {
+//                        let answerer = subJson.string
+//                        if answerer == userid {
+//                            answered = true
+//                        }
+//                    }
+//                    
+//                    if answercount == nil {
+//                        answercount = 0
+//                    }
+//                    
+//                    if creatorname == nil {
+//                        creatorname = "Anonymous"
+//                    } else if anonymous == "true" {
+//                        creatorname = "Anonymous"
+//                    }
+//                    
+//                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: answered, currentuser: user, createdAt: yourDate, creator: creator, likecount: likecount)
+//                    self.myQuestionArray.append(question)
+//
+//                    self.tableView.reloadData()
+//                }
+//        }
+//    }
     
     func loadUserInfo() {
 //        let url = globalurl + "api/currentuser"
@@ -389,6 +454,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                         self.tableView.reloadData()
                                         self.loadData()
                                         self.loadHotQuestionData()
+                                        self.loadFeaturedData()
                                     }
                             }
                         }
@@ -440,6 +506,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             self.tableView.reloadData()
                             self.loadData()
                             self.loadHotQuestionData()
+                            self.loadFeaturedData()
                         }
                 }
             }
@@ -638,9 +705,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func refreshFeed(){
         self.questionArray.removeAll(keepCapacity: true)
         self.hotQuestionArray.removeAll(keepCapacity: true)
-        
+        self.featuredQuestionArray.removeAll(keepCapacity: true)
 //        self.currentPage = 0
 //        self.loadPaginatedData()
+        self.loadFeaturedData()
         self.loadData()
         self.loadHotQuestionData()
         self.tableView.reloadData()
@@ -650,8 +718,9 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Code to refresh table view
         self.questionArray.removeAll(keepCapacity: true)
         self.hotQuestionArray.removeAll(keepCapacity: true)
-        
+        self.featuredQuestionArray.removeAll(keepCapacity: true)
 //        self.currentPage = 0
+        self.loadFeaturedData()
         self.loadData()
         self.loadHotQuestionData()
 //        self.loadPaginatedData()
@@ -671,8 +740,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Dispose of any resources that can be recreated.
     }
     
+    
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
+        if counter == 0 {
+            return 2
+        } else {
+            return 1
+        }
+//        return 2
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -680,16 +755,59 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        if section == 0 {
+//            return featuredQuestionArray.count
+//        } else {
+//            if counter == 0 {
+//                return questionArray.count
+//            } else {
+//                return hotQuestionArray.count
+//            }
+//        }
         if counter == 0 {
-            return questionArray.count
+            if section == 0 {
+                return featuredQuestionArray.count
+            } else {
+                return questionArray.count
+            }
         } else {
             return hotQuestionArray.count
         }
+        
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         if counter == 0 {
+            if indexPath.section == 0 {
+                let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+                
+                cell.preservesSuperviewLayoutMargins = false
+                cell.separatorInset = UIEdgeInsetsZero
+                cell.layoutMargins = UIEdgeInsetsZero
+                
+                cell.questionTextView.text = featuredQuestionArray[indexPath.row].content
+                cell.questionTextView.userInteractionEnabled = false
+                
+                let answercount = featuredQuestionArray[indexPath.row].answercount
+                
+                cell.answercountLabel.text =  "\(answercount)"
+                
+                let likecount = featuredQuestionArray[indexPath.row].likecount
+                let formattedlikecount = likecount.abbreviateNumber()
+                cell.likecountTextView.text = "\(formattedlikecount)"
+                cell.likecountTextView.editable = false
+                cell.likecountTextView.selectable = false
+                
+                cell.timeAgoLabel.text = ""
+                cell.contentView.backgroundColor = UIColor(red:1.0, green:0.97, blue:0.61, alpha:1.0)
+                
+                return cell
+                
+            }
+            
             let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+            
+            cell.contentView.backgroundColor = UIColor.clearColor()
             
             cell.preservesSuperviewLayoutMargins = false
             cell.separatorInset = UIEdgeInsetsZero
@@ -723,6 +841,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
             return cell
         } else {
             let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+            
+            cell.contentView.backgroundColor = UIColor.clearColor()
             
             cell.preservesSuperviewLayoutMargins = false
             cell.separatorInset = UIEdgeInsetsZero
@@ -759,29 +879,131 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "segueToTakeVideoVC" {
-            let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-            let content = self.questionArray[selectedIndexPath].content
-            let id = self.questionArray[selectedIndexPath].id
-            takeVideoVC.content = content
-            takeVideoVC.id = id
+            tableView.setEditing(false, animated: true)
+            if counter == 0 {
+                if recordedRow == 0 {
+                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+                    let content = self.featuredQuestionArray[selectedIndexPath].content
+                    let id = self.featuredQuestionArray[selectedIndexPath].id
+                    takeVideoVC.content = content
+                    takeVideoVC.id = id
+                    takeVideoVC.fromFeatured = true
+                } else if recordedRow == 1 {
+                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+                    let content = self.questionArray[selectedIndexPath].content
+                    let id = self.questionArray[selectedIndexPath].id
+                    takeVideoVC.content = content
+                    takeVideoVC.id = id
+                }
+            } else if counter == 1 {
+                let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+                let content = self.hotQuestionArray[selectedIndexPath].content
+                let id = self.hotQuestionArray[selectedIndexPath].id
+                takeVideoVC.content = content
+                takeVideoVC.id = id
+            }
+//            if recordedRow == 0 {
+//                let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+//                let content = self.featuredQuestionArray[selectedIndexPath].content
+//                let id = self.featuredQuestionArray[selectedIndexPath].id
+//                takeVideoVC.content = content
+//                takeVideoVC.id = id
+//                takeVideoVC.fromFeatured = true
+//            } else if recordedRow == 1 {
+//                let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+//                let content = self.questionArray[selectedIndexPath].content
+//                let id = self.questionArray[selectedIndexPath].id
+//                takeVideoVC.content = content
+//                takeVideoVC.id = id
+//            }
+            
         } else if segue.identifier == "segueToAnswerVC" {
-            let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-            let indexPath = self.tableView.indexPathForSelectedRow
-            let content = self.questionArray[indexPath!.row].content
-            let id = self.questionArray[indexPath!.row].id
-            let creatorname = self.questionArray[indexPath!.row].creatorname
-            let question = self.questionArray[indexPath!.row]
-            self.selectedIndexPath = indexPath!.row
-            answerVC.content = content
-            answerVC.id = id
-            answerVC.creatorname = creatorname
-            answerVC.question = question
+            if counter == 0 {
+                if selectedRow == 0 {
+                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+                    let indexPath = self.tableView.indexPathForSelectedRow
+                    let content = self.featuredQuestionArray[indexPath!.row].content
+                    let id = self.featuredQuestionArray[indexPath!.row].id
+                    let creatorname = self.featuredQuestionArray[indexPath!.row].creatorname
+                    let question = self.featuredQuestionArray[indexPath!.row]
+                    self.selectedIndexPath = indexPath!.row
+                    answerVC.content = content
+                    answerVC.id = id
+                    answerVC.creatorname = creatorname
+                    answerVC.question = question
+                    answerVC.fromFeatured = true
+                } else if selectedRow == 1 {
+                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+                    let indexPath = self.tableView.indexPathForSelectedRow
+                    let content = self.questionArray[indexPath!.row].content
+                    let id = self.questionArray[indexPath!.row].id
+                    let creatorname = self.questionArray[indexPath!.row].creatorname
+                    let question = self.questionArray[indexPath!.row]
+                    self.selectedIndexPath = indexPath!.row
+                    answerVC.content = content
+                    answerVC.id = id
+                    answerVC.creatorname = creatorname
+                    answerVC.question = question
+                }
+            } else if counter == 1 {
+                let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+                let indexPath = self.tableView.indexPathForSelectedRow
+                let content = self.hotQuestionArray[indexPath!.row].content
+                let id = self.hotQuestionArray[indexPath!.row].id
+                let creatorname = self.hotQuestionArray[indexPath!.row].creatorname
+                let question = self.hotQuestionArray[indexPath!.row]
+                self.selectedIndexPath = indexPath!.row
+                answerVC.content = content
+                answerVC.id = id
+                answerVC.creatorname = creatorname
+                answerVC.question = question
+
+            }
+//            if selectedRow == 0 {
+//                let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+//                let indexPath = self.tableView.indexPathForSelectedRow
+//                let content = self.featuredQuestionArray[indexPath!.row].content
+//                let id = self.featuredQuestionArray[indexPath!.row].id
+//                let creatorname = self.featuredQuestionArray[indexPath!.row].creatorname
+//                let question = self.featuredQuestionArray[indexPath!.row]
+//                self.selectedIndexPath = indexPath!.row
+//                answerVC.content = content
+//                answerVC.id = id
+//                answerVC.creatorname = creatorname
+//                answerVC.question = question
+//                answerVC.fromFeatured = true
+//            } else if selectedRow == 1 {
+//                let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+//                let indexPath = self.tableView.indexPathForSelectedRow
+//                let content = self.questionArray[indexPath!.row].content
+//                let id = self.questionArray[indexPath!.row].id
+//                let creatorname = self.questionArray[indexPath!.row].creatorname
+//                let question = self.questionArray[indexPath!.row]
+//                self.selectedIndexPath = indexPath!.row
+//                answerVC.content = content
+//                answerVC.id = id
+//                answerVC.creatorname = creatorname
+//                answerVC.question = question
+//            }
         }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        if counter == 0 {
+            if indexPath.section == 0 {
+                selectedRow = 0
+                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            } else {
+                selectedRow = 1
+                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }
+        } else if counter == 1 {
+            self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
+        
     }
     
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -792,6 +1014,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let record = UITableViewRowAction(style: .Normal, title: "Record") { action, index in
             print("Record button tapped")
             self.selectedIndexPath = indexPath.row
+            self.recordedRow = indexPath.section
             self.performSegueWithIdentifier("segueToTakeVideoVC", sender: self)
         }
         record.backgroundColor = UIColor.orangeColor()

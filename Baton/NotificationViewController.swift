@@ -85,14 +85,19 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                         read = false
                     }
                     
+                    var question_content = subJson["question_content"].string
+                    if question_content == nil {
+                        question_content = ""
+                    }
+                    
+                    var featuredQuestion = subJson["featuredQuestion"].bool
+                    if featuredQuestion == nil {
+                        featuredQuestion = false
+                    }
+                    
                     if type == "answer" {
                         
-                        var question_content = subJson["question_content"].string
-                        if question_content == nil {
-                            question_content = ""
-                        }
-                        
-                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: question_content, createdAt: yourDate, answer_id: answer_id, thumbnail_url: "")
+                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: question_content, createdAt: yourDate, answer_id: answer_id, thumbnail_url: "", featuredQuestion: featuredQuestion)
                         self.notificationArray.append(notification)
                         self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         
@@ -105,14 +110,14 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                             thumbnail_url = ""
                         }
                         
-                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: "", createdAt: yourDate, answer_id: answer_id, thumbnail_url: thumbnail_url)
+                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: question_content, createdAt: yourDate, answer_id: answer_id, thumbnail_url: thumbnail_url, featuredQuestion: featuredQuestion)
                         self.notificationArray.append(notification)
                         self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         
                         self.tableView.reloadData()
                     }
                      else if type == "follow" {
-                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: "", read: read, content: "", createdAt: yourDate, answer_id: "", thumbnail_url: "")
+                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: "", read: read, content: "", createdAt: yourDate, answer_id: "", thumbnail_url: "", featuredQuestion: featuredQuestion)
                         self.notificationArray.append(notification)
                         self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         
@@ -536,6 +541,10 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             let indexPath = self.tableView.indexPathForSelectedRow
             let questionId = self.notificationArray[indexPath!.row].question_id
             let answerId = self.notificationArray[indexPath!.row].answer_id
+            let featuredQuestion = self.notificationArray[indexPath!.row].featuredQuestion
+            if featuredQuestion {
+                answeredQuestionVC.fromFeatured = true
+            }
             answeredQuestionVC.questionId = questionId
             answeredQuestionVC.answerId = answerId
             notificationArray[indexPath!.row].read = true

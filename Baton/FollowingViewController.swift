@@ -118,6 +118,12 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                     if views == nil {
                         views = 0
                     }
+                    var featuredQuestion = subJson["featuredQuestion"].bool
+                    
+                    if featuredQuestion == nil {
+                        featuredQuestion = false
+                    }
+                    
                     var question_content = subJson["question_content"].string
                     if question_content == nil {
                         question_content = ""
@@ -160,7 +166,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                                         content = ""
                                     }
                                     
-                                    let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: content, video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views)
+                                    let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: content, video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion)
                                     self.answerArray.append(answer)
                                     self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
 
@@ -169,7 +175,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                                     
                             }
                         } else {
-                            let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views)
+                            let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: false, frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion)
                             self.answerArray.append(answer)
                             self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
 
@@ -1034,6 +1040,10 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 let indexPath = self.questionIndex
                 let content = self.answerArray[indexPath].question_content
                 let id = self.answerArray[indexPath].question_id
+                let featuredQuestion = self.answerArray[indexPath].featuredQuestion
+                if featuredQuestion {
+                    answerVC.fromFeatured = true
+                }
                 answerVC.content = content
                 answerVC.id = id
                 answerVC.fromFollowing = true
@@ -1050,6 +1060,8 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 answerVC.id = id
                 answerVC.creatorname = creatorname
                 answerVC.question = question
+                self.navigationController?.hidesBarsOnSwipe = false
+                self.navigationController?.navigationBarHidden = false
             }
         } else if segue.identifier == "segueFromFollowingToProfile" {
             if fromRelays {
@@ -1065,6 +1077,8 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 profileVC.fromOtherVC = true
                 profileVC.creatorId = creatorId
                 profileVC.creatorname = creatorname
+                self.navigationController?.hidesBarsOnSwipe = false
+                self.navigationController?.navigationBarHidden = false
             } else {
                 let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController
                 for cell in tableView.visibleCells {
@@ -1078,6 +1092,8 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 profileVC.fromOtherVC = true
                 profileVC.creatorId = creatorId
                 profileVC.creatorname = creatorname
+                self.navigationController?.hidesBarsOnSwipe = false
+                self.navigationController?.navigationBarHidden = false
             }
 
         } else if segue.identifier == "segueFromSearchToProfile" {
@@ -1090,6 +1106,8 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
 //            if searchController.active {
 //                
 //            }
+            self.navigationController?.hidesBarsOnSwipe = false
+            self.navigationController?.navigationBarHidden = false
 
         }
     }

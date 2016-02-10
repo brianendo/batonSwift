@@ -89,7 +89,7 @@ class LogInViewController: UIViewController {
 //                    self.presentViewController(mainVC!, animated: true, completion: nil)
 //                }
 //        })
-        let email:String = emailTextField.text! as String
+        let email:String = emailTextField.text!.lowercaseString as String
         let password:String = passwordTextField.text! as String
         
         if ( email == "" || password == "" ) {
@@ -192,6 +192,12 @@ class LogInViewController: UIViewController {
         }
         
     }
+    
+    @IBAction func forgotPasswordButtonPressed(sender: UIButton) {
+        let forgotUrl = globalurl + "forgot"
+        UIApplication.sharedApplication().openURL(NSURL(string: forgotUrl)!)
+    }
+    
     
 
 }

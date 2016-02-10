@@ -48,7 +48,7 @@ class SignUpViewController: UIViewController {
     
     func emailTextFieldDidChange(textField: UITextField) {
         
-        let email = self.emailTextField.text!
+        let email = self.emailTextField.text!.lowercaseString
         let check = isValidEmail(email)
         
         if check {
@@ -83,7 +83,7 @@ class SignUpViewController: UIViewController {
     }
     
     @IBAction func signUpButtonPressed(sender: UIButton) {
-        let email = emailTextField.text! as String
+        let email = emailTextField.text!.lowercaseString as String
         let password = passwordTextField.text! as String
         
         if ( email == "" || password == "" ) {
