@@ -94,6 +94,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>COSTouchVisualizer.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>FBSDKCoreKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -157,11 +162,6 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>26683C9BF895F83CC155F336A706B19F</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>3B41A9B1D49827D58E203AF61D34F608</key>
 		<dict>
 			<key>primary</key>
@@ -173,6 +173,11 @@
 			<true/>
 		</dict>
 		<key>4C698C648EE4D43C6B8BE0BE1FE91737</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>578A3637A2CEFEC54B956E9B2EB12E2D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -237,17 +242,22 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>C476CD5D4B7AE24EEAAACE7B45BC5499</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C93F5F0DAD68A096CEE226CC07E1771B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>D1B3D231EED9AD3B2A77C4CE93023F11</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>D8470470292BC39EE263E6103508E41A</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>D9A4483CBF2BF48B8FCC4FC69BEC95FA</key>
 		<dict>
 			<key>primary</key>
 			<true/>

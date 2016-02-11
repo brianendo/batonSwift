@@ -755,7 +755,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         } else {
             if counter == 0 {
                 if myFeaturedAnswerArray.count == 0 {
-                    label.text = "No posts"
+                    label.text = "No featured relays"
                     label.hidden = false
                     return 0
                 } else {

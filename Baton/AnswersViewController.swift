@@ -48,8 +48,8 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 self.loadQuestion()
             }
         }
-       
-        
+        self.relayButton.backgroundColor = UIColor.whiteColor()
+        self.tabBarController?.tabBar.hidden = true
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -67,6 +67,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 }
             }
         }
+//        self.relayButton.backgroundColor = UIColor.whiteColor()
     }
     
     override func viewDidLoad() {
@@ -84,6 +85,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         
         self.relayButton.layer.borderColor = UIColor.lightGrayColor().CGColor
         self.relayButton.layer.borderWidth = 0.5
+        self.relayButton.backgroundColor = UIColor.whiteColor()
         
         self.moreInfoBarButton.setTitleTextAttributes([NSForegroundColorAttributeName:UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0), NSFontAttributeName: UIFont(name: "HelveticaNeue-Medium", size: 28)!], forState: .Normal)
         
@@ -1310,6 +1312,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     
     
     @IBAction func relayButtonPressed(sender: UIButton) {
+        self.relayButton.backgroundColor = UIColor(white:0.87, alpha:1.0)
         self.performSegueWithIdentifier("segueFromAnswerToTakeVideo", sender: self)
     }
     

@@ -30,6 +30,7 @@ target 'Baton' do
         pod 'FBSDKCoreKit'
         pod 'FBSDKShareKit'
         pod 'FBSDKLoginKit'
+        pod 'COSTouchVisualizer'
 end
 
 target 'BatonTests' do

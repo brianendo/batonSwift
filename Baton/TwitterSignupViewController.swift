@@ -396,7 +396,11 @@ class TwitterSignupViewController: UIViewController, UIImagePickerControllerDele
                             return nil
                         }
                         
-                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//                        let mainVC = storyboard.instantiateInitialViewController()
+//                        self.presentViewController(mainVC!, animated: true, completion: nil)
+                        
+                        let storyboard = UIStoryboard(name: "Onboarding", bundle: nil)
                         let mainVC = storyboard.instantiateInitialViewController()
                         self.presentViewController(mainVC!, animated: true, completion: nil)
                     } else if statuscode == 404 {

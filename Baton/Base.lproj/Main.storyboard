@@ -240,12 +240,12 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tFR-ER-lKw">
-                                <rect key="frame" x="228" y="1130" width="144" height="90"/>
+                                <rect key="frame" x="228" y="1130" width="166" height="90"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="G3i-Ri-OwO"/>
                                 </constraints>
-                                <state key="normal" title="  Relay" image="VideoRecorder">
+                                <state key="normal" title="  Record a Relay" image="VideoRecorder">
                                     <color key="titleColor" red="0.16862745100000001" green="0.18039215689999999" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>

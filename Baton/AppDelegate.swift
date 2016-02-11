@@ -13,6 +13,7 @@ import AWSCognito
 import AWSS3
 import Fabric
 import TwitterKit
+import COSTouchVisualizer
 
 
 // Firebase url
@@ -30,7 +31,7 @@ var myemail = ""
 
 let herokuUrl = "https://arcane-savannah-8802.herokuapp.com/"
 let localUrl = "http://localhost:5000/"
-let globalurl = localUrl
+let globalurl = herokuUrl
 
 let cloudfrontUrl = "https://d1uji1hs8rdjoi.cloudfront.net/"
 
@@ -44,11 +45,20 @@ let S3BucketName = "batonapp"
 var imageCache: Dictionary<String, NSData?> = Dictionary<String, NSData>()
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowDelegate {
 
     var window: UIWindow?
 
-
+//    lazy var window: UIWindow? = {
+//        var customWindow = COSTouchVisualizerWindow(frame: UIScreen.mainScreen().bounds)
+//        customWindow.touchVisualizerWindowDelegate = self
+//        return customWindow
+//    }()
+//
+//    func touchVisualizerWindowShouldAlwaysShowFingertip(window: COSTouchVisualizerWindow!) -> Bool {
+//        return true
+//    }
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         

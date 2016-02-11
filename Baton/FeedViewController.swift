@@ -36,6 +36,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var refreshControl:UIRefreshControl!
     
+    override func viewWillAppear(animated: Bool) {
+        self.tabBarController?.tabBar.hidden = false
+    }
+    
     func loadFeaturedData() {
         let url = globalurl + "api/questions-featured/" + userid
         

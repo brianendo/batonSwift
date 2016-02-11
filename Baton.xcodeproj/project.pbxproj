@@ -19,9 +19,12 @@
 		8E146C671C62901000468A1C /* TwitterSignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */; };
 		8E146C691C62B5EE00468A1C /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C681C62B5EE00468A1C /* WebViewController.swift */; };
 		8E146C6E1C69221400468A1C /* ShareVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C6D1C69221400468A1C /* ShareVideoViewController.swift */; };
-		8E146C711C69356100468A1C /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E146C6F1C69356000468A1C /* FBSDKCoreKit.framework */; };
-		8E146C721C69356100468A1C /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E146C701C69356100468A1C /* FBSDKLoginKit.framework */; };
-		8E146C741C69356A00468A1C /* FBSDKShareKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E146C731C69356A00468A1C /* FBSDKShareKit.framework */; };
+		8E146C761C6BBC1B00468A1C /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C751C6BBC1800468A1C /* OnboardingViewController.swift */; };
+		8E146C781C6BC25500468A1C /* Onboarding.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E146C771C6BC25500468A1C /* Onboarding.storyboard */; };
+		8E146C7B1C6BD3C500468A1C /* Onboarding1ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C7A1C6BD3C400468A1C /* Onboarding1ViewController.swift */; };
+		8E146C7D1C6BE54A00468A1C /* Onboarding2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C7C1C6BE54900468A1C /* Onboarding2ViewController.swift */; };
+		8E146C8E1C6C043500468A1C /* Onboarding3ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C8D1C6C043500468A1C /* Onboarding3ViewController.swift */; };
+		8E146C901C6C0C2200468A1C /* PushViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C8F1C6C0C2100468A1C /* PushViewController.swift */; };
 		8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */; };
 		8E9D70E31C164A280073CA17 /* AnsweredQuestionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */; };
 		8E9D70E51C164A920073CA17 /* AnsweredQuestionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */; };
@@ -94,9 +97,12 @@
 		8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterSignupViewController.swift; sourceTree = "<group>"; };
 		8E146C681C62B5EE00468A1C /* WebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		8E146C6D1C69221400468A1C /* ShareVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareVideoViewController.swift; sourceTree = "<group>"; };
-		8E146C6F1C69356000468A1C /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = "../../Downloads/FacebookSDKs-iOS-20160115/FBSDKCoreKit.framework"; sourceTree = "<group>"; };
-		8E146C701C69356100468A1C /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = "../../Downloads/FacebookSDKs-iOS-20160115/FBSDKLoginKit.framework"; sourceTree = "<group>"; };
-		8E146C731C69356A00468A1C /* FBSDKShareKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKShareKit.framework; path = "../../Downloads/FacebookSDKs-iOS-20160115/FBSDKShareKit.framework"; sourceTree = "<group>"; };
+		8E146C751C6BBC1800468A1C /* OnboardingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		8E146C771C6BC25500468A1C /* Onboarding.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Onboarding.storyboard; sourceTree = "<group>"; };
+		8E146C7A1C6BD3C400468A1C /* Onboarding1ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Onboarding1ViewController.swift; sourceTree = "<group>"; };
+		8E146C7C1C6BE54900468A1C /* Onboarding2ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Onboarding2ViewController.swift; sourceTree = "<group>"; };
+		8E146C8D1C6C043500468A1C /* Onboarding3ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Onboarding3ViewController.swift; sourceTree = "<group>"; };
+		8E146C8F1C6C0C2100468A1C /* PushViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushViewController.swift; sourceTree = "<group>"; };
 		8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TakeVideoViewController.swift; sourceTree = "<group>"; };
 		8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionViewController.swift; sourceTree = "<group>"; };
 		8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionTableViewCell.swift; sourceTree = "<group>"; };
@@ -152,10 +158,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E146C741C69356A00468A1C /* FBSDKShareKit.framework in Frameworks */,
 				58FEA2CEC2F6ECCB5095338B /* Pods_Baton.framework in Frameworks */,
-				8E146C711C69356100468A1C /* FBSDKCoreKit.framework in Frameworks */,
-				8E146C721C69356100468A1C /* FBSDKLoginKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,9 +182,6 @@
 		61993B9FC3A7A0CC749A0065 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8E146C731C69356A00468A1C /* FBSDKShareKit.framework */,
-				8E146C6F1C69356000468A1C /* FBSDKCoreKit.framework */,
-				8E146C701C69356100468A1C /* FBSDKLoginKit.framework */,
 				2D3DEE78048E361BDFF5588A /* Pods_Baton.framework */,
 			);
 			name = Frameworks;
@@ -234,6 +234,19 @@
 			name = Notification;
 			sourceTree = "<group>";
 		};
+		8E146C791C6BC3F100468A1C /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				8E146C751C6BBC1800468A1C /* OnboardingViewController.swift */,
+				8E146C771C6BC25500468A1C /* Onboarding.storyboard */,
+				8E146C7A1C6BD3C400468A1C /* Onboarding1ViewController.swift */,
+				8E146C7C1C6BE54900468A1C /* Onboarding2ViewController.swift */,
+				8E146C8D1C6C043500468A1C /* Onboarding3ViewController.swift */,
+				8E146C8F1C6C0C2100468A1C /* PushViewController.swift */,
+			);
+			name = Onboarding;
+			sourceTree = "<group>";
+		};
 		8EE04AC11BE299890040D5A5 = {
 			isa = PBXGroup;
 			children = (
@@ -259,6 +272,7 @@
 		8EE04ACC1BE299890040D5A5 /* Baton */ = {
 			isa = PBXGroup;
 			children = (
+				8E146C791C6BC3F100468A1C /* Onboarding */,
 				8EE04B011BE2A6C10040D5A5 /* LogIn */,
 				8EE04ACD1BE2998A0040D5A5 /* AppDelegate.swift */,
 				8EE04AFB1BE29A030040D5A5 /* FeedViewController.swift */,
@@ -448,6 +462,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8EE04B031BE2A6E20040D5A5 /* LogIn.storyboard in Resources */,
+				8E146C781C6BC25500468A1C /* Onboarding.storyboard in Resources */,
 				8EE04AD81BE2998A0040D5A5 /* LaunchScreen.storyboard in Resources */,
 				8EE04AD51BE2998A0040D5A5 /* Assets.xcassets in Resources */,
 				8EE04AD31BE2998A0040D5A5 /* Main.storyboard in Resources */,
@@ -536,6 +551,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E146C8E1C6C043500468A1C /* Onboarding3ViewController.swift in Sources */,
 				8EB945751C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift in Sources */,
 				8EE04B051BE2A77D0040D5A5 /* StartViewController.swift in Sources */,
 				8EE04B1C1BE862160040D5A5 /* Question.swift in Sources */,
@@ -553,6 +569,7 @@
 				8E146C5A1C5AC1FE00468A1C /* NotificationFollowTableViewCell.swift in Sources */,
 				8E146C641C5FEFC800468A1C /* ChangeEmailViewController.swift in Sources */,
 				8E146C5C1C5BE89200468A1C /* SettingsTableViewController.swift in Sources */,
+				8E146C901C6C0C2200468A1C /* PushViewController.swift in Sources */,
 				8EB9456D1C498B5200FA01E2 /* FollowingAnswerTableViewCell.swift in Sources */,
 				8EA960F61C110A3F00371C77 /* AnswersViewController.swift in Sources */,
 				8EE04B001BE2A14F0040D5A5 /* AskQuestionViewController.swift in Sources */,
@@ -563,7 +580,10 @@
 				8EB9456B1C498B3000FA01E2 /* FollowingViewController.swift in Sources */,
 				8EE04B261BE974630040D5A5 /* ProfileQuestionTableViewCell.swift in Sources */,
 				8EB945671C487BA000FA01E2 /* UserTableViewCell.swift in Sources */,
+				8E146C761C6BBC1B00468A1C /* OnboardingViewController.swift in Sources */,
 				8E9D70EB1C17A0300073CA17 /* TabBarViewController.swift in Sources */,
+				8E146C7B1C6BD3C500468A1C /* Onboarding1ViewController.swift in Sources */,
+				8E146C7D1C6BE54A00468A1C /* Onboarding2ViewController.swift in Sources */,
 				8E146C691C62B5EE00468A1C /* WebViewController.swift in Sources */,
 				8E146C671C62901000468A1C /* TwitterSignupViewController.swift in Sources */,
 				8E146C621C5FE42D00468A1C /* ChangePasswordViewController.swift in Sources */,
