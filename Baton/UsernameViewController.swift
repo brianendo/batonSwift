@@ -11,55 +11,53 @@ import Alamofire
 import SwiftyJSON
 import KeychainSwift
 import JWTDecode
+import Crashlytics
 
 class UsernameViewController: UIViewController, UITextFieldDelegate {
 
-    let keychain = KeychainSwift()
-    
+    // MARK: - IBOutlets
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var bottomLayoutConstraint: NSLayoutConstraint!
     @IBOutlet weak var usernameStatusLabel: UILabel!
     
-    
+    // MARK: - Variables
+    let keychain = KeychainSwift()
     var email = ""
     var password = ""
     var firstname = ""
     var lastname = ""
-    
     var characterSet:NSCharacterSet = NSCharacterSet(charactersInString: "abcdefghijklmnopqrstuvwxyz0123456789_")
     
+    // MARK: - Keyboard
     func registerForKeyboardNotifications ()-> Void   {
-        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardDidShowNotification, object: nil)
-        
     }
-    
     
     func keyboardWillShow(notification: NSNotification) {
         var info = notification.userInfo!
         let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
-        
         self.bottomLayoutConstraint.constant = keyboardFrame.size.height
     }
     
     
+    // MARK: - viewWill/viewDid
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
         self.registerForKeyboardNotifications()
     }
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-        self.doneButton.enabled = false
+        self.doneButton.hidden = true
         self.usernameTextField.becomeFirstResponder()
+        // Add function and delegate to textField
         self.usernameTextField.addTarget(self, action: "textFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
         self.usernameTextField.delegate = self
     }
     
+    // MARK: - textField delegate
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         
         let currentCharacterCount = textField.text?.characters.count ?? 0
@@ -70,7 +68,9 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
         return newLength <= 20
     }
     
+    // MARK: textField functions
     func textFieldDidChange(textField: UITextField) {
+        // Makes textField automatically lowercase
         self.usernameTextField.text = textField.text?.lowercaseString
         if self.usernameTextField.text!.characters.count > 2  {
             
@@ -78,7 +78,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
             
             if ((username.rangeOfCharacterFromSet(self.characterSet.invertedSet, options: [], range: nil)) != nil) {
                 self.usernameStatusLabel.text = "Username cannot contain special characters"
-                self.doneButton.enabled = false
+                self.doneButton.hidden = true
             } else {
                 
                 let url = globalurl + "api/usernamecheck/" + username
@@ -98,17 +98,17 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                             {
                                 print("Username available")
                                 self.usernameStatusLabel.text = "Username available"
-                                self.doneButton.enabled = true
+                                self.doneButton.hidden = false
                             } else if statuscode == 404 {
                                 self.usernameStatusLabel.text = "Username not available"
-                                self.doneButton.enabled = false
+                                self.doneButton.hidden = true
                             } else {
                                 self.usernameStatusLabel.text = "Username not available"
-                                self.doneButton.enabled = false
+                                self.doneButton.hidden = true
                             }
                         }  else {
                             self.usernameStatusLabel.text = "Username not available"
-                            self.doneButton.enabled = false
+                            self.doneButton.hidden = true
                         }
                         
                 }
@@ -118,7 +118,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
             
         } else {
             self.usernameStatusLabel.text = "Username must be longer than 2 characters"
-            self.doneButton.enabled = false
+            self.doneButton.hidden = true
         }
     }
 
@@ -136,9 +136,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
             "lastname": lastname,
             "username": usernameTextField.text! as String
         ]
-        
         let url = globalurl + "api/signup"
-        
         Alamofire.request(.POST, url, parameters: parameters)
             .responseJSON { response in
                 print(response.request)
@@ -150,6 +148,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                 
                 if ( response.response != "FAILURE" ) {
                     
+                    // Username is available
                     if (statuscode >= 200 && statuscode < 300)
                     {
                         print("Sign up successful")
@@ -160,39 +159,29 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                         let id = json["data"]["_id"].string
                         let refresh_token = json["data"]["token"].string
                         let token = json["token"].string
-                        do {
-                            let jwt = try decode(token!)
-                            print(jwt)
-                            print(jwt.body)
-                            print(jwt.expiresAt)
-                        } catch {
-                            print("Failed to decode JWT: \(error)")
-                        }
+                        
                         self.keychain.set(id!, forKey: "ID")
                         self.keychain.set("1", forKey: "ISLOGGEDIN")
                         self.keychain.set(token!, forKey: "JWT")
                         self.keychain.set(refresh_token!, forKey: "refresh_token")
-//                        let id = json["_id"].string
-//                        var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-//                        prefs.setObject(id, forKey: "ID")
-//                        prefs.setInteger(1, forKey: "ISLOGGEDIN")
-//                        prefs.synchronize()
                         
-//                        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//                        let mainVC = storyboard.instantiateInitialViewController()
-//                        self.presentViewController(mainVC!, animated: true, completion: nil)
+                        Answers.logSignUpWithMethod("Regular",
+                            success: true,
+                            customAttributes: [:])
+                        
+                        // Go to onboarding storyboard
                         let storyboard = UIStoryboard(name: "Onboarding", bundle: nil)
                         let mainVC = storyboard.instantiateInitialViewController()
                         self.presentViewController(mainVC!, animated: true, completion: nil)
                     } else if statuscode == 404 {
-                        var alertView:UIAlertView = UIAlertView()
+                        let alertView:UIAlertView = UIAlertView()
                         alertView.title = "Sign Up Failed!"
                         alertView.message = "Username taken"
                         alertView.delegate = self
                         alertView.addButtonWithTitle("OK")
                         alertView.show()
                     } else {
-                        var alertView:UIAlertView = UIAlertView()
+                        let alertView:UIAlertView = UIAlertView()
                         alertView.title = "Sign Up Failed!"
                         alertView.message = "Connection Failed"
                         alertView.delegate = self
@@ -200,7 +189,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                         alertView.show()
                     }
                 }  else {
-                    var alertView:UIAlertView = UIAlertView()
+                    let alertView:UIAlertView = UIAlertView()
                     alertView.title = "Sign up Failed!"
                     alertView.message = "Connection Failure"
                     alertView.delegate = self

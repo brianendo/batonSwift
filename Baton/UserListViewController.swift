@@ -13,14 +13,34 @@ import AWSS3
 
 class UserListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+    // MARK: - IBOutlet
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: - Variables
     var counter = ""
     var userIdArray = [String]()
     var usernameArray = [String]()
     var indexPath = 0
     var id = ""
     
+    // MARK: - viewDid/viewWill
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Do any additional setup after loading the view.
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.tableFooterView = UIView()
+        
+        self.loadUsers()
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: load functions
     func loadUsers() {
         if counter == "followers" {
             let url = globalurl + "api/followers/" + id
@@ -38,7 +58,7 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
                         let json = JSON(value!)
                         print("JSON: \(json)")
                         let userId = subJson["sender"].string
-                        var username = subJson["recipientname"].string
+                        var username = subJson["sendername"].string
                         
                         if username == nil {
                             username = "Could not find username"
@@ -90,22 +110,7 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.tableFooterView = UIView()
-        
-        self.loadUsers()
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+    // MARK: - tableView
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("userCell", forIndexPath: indexPath) as! UserTableViewCell
         
@@ -134,10 +139,10 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
             let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
             let transferManager = AWSS3TransferManager.defaultS3TransferManager()
             
-            
+            let key = "profilePics/" + creator
             let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
             readRequest1.bucket = S3BucketName
-            readRequest1.key =  creator
+            readRequest1.key =  key
             readRequest1.downloadingFileURL = downloadingFileURL1
             
             let task = transferManager.download(readRequest1)
@@ -173,6 +178,7 @@ class UserListViewController: UIViewController, UITableViewDelegate, UITableView
         self.performSegueWithIdentifier("segueFromUserListToProfile", sender: self)
     }
     
+    // MARK: - Segues
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "segueFromUserListToProfile" {
             let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController

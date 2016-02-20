@@ -14,6 +14,7 @@ import JWTDecode
 
 class EditProfileTableViewController: UITableViewController, UITextFieldDelegate {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var saveBarButton: UIBarButtonItem!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var firstNameTextField: UITextField!
@@ -22,27 +23,31 @@ class EditProfileTableViewController: UITableViewController, UITextFieldDelegate
     @IBOutlet weak var usernameStatusLabel: UILabel!
     @IBOutlet weak var twitterTextField: UITextField!
     
+    // MARK: - Variables
     let keychain = KeychainSwift()
-    
     var characterSet:NSCharacterSet = NSCharacterSet(charactersInString: "abcdefghijklmnopqrstuvwxyz0123456789_")
     var namecharacterSet:NSCharacterSet = NSCharacterSet(charactersInString: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_ ")
-    
     var bio = ""
     var twitterUsername = ""
     
+    // MARK: - viewWill/viewDid
     override func viewDidLoad() {
         super.viewDidLoad()
         self.saveBarButton.enabled = false
         self.tableView.allowsSelection = false
+        
+        // Prefill contents from global variables
         self.usernameTextField.text = myUsername
         self.firstNameTextField.text = myfirstname
         self.lastNameTextField.text = mylastname
         self.bioTextView.text = mybio
         self.twitterTextField.text = twitterUsername
         self.usernameStatusLabel.text = ""
+        
         self.usernameTextField.addTarget(self, action: "textFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
         self.firstNameTextField.addTarget(self, action: "firstNameTextFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
         self.lastNameTextField.addTarget(self, action: "lastNameTextFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
+        self.twitterTextField.addTarget(self, action: "twitterTextFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
         
         self.usernameTextField.delegate = self
         self.firstNameTextField.delegate = self
@@ -54,7 +59,7 @@ class EditProfileTableViewController: UITableViewController, UITextFieldDelegate
         // Dispose of any resources that can be recreated.
     }
 
-    
+    // MARK: - textField delegate
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         
         let currentCharacterCount = textField.text?.characters.count ?? 0
@@ -65,6 +70,7 @@ class EditProfileTableViewController: UITableViewController, UITextFieldDelegate
         return newLength <= 20
     }
     
+    // MARK: textField functions
     func firstNameTextFieldDidChange(textField: UITextField) {
         
         let firstName = self.firstNameTextField.text!
@@ -74,6 +80,24 @@ class EditProfileTableViewController: UITableViewController, UITextFieldDelegate
             self.saveBarButton.enabled = false
         } else {
             if ((firstName.rangeOfCharacterFromSet(self.namecharacterSet.invertedSet, options: [], range: nil)) != nil) {
+                self.usernameStatusLabel.text = "Name cannot contain special characters"
+                self.saveBarButton.enabled = false
+            } else {
+                self.usernameStatusLabel.text = ""
+                self.saveBarButton.enabled = true
+            }
+        }
+    }
+    
+    func twitterTextFieldDidChange(textField: UITextField) {
+        
+        let twitter = self.firstNameTextField.text!
+        
+        if twitter == twitterUsername {
+            self.usernameStatusLabel.text = ""
+            self.saveBarButton.enabled = false
+        } else {
+            if ((twitter.rangeOfCharacterFromSet(self.namecharacterSet.invertedSet, options: [], range: nil)) != nil) {
                 self.usernameStatusLabel.text = "Name cannot contain special characters"
                 self.saveBarButton.enabled = false
             } else {
@@ -159,12 +183,7 @@ class EditProfileTableViewController: UITableViewController, UITextFieldDelegate
         }
     }
     
-    // MARK: - Table view data source
-    
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
-    }
-    
+    // MARK: - IBActions
     
     @IBAction func exitBarButtonPressed(sender: UIBarButtonItem) {
         self.dismissViewControllerAnimated(true, completion: nil)
@@ -177,30 +196,19 @@ class EditProfileTableViewController: UITableViewController, UITextFieldDelegate
         let bio = bioTextView.text! as String
         let twitter = twitterTextField.text! as String
         
+        // Check if any of the textField have changed
         if (myUsername != username) || (mylastname != lastname) || (myfirstname != firstname) || (mybio != bio) || (twitterUsername != twitter) {
             print("Changed")
-            
-            
-            
             
             mybio = bio
             myUsername = username
             mylastname = lastname
             myfirstname = firstname
             
-//            let url = globalurl + "api/edituser"
-//            Alamofire.request(.POST, url, parameters: parameters, encoding: .JSON)
-            
             var token = self.keychain.get("JWT")
-            print(token)
-            
             do {
                 
                 let jwt = try decode(token!)
-                print(jwt)
-                print(jwt.body)
-                print(jwt.expiresAt)
-                print(jwt.expired)
                 if jwt.expired == true {
                     var refresh_token = self.keychain.get("refresh_token")
                     
@@ -209,11 +217,9 @@ class EditProfileTableViewController: UITableViewController, UITextFieldDelegate
                     }
                     
                     let url = globalurl + "api/changetoken/"
-                    
                     let parameters = [
                         "refresh_token": refresh_token! as String
                     ]
-                    
                     Alamofire.request(.POST, url, parameters: parameters)
                         .responseJSON { response in
                             var value = response.result.value

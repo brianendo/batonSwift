@@ -10,8 +10,10 @@ import UIKit
 import AVKit
 import AVFoundation
 
+// ProfileViewController TableViewCell
 class ProfileRelayTableViewCell: UITableViewCell {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var contentTextView: UITextView!
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var timeAgoLabel: UILabel!
@@ -23,18 +25,18 @@ class ProfileRelayTableViewCell: UITableViewCell {
     @IBOutlet weak var questionContentButton: UIButton!
     @IBOutlet weak var extraButton: UIButton!
     
+    // MARK: - Variables
     var player: AVPlayer!
     var playerController: AVPlayerViewController!
     
+    // MARK: - override
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         
         playerController = AVPlayerViewController()
         playerController.player = player
-        
         playerController.view.frame = CGRectMake(videoView.frame.origin.x, videoView.frame.origin.x, videoView.frame.size.width, videoView.frame.size.height)
-        
         playerController.showsPlaybackControls = false
         playerController.videoGravity = AVLayerVideoGravityResizeAspectFill
         playerController.view.hidden = false

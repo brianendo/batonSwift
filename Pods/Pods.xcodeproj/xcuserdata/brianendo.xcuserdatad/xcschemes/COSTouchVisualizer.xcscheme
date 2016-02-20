@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = '488907C6C18FDE6039EFF60A'
+               BlueprintIdentifier = 'C477EFC341F427BCB02955B0'
                BlueprintName = 'COSTouchVisualizer'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'COSTouchVisualizer.framework'>

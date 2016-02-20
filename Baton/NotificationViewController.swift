@@ -10,18 +10,60 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import AWSS3
+import Crashlytics
 
 class NotificationViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: - Variables
     var notificationArray = [Notification]()
-    
     var refreshControl:UIRefreshControl!
-    
     var counter = 0
     var notificationIndex = 0
     
+    // MARK: - viewWill/viewDid
+    override func viewWillAppear(animated: Bool) {
+        self.tabBarController!.tabBar.hidden = false
+        let tabItem = self.tabBarController?.viewControllers![2]
+        tabItem?.tabBarItem.image = UIImage(named: "thickerBell")
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        // Makes sure that readAll is not called if there are no new notifications
+        if counter > 0 {
+            self.counter = 0
+            self.readAll()
+        }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.navigationItem.title = "Notifications"
+
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.scrollsToTop = true
+        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.estimatedRowHeight = 70
+        self.tableView.tableFooterView = UIView()
+        
+        self.notificationArray.removeAll(keepCapacity: true)
+        self.loadNotifications()
+        
+        self.refreshControl = UIRefreshControl()
+        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        self.tableView.addSubview(refreshControl)
+    }
+    
+    // MARK: - functions
     func loadNotifications(){
         let url = globalurl + "api/users/" + userid + "/notifications/"
         
@@ -29,8 +71,6 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             .responseJSON { response in
                 var value = response.result.value
                 
-                print("Reached")
-                print(value)
                 if value == nil {
                     value = []
                     print("No notifications")
@@ -46,7 +86,6 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 } else {
                     self.tableView.hidden = false
                     let json = JSON(response.result.value!)
-                print("JSON: \(json)")
                 for (_,subJson):(String, JSON) in json {
                     //Do something you want
                     let type = subJson["type"].string
@@ -56,15 +95,16 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                     
                     var sendername = subJson["sendername"].string
                     let anonymous = subJson["anonymous"].string
-                    let question_id = subJson["question_id"].string
+                    var question_id = subJson["question_id"].string
+                    if question_id == nil {
+                        question_id = ""
+                    }
                     var read = subJson["read"].bool
-                    let answer_id = subJson["answer_id"].string
+                    var answer_id = subJson["answer_id"].string
+                    if answer_id == nil {
+                        answer_id = ""
+                    }
                     let createdAt = subJson["created_at"].string
-//                    let thumbnailUrl = subJson["thumbnail_url"].string
-//                        
-//                    if thumbnailUrl == nil {
-//                        thumbnailUrl = ""
-//                    }
                     
                     let dateFor: NSDateFormatter = NSDateFormatter()
                     dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -95,47 +135,49 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                         featuredQuestion = false
                     }
                     
-                    if type == "answer" {
-                        
-                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: question_content, createdAt: yourDate, answer_id: answer_id, thumbnail_url: "", featuredQuestion: featuredQuestion)
-                        self.notificationArray.append(notification)
-                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-                        
-                        self.tableView.reloadData()
-                        
-                    } else if type == "like"{
-                        var thumbnail_url = subJson["thumbnail_url"].string
-                        
-                        if thumbnail_url == nil {
-                            thumbnail_url = ""
-                        }
-                        
-                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: question_content, createdAt: yourDate, answer_id: answer_id, thumbnail_url: thumbnail_url, featuredQuestion: featuredQuestion)
-                        self.notificationArray.append(notification)
-                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-                        
-                        self.tableView.reloadData()
+                    var thumbnail_url = subJson["thumbnail_url"].string
+                    
+                    if thumbnail_url == nil {
+                        thumbnail_url = ""
                     }
-                     else if type == "follow" {
-                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: "", read: read, content: "", createdAt: yourDate, answer_id: "", thumbnail_url: "", featuredQuestion: featuredQuestion)
-                        self.notificationArray.append(notification)
-                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-                        
-                        self.tableView.reloadData()
-                    }
+                    
+                    let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: question_content, createdAt: yourDate, answer_id: answer_id, thumbnail_url: thumbnail_url, featuredQuestion: featuredQuestion)
+                    self.notificationArray.append(notification)
+                    self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+                    self.tableView.reloadData()
+                    
+                    // Separate between different types of notifications
+//                    if type == "answer" {
+//                        
+//                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: question_content, createdAt: yourDate, answer_id: answer_id, thumbnail_url: "", featuredQuestion: featuredQuestion)
+//                        self.notificationArray.append(notification)
+//                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+//                        
+//                        self.tableView.reloadData()
+//                        
+//                    } else if type == "like"{
+//                       
+//                        
+//                        
+//                        
+//                        self.tableView.reloadData()
+//                    }
+//                     else if type == "follow" {
+//                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: "", read: read, content: "", createdAt: yourDate, answer_id: "", thumbnail_url: "", featuredQuestion: featuredQuestion)
+//                        self.notificationArray.append(notification)
+//                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+//                        
+//                        self.tableView.reloadData()
+//                    }
                 }
-
+//                    self.tableView.reloadData()
                 }
                                 
         }
         
     }
     
-    override func viewWillAppear(animated: Bool) {
-        self.tabBarController!.tabBar.hidden = false
-        let tabItem = self.tabBarController?.viewControllers![2]
-        tabItem?.tabBarItem.image = UIImage(named: "thickerBell")
-    }
+    
     
     func readAll() {
         let url = globalurl + "api/notifications/" + userid + "/readall"
@@ -152,43 +194,15 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         }
     }
     
-    override func viewDidDisappear(animated: Bool) {
-        if counter > 0 {
-            self.counter = 0
-            self.readAll()
-        }
-    }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        print("Loaded")
-        self.navigationItem.title = "Notifications"
-        // Do any additional setup after loading the view.
-        self.tableView.delegate = self
-        self.tableView.dataSource = self
-        self.tableView.scrollsToTop = true
-        
-        self.tableView.rowHeight = UITableViewAutomaticDimension
-        self.tableView.estimatedRowHeight = 70
-        self.tableView.tableFooterView = UIView()
-        
-        self.notificationArray.removeAll(keepCapacity: true)
-        self.loadNotifications()
-        
-        self.refreshControl = UIRefreshControl()
-        //        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
-        self.tableView.addSubview(refreshControl)
-    }
     
     func refresh(sender:AnyObject)
     {
         // Code to refresh table view
         self.notificationArray.removeAll(keepCapacity: true)
-        
+        self.tableView.reloadData()
         self.loadNotifications()
-        let delayInSeconds = 1.5;
+        let delayInSeconds = 1.0;
         let popTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSeconds * Double(NSEC_PER_SEC)));
         dispatch_after(popTime, dispatch_get_main_queue()) { () -> Void in
             // When done requesting/reloading/processing invoke endRefreshing, to close the control
@@ -196,12 +210,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         }
     }
     
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
+    // MARK: - tableView
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return notificationArray.count
     }
@@ -210,7 +219,6 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         let type = notificationArray[indexPath.row].type
         let sendername = notificationArray[indexPath.row].sendername
         let read = notificationArray[indexPath.row].read
-        let id = notificationArray[indexPath.row].id
         let sender = notificationArray[indexPath.row].sender
         
         if type == "answer" {
@@ -246,18 +254,15 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 print("pull from cache")
                 cell.profileImageView.image = UIImage(data: cachedImageResult!)
             } else {
-                // 3
                 cell.profileImageView.image = UIImage(named: "Placeholder")
-                
-                // 4
                 let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
                 let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
                 let transferManager = AWSS3TransferManager.defaultS3TransferManager()
                 
-                
+                let key = "profilePics/" + sender
                 let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
                 readRequest1.bucket = S3BucketName
-                readRequest1.key =  sender
+                readRequest1.key =  key
                 readRequest1.downloadingFileURL = downloadingFileURL1
                 
                 let task = transferManager.download(readRequest1)
@@ -313,18 +318,16 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 print("pull from cache")
                 cell.profileImageView.image = UIImage(data: cachedImageResult!)
             } else {
-                // 3
                 cell.profileImageView.image = UIImage(named: "Placeholder")
                 
-                // 4
                 let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
                 let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
                 let transferManager = AWSS3TransferManager.defaultS3TransferManager()
                 
-                
+                let key = "profilePics/" + sender
                 let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
                 readRequest1.bucket = S3BucketName
-                readRequest1.key =  sender
+                readRequest1.key =  key
                 readRequest1.downloadingFileURL = downloadingFileURL1
                 
                 let task = transferManager.download(readRequest1)
@@ -369,7 +372,9 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             }
             
             return cell
-        } else {
+        }
+        // Following notifications
+        else {
             let cell: NotificationFollowTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationFollowCell", forIndexPath: indexPath) as! NotificationFollowTableViewCell
             if read == false {
                 cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
@@ -377,7 +382,6 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 cell.backgroundColor = UIColor.whiteColor()
             }
             
-            let notificationId = notificationArray[indexPath.row].id
             cell.preservesSuperviewLayoutMargins = false
             cell.separatorInset = UIEdgeInsetsZero
             cell.layoutMargins = UIEdgeInsetsZero
@@ -406,18 +410,16 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 print("pull from cache")
                 cell.profileImageView.image = UIImage(data: cachedImageResult!)
             } else {
-                // 3
                 cell.profileImageView.image = UIImage(named: "Placeholder")
                 
-                // 4
                 let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
                 let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
                 let transferManager = AWSS3TransferManager.defaultS3TransferManager()
                 
-                
+                let key = "profilePics/" + sender
                 let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
                 readRequest1.bucket = S3BucketName
-                readRequest1.key =  sender
+                readRequest1.key =  key
                 readRequest1.downloadingFileURL = downloadingFileURL1
                 
                 let task = transferManager.download(readRequest1)
@@ -463,9 +465,74 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         
     }
     
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let type = notificationArray[indexPath.row].type
+        let id = notificationArray[indexPath.row].id
+        let read = notificationArray[indexPath.row].read
+        
+        
+        if read == false  {
+            self.counter--
+            notificationArray[indexPath.row].read = true
+            self.tableView.reloadData()
+            let url = globalurl + "api/notifications/" + id + "/read/"
+            Alamofire.request(.PUT, url, parameters: nil)
+                .responseJSON { response in
+            }
+            if type == "answer" || type == "like" {
+                Answers.logCustomEventWithName("Notification Clicked",
+                    customAttributes: ["read": false, "type": type])
+                self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            } else {
+                Answers.logCustomEventWithName("Notification Clicked",
+                    customAttributes: ["read": false, "type": type])
+                self.performSegueWithIdentifier("segueFromNotificationsToProfile", sender: self)
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }
+            
+        } else {
+            if type == "answer" || type == "like" {
+                Answers.logCustomEventWithName("Notification Clicked",
+                    customAttributes: ["read": true, "type": type])
+                self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            } else {
+                Answers.logCustomEventWithName("Notification Clicked",
+                    customAttributes: ["read": true, "type": type])
+                self.performSegueWithIdentifier("segueFromNotificationsToProfile", sender: self)
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }
+        }
+        
+//        if type == "answer" {
+//            let url = globalurl + "api/notifications/" + id + "/read/"
+//            Alamofire.request(.PUT, url, parameters: nil)
+//                .responseJSON { response in
+//            }
+//            self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
+//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//        } else if type == "like" {
+//            let url = globalurl + "api/notifications/" + id + "/read/"
+//            Alamofire.request(.PUT, url, parameters: nil)
+//                .responseJSON { response in
+//            }
+//            self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
+//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//        } else {
+//            let url = globalurl + "api/notifications/" + id + "/read/"
+//            Alamofire.request(.PUT, url, parameters: nil)
+//                .responseJSON { response in
+//            }
+//            notificationIndex = indexPath.row
+//            self.performSegueWithIdentifier("segueFromNotificationsToProfile", sender: self)
+//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//        }
+    }
+    
+    // MARK: - tableView functions
     func toggleFollow(sender:UIButton!) {
         let tag = sender.tag
-        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 0)) as! NotificationFollowTableViewCell
         let creatorId = self.notificationArray[tag].sender
         
         if sender.selected == false {
@@ -499,46 +566,12 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         }
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let type = notificationArray[indexPath.row].type
-        let id = notificationArray[indexPath.row].id
-        let read = notificationArray[indexPath.row].read
-        
-        if read == false {
-            self.counter--
-            notificationArray[indexPath.row].read = true
-        }
-        
-        
-        if type == "answer" {
-            let url = globalurl + "api/notifications/" + id + "/read/"
-            Alamofire.request(.PUT, url, parameters: nil)
-                .responseJSON { response in
-            }
-            self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        } else if type == "like" {
-            let url = globalurl + "api/notifications/" + id + "/read/"
-            Alamofire.request(.PUT, url, parameters: nil)
-                .responseJSON { response in
-            }
-            self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        } else {
-            let url = globalurl + "api/notifications/" + id + "/read/"
-            Alamofire.request(.PUT, url, parameters: nil)
-                .responseJSON { response in
-            }
-            notificationIndex = indexPath.row
-            self.performSegueWithIdentifier("segueFromNotificationsToProfile", sender: self)
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        }
-    }
-    
+    // MARK: - Segues
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "segueToAnsweredQuestionVC" {
             let answeredQuestionVC: AnsweredQuestionViewController = segue.destinationViewController as! AnsweredQuestionViewController
             let indexPath = self.tableView.indexPathForSelectedRow
+            print(self.notificationArray[indexPath!.row])
             let questionId = self.notificationArray[indexPath!.row].question_id
             let answerId = self.notificationArray[indexPath!.row].answer_id
             let featuredQuestion = self.notificationArray[indexPath!.row].featuredQuestion

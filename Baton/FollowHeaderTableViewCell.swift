@@ -8,11 +8,14 @@
 
 import UIKit
 
+// FollowingViewController TableViewCell
 class FollowHeaderTableViewCell: UITableViewCell {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var relayButton: UIButton!
     @IBOutlet weak var postButton: UIButton!
     
+    // MARK: - override
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

@@ -10,6 +10,8 @@ import UIKit
 
 class OnboardingViewController: UIPageViewController {
 
+    // MARK: - Variables
+    // Makes array of View Controllers
     private(set) lazy var orderedViewControllers: [UIViewController] = {
         return [self.newColoredViewController("Onboarding1"),
             self.newColoredViewController("Onboarding2"),
@@ -17,18 +19,15 @@ class OnboardingViewController: UIPageViewController {
             self.newColoredViewController("Push")]
     }()
     
+    // Instantiates View Controller with the given Storyboard ID
     private func newColoredViewController(color: String) -> UIViewController {
         return UIStoryboard(name: "Onboarding", bundle: nil) .
             instantiateViewControllerWithIdentifier("\(color)ViewController")
     }
     
-//    private func stylePageControl() {
-//        let pageControl = UIPageControl()
-//        pageControl.currentPageIndicatorTintColor = UIColor.blueColor()
-//        pageControl.pageIndicatorTintColor = UIColor.greenColor()
-//        pageControl.backgroundColor = UIColor.orangeColor()
-//    }
     
+    // MARK: - viewWill/viewDid
+    // Finds UIPageControl view and then changes the background color
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         for view in self.view.subviews {
@@ -42,12 +41,12 @@ class OnboardingViewController: UIPageViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         // Do any additional setup after loading the view.
+        
+        // Set delegate of UIPageViewController
         dataSource = self
         
-        view.backgroundColor = UIColor.clearColor()
-        
+        // Goes to firstViewController in the orderedList above
         if let firstViewController = orderedViewControllers.first {
             setViewControllers([firstViewController],
                 direction: .Forward,
@@ -65,8 +64,11 @@ class OnboardingViewController: UIPageViewController {
 
 }
 
+
+// Extension used to edit UIPageViewController DataSource
 extension OnboardingViewController: UIPageViewControllerDataSource {
     
+    // Set up the View Controller before
     func pageViewController(pageViewController: UIPageViewController,
         viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
             guard let viewControllerIndex = orderedViewControllers.indexOf(viewController) else {
@@ -75,6 +77,7 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
             
             let previousIndex = viewControllerIndex - 1
             
+            // Index cannot be lower than 0
             guard previousIndex >= 0 else {
                 return nil
             }
@@ -86,6 +89,7 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
             return orderedViewControllers[previousIndex]
     }
     
+    // Set up the View Controller after
     func pageViewController(pageViewController: UIPageViewController,
         viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
             guard let viewControllerIndex = orderedViewControllers.indexOf(viewController) else {
@@ -95,6 +99,7 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
             let nextIndex = viewControllerIndex + 1
             let orderedViewControllersCount = orderedViewControllers.count
             
+            // Last Index must be -1 of count
             guard orderedViewControllersCount != nextIndex else {
                 return nil
             }
@@ -106,10 +111,12 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
             return orderedViewControllers[nextIndex]
     }
     
+    // Return the count of View Controllers
     func presentationCountForPageViewController(pageViewController: UIPageViewController) -> Int {
         return orderedViewControllers.count
     }
     
+    // Makes the first view controller the first view controller in the ordered Array
     func presentationIndexForPageViewController(pageViewController: UIPageViewController) -> Int {
         guard let firstViewController = viewControllers?.first,
             firstViewControllerIndex = orderedViewControllers.indexOf(firstViewController) else {

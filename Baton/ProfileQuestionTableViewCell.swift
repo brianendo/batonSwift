@@ -8,14 +8,17 @@
 
 import UIKit
 
+// ProfileViewController TableViewCell
 class ProfileQuestionTableViewCell: UITableViewCell {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var answercountLabel: UILabel!
     @IBOutlet weak var questionTextView: UITextView!
     @IBOutlet weak var likeCountTextView: UITextView!
     @IBOutlet weak var timeAgoLabel: UILabel!
+    @IBOutlet weak var channelButton: UIButton!
     
-    
+    // MARK: - overrid
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

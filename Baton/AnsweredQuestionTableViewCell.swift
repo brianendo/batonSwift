@@ -10,8 +10,10 @@ import UIKit
 import AVKit
 import AVFoundation
 
+// AnsweredQuestionViewController TableViewCell
 class AnsweredQuestionTableViewCell: UITableViewCell {
     
+    // MARK: - IBOutlets
     @IBOutlet weak var nameTextView: UITextView!
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var likeImageView: UIImageView!
@@ -25,34 +27,30 @@ class AnsweredQuestionTableViewCell: UITableViewCell {
     @IBOutlet weak var nameButton: UIButton!
     @IBOutlet weak var extraButton: UIButton!
     
+    // MARK: - Variables
     var player: AVPlayer!
     var playerController: AVPlayerViewController!
     
+    // MARK: - override
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         
-        self.profileImageView.frame = CGRectMake(0, 0, 30, 30)
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor
         self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2
         self.profileImageView.clipsToBounds = true
         
-//        likeCountTextView.layer.shadowColor = UIColor.blackColor().CGColor
-//        likeCountTextView.layer.shadowOffset = CGSizeMake(0, 2.0)
-//        likeCountTextView.layer.shadowOpacity = 1.0
-//        likeCountTextView.layer.shadowRadius = 2.0
-//        likeCountTextView.layer.backgroundColor = UIColor.clearColor().CGColor
-        
         playerController = AVPlayerViewController()
         playerController.player = player
-        
         playerController.view.frame = CGRectMake(videoView.frame.origin.x, videoView.frame.origin.x, videoView.frame.size.width, videoView.frame.size.height)
-        
         playerController.showsPlaybackControls = false
         playerController.videoGravity = AVLayerVideoGravityResizeAspectFill
         playerController.view.hidden = false
+        
+        followButton.setImage(UIImage(named: "addperson"), forState: .Normal)
+        followButton.setImage(UIImage(named: "addedperson"), forState: .Selected)
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

@@ -8,16 +8,19 @@
 
 import UIKit
 
+// AnswersViewController TableViewCell
 class QuestionTitleTableViewCell: UITableViewCell {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var likeCountTextView: UITextView!
     @IBOutlet weak var contentTextView: UITextView!
     @IBOutlet weak var postedByTextView: UITextView!
     @IBOutlet weak var timeAgoLabel: UILabel!
     @IBOutlet weak var answerCountLabel: UILabel!
     @IBOutlet weak var postedByButton: UIButton!
+    @IBOutlet weak var channelButton: UIButton!
     
-    
+    // MARK: - overrride
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

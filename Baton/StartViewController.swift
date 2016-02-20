@@ -12,13 +12,15 @@ import Alamofire
 import SwiftyJSON
 import KeychainSwift
 import JWTDecode
+import Crashlytics
 
 class StartViewController: UIViewController {
-
-    let keychain = KeychainSwift()
     
+    // MARK: - IBOutlet
     @IBOutlet weak var twitterLoginButton: UIButton!
     
+    // MARK: - Variables
+    let keychain = KeychainSwift()
     var firstname = ""
     var lastname = ""
     var profileImageUrl = ""
@@ -26,10 +28,13 @@ class StartViewController: UIViewController {
     var twitterId = ""
     var twitterUsername = ""
     
+    // MARK: - viewWill/viewDid
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        // Format text and image on Twitter Button
         twitterLoginButton.titleEdgeInsets = UIEdgeInsetsMake(0, -twitterLoginButton.imageView!.frame.size.width, 0, twitterLoginButton.imageView!.frame.size.width);
         twitterLoginButton.imageEdgeInsets = UIEdgeInsetsMake(0, twitterLoginButton.titleLabel!.frame.size.width, 0, -twitterLoginButton.titleLabel!.frame.size.width)
     }
@@ -40,15 +45,20 @@ class StartViewController: UIViewController {
     }
     
     
+    // MARK: - IBAction
     @IBAction func twitterLoginPressed(sender: UIButton) {
+        // Twitter Login
+        Answers.logCustomEventWithName("StartVC Taps",
+            customAttributes: ["button":"Twitter"])
         Twitter.sharedInstance().logInWithCompletion { session, error in
             if (session != nil) {
                 print(session?.userID)
                 
+                // Unique Twitter id
                 let twitterId = (session?.userID)! as String
                 
+                // Check if user with Twitter id exists
                 let url = globalurl + "api/findtwitteruser/" + twitterId
-                
                 Alamofire.request(.GET, url, parameters: nil)
                     .responseJSON { response in
                         print(response.request)
@@ -57,6 +67,8 @@ class StartViewController: UIViewController {
                         print(response.response?.statusCode)
                         
                         let statuscode = response.response?.statusCode
+                        
+                        // Able to find a user with that Twitter ID
                         if statuscode == 200 {
                             print("Log In successful")
                             let json = JSON(response.result.value!)
@@ -65,21 +77,7 @@ class StartViewController: UIViewController {
                             print(json["token"].string)
                             let id = json["data"]["_id"].string
                             let token = json["token"].string
-                            var refresh_token = json["data"]["token"].string
-                            if token == nil {
-                                
-                            } else {
-                                do {
-                                    let jwt = try decode(token!)
-                                    print(jwt)
-                                    print(jwt.body)
-                                    print(jwt.expiresAt)
-                                } catch {
-                                    print("Failed to decode JWT: \(error)")
-                                }
-                                
-                            }
-                            
+                            let refresh_token = json["data"]["token"].string
                             
                             if refresh_token == nil {
                                 // Generate refresh token if user does not have one
@@ -95,10 +93,13 @@ class StartViewController: UIViewController {
                                             let json = JSON(response.result.value!)
                                             print("JSON: \(json)")
                                             let token = json["token"].string
+                                            
+                                            // Set refresh token in Keychain
                                             self.keychain.set(token!, forKey: "refresh_token")
                                         }
                                 }
                             } else {
+                                // Set refresh token in Keychain
                                 self.keychain.set(refresh_token!, forKey: "refresh_token")
                             }
                             
@@ -106,46 +107,62 @@ class StartViewController: UIViewController {
                             self.keychain.set("1", forKey: "ISLOGGEDIN")
                             self.keychain.set(token!, forKey: "JWT")
                             
-//                            let id = json["_id"].string
-//                            let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-//                            prefs.setObject(id, forKey: "ID")
-//                            prefs.setInteger(1, forKey: "ISLOGGEDIN")
-//                            prefs.synchronize()
+                            Answers.logLoginWithMethod("Twitter",
+                                success: true,
+                                customAttributes: [:])
                             
+                            // Go to main storyboard
                             let storyboard = UIStoryboard(name: "Main", bundle: nil)
                             let mainVC = storyboard.instantiateInitialViewController()
                             self.presentViewController(mainVC!, animated: true, completion: nil)
-                        } else if statuscode == 400 {
+                        }
+                        // Unable to find user with that Twitter ID, Set up sign up process
+                        else if statuscode == 400 {
                             print("signed in as \(session!.userName)")
                             let userID = (session?.userID)!
                             let client = TWTRAPIClient()
                             client.loadUserWithID(userID) { (user, error) -> Void in
-                                // handle the response or error
                                 print(user?.name)
                                 print(user?.profileImageURL)
                                 print(user?.profileImageLargeURL)
-                                let fullName = (user?.name)! as String
-                                let fullNameArr = fullName.characters.split{$0 == " "}.map(String.init)
+                                var profileImageUrl = (user?.profileImageLargeURL)
+                                if profileImageUrl == nil {
+                                    profileImageUrl = ""
+                                }
                                 
-                                self.firstname = fullNameArr[0]
-                                self.lastname = fullNameArr[1]
-                                self.profileImageUrl = (user?.profileImageLargeURL)! as String
+                                let fullName = (user?.name)
+                                if fullName == nil {
+                                    
+                                } else {
+                                    // Split first name and last name by finding a space, not going to be fully accurate
+                                    let fullNameArr = fullName!.characters.split{$0 == " "}.map(String.init)
+                                    if fullNameArr.count > 1 {
+                                        self.firstname = fullNameArr[0]
+                                        self.lastname = fullNameArr[1]
+                                    } else if fullNameArr.count == 1 {
+                                        self.firstname = fullNameArr[0]
+                                    } else {
+                                        
+                                    }
+                                }
+                                
+                                
+                                self.profileImageUrl = profileImageUrl! as String
                                 self.username = session!.userName as String
                                 self.twitterId = userID
                                 self.twitterUsername = session!.userName as String
                                 
-                                let url = "http://twitter.com/" + session!.userName
                                 self.performSegueWithIdentifier("segueToTwitterSignup", sender: self)
                             }
                         } else if statuscode == 404 {
-                            var alertView:UIAlertView = UIAlertView()
+                            let alertView:UIAlertView = UIAlertView()
                             alertView.title = "Sign in Failed!"
                             alertView.message = "Connection Failed"
                             alertView.delegate = self
                             alertView.addButtonWithTitle("OK")
                             alertView.show()
                         } else {
-                            var alertView:UIAlertView = UIAlertView()
+                            let alertView:UIAlertView = UIAlertView()
                             alertView.title = "Sign in Failed!"
                             alertView.message = "Connection Failed"
                             alertView.delegate = self
@@ -165,7 +182,19 @@ class StartViewController: UIViewController {
         }
     }
     
-
+    @IBAction func logInButtonPressed(sender: UIButton) {
+        Answers.logCustomEventWithName("StartVC Taps",
+            customAttributes: ["button":"Log In"])
+    }
+    
+    @IBAction func signUpButtonPressed(sender: UIButton) {
+        Answers.logCustomEventWithName("StartVC Taps",
+            customAttributes: ["button":"Sign Up"])
+    }
+    
+    
+    
+    // MARK: - Segues
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "segueToTwitterSignup" {
             let twitterVC: TwitterSignupViewController = segue.destinationViewController as! TwitterSignupViewController

@@ -8,13 +8,16 @@
 
 import UIKit
 
+// ProfileViewController TableViewCell
 class ProfileButtonsTableViewCell: UITableViewCell {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var pencilButton: UIButton!
     @IBOutlet weak var recorderButton: UIButton!
     @IBOutlet weak var heartButton: UIButton!
     @IBOutlet weak var personalButton: UIButton!
     
+    // MARK: - override
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

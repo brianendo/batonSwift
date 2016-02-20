@@ -18,8 +18,10 @@ class Question: NSObject {
     var createdAt: NSDate
     var creator: String
     var likecount: Int
+    var channel_id: String
+    var channel_name: String
     
-    init(content: String?, creatorname: String?, id: String?, answercount: Int?, answered: Bool?, currentuser: Bool?, createdAt: NSDate?, creator: String?, likecount: Int?) {
+    init(content: String?, creatorname: String?, id: String?, answercount: Int?, answered: Bool?, currentuser: Bool?, createdAt: NSDate?, creator: String?, likecount: Int?, channel_id: String?, channel_name: String?) {
         self.content = content!
         self.creatorname = creatorname!
         self.id = id!
@@ -29,5 +31,7 @@ class Question: NSObject {
         self.createdAt = createdAt!
         self.creator = creator!
         self.likecount = likecount!
+        self.channel_id = channel_id!
+        self.channel_name = channel_name!
     }
 }

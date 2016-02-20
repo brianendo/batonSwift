@@ -7,13 +7,14 @@
 //
 
 import UIKit
+import Crashlytics
 
 class TabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        // Put border between the tabBar icons
         if let items = self.tabBar.items {
             
             //Get the height of the tab bar
@@ -52,24 +53,25 @@ class TabBarViewController: UITabBarController {
         // Dispose of any resources that can be recreated.
     }
     
-//    override func viewWillLayoutSubviews() {
-//        var tabFrame = self.tabBar.frame
-//        // - 40 is editable , I think the default value is around 50 px, below lowers the tabbar and above increases the tab bar size
-//        tabFrame.size.height = 40
-//        tabFrame.origin.y = self.view.frame.size.height - 40
-//        self.tabBar.frame = tabFrame
-//        
-//    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    override func tabBar(tabBar: UITabBar, didSelectItem item: UITabBarItem) {
+        if item.tag == 0 {
+            Answers.logCustomEventWithName("Tab Bar",
+                customAttributes: ["name":"feed"])
+            print("feed")
+        } else if item.tag == 1 {
+            Answers.logCustomEventWithName("Tab Bar",
+                customAttributes: ["name":"search"])
+            print("search")
+        } else if item.tag == 2 {
+            Answers.logCustomEventWithName("Tab Bar",
+                customAttributes: ["name":"notification"])
+            print("notifications")
+        } else if item.tag == 3 {
+            Answers.logCustomEventWithName("Tab Bar",
+                customAttributes: ["name":"profile"])
+            print("profile")
+        }
     }
-    */
+    
 
 }

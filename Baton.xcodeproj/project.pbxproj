@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		58FEA2CEC2F6ECCB5095338B /* Pods_Baton.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D3DEE78048E361BDFF5588A /* Pods_Baton.framework */; };
+		8E0F19871C72590200F7BC35 /* ChannelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F19861C72590200F7BC35 /* ChannelViewController.swift */; };
+		8E0F19891C72596900F7BC35 /* ChannelTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F19881C72596900F7BC35 /* ChannelTitleTableViewCell.swift */; };
+		8E0F198B1C725F3F00F7BC35 /* PickChannelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F198A1C725F3E00F7BC35 /* PickChannelViewController.swift */; };
+		8E0F198D1C72602800F7BC35 /* PickChannelTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F198C1C72602800F7BC35 /* PickChannelTableViewCell.swift */; };
+		8E0F198F1C7294EF00F7BC35 /* FeedSegmentedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F198E1C7294EF00F7BC35 /* FeedSegmentedTableViewCell.swift */; };
 		8E146C561C5AA55500468A1C /* NameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C551C5AA55500468A1C /* NameViewController.swift */; };
 		8E146C581C5AA55C00468A1C /* UsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C571C5AA55C00468A1C /* UsernameViewController.swift */; };
 		8E146C5A1C5AC1FE00468A1C /* NotificationFollowTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C591C5AC1FE00468A1C /* NotificationFollowTableViewCell.swift */; };
@@ -31,7 +36,6 @@
 		8E9D70E71C167A960073CA17 /* MyQuestionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E61C167A960073CA17 /* MyQuestionTitleTableViewCell.swift */; };
 		8E9D70E91C1776860073CA17 /* ProfileRelayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E81C1776860073CA17 /* ProfileRelayTableViewCell.swift */; };
 		8E9D70EB1C17A0300073CA17 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */; };
-		8E9D70ED1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70EC1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift */; };
 		8EA960F61C110A3F00371C77 /* AnswersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F51C110A3F00371C77 /* AnswersViewController.swift */; };
 		8EA960F81C11185A00371C77 /* AnswerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */; };
 		8EA960FA1C12277900371C77 /* QuestionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */; };
@@ -86,6 +90,11 @@
 
 /* Begin PBXFileReference section */
 		2D3DEE78048E361BDFF5588A /* Pods_Baton.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Baton.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E0F19861C72590200F7BC35 /* ChannelViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChannelViewController.swift; sourceTree = "<group>"; };
+		8E0F19881C72596900F7BC35 /* ChannelTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChannelTitleTableViewCell.swift; sourceTree = "<group>"; };
+		8E0F198A1C725F3E00F7BC35 /* PickChannelViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickChannelViewController.swift; sourceTree = "<group>"; };
+		8E0F198C1C72602800F7BC35 /* PickChannelTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickChannelTableViewCell.swift; sourceTree = "<group>"; };
+		8E0F198E1C7294EF00F7BC35 /* FeedSegmentedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedSegmentedTableViewCell.swift; sourceTree = "<group>"; };
 		8E146C551C5AA55500468A1C /* NameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameViewController.swift; sourceTree = "<group>"; };
 		8E146C571C5AA55C00468A1C /* UsernameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UsernameViewController.swift; sourceTree = "<group>"; };
 		8E146C591C5AC1FE00468A1C /* NotificationFollowTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationFollowTableViewCell.swift; sourceTree = "<group>"; };
@@ -109,7 +118,6 @@
 		8E9D70E61C167A960073CA17 /* MyQuestionTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyQuestionTitleTableViewCell.swift; sourceTree = "<group>"; };
 		8E9D70E81C1776860073CA17 /* ProfileRelayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileRelayTableViewCell.swift; sourceTree = "<group>"; };
 		8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
-		8E9D70EC1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileSegmentedTableViewCell.swift; sourceTree = "<group>"; };
 		8EA960F51C110A3F00371C77 /* AnswersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnswersViewController.swift; sourceTree = "<group>"; };
 		8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnswerTableViewCell.swift; sourceTree = "<group>"; };
 		8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionTitleTableViewCell.swift; sourceTree = "<group>"; };
@@ -187,6 +195,26 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8E0F19851C6C346700F7BC35 /* Feed */ = {
+			isa = PBXGroup;
+			children = (
+				8E0F19861C72590200F7BC35 /* ChannelViewController.swift */,
+				8E0F19881C72596900F7BC35 /* ChannelTitleTableViewCell.swift */,
+				8EE04AFB1BE29A030040D5A5 /* FeedViewController.swift */,
+				8E0F198E1C7294EF00F7BC35 /* FeedSegmentedTableViewCell.swift */,
+				8EE04AFD1BE29C3A0040D5A5 /* QuestionTableViewCell.swift */,
+				8EE04AFF1BE2A14F0040D5A5 /* AskQuestionViewController.swift */,
+				8E0F198A1C725F3E00F7BC35 /* PickChannelViewController.swift */,
+				8E0F198C1C72602800F7BC35 /* PickChannelTableViewCell.swift */,
+				8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */,
+				8E146C6D1C69221400468A1C /* ShareVideoViewController.swift */,
+				8EA960F51C110A3F00371C77 /* AnswersViewController.swift */,
+				8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */,
+				8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */,
+			);
+			name = Feed;
+			sourceTree = "<group>";
+		};
 		8E146C6A1C656D2B00468A1C /* Following */ = {
 			isa = PBXGroup;
 			children = (
@@ -206,7 +234,6 @@
 				8EE04B251BE974630040D5A5 /* ProfileQuestionTableViewCell.swift */,
 				8E9D70E81C1776860073CA17 /* ProfileRelayTableViewCell.swift */,
 				8EE04B2D1BEABBD10040D5A5 /* ProfileTableViewCell.swift */,
-				8E9D70EC1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift */,
 				8EB945701C4DA46900FA01E2 /* ProfileLikedTableViewCell.swift */,
 				8EB945741C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift */,
 				8E146C681C62B5EE00468A1C /* WebViewController.swift */,
@@ -237,8 +264,8 @@
 		8E146C791C6BC3F100468A1C /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
-				8E146C751C6BBC1800468A1C /* OnboardingViewController.swift */,
 				8E146C771C6BC25500468A1C /* Onboarding.storyboard */,
+				8E146C751C6BBC1800468A1C /* OnboardingViewController.swift */,
 				8E146C7A1C6BD3C400468A1C /* Onboarding1ViewController.swift */,
 				8E146C7C1C6BE54900468A1C /* Onboarding2ViewController.swift */,
 				8E146C8D1C6C043500468A1C /* Onboarding3ViewController.swift */,
@@ -272,20 +299,13 @@
 		8EE04ACC1BE299890040D5A5 /* Baton */ = {
 			isa = PBXGroup;
 			children = (
+				8EE04ACD1BE2998A0040D5A5 /* AppDelegate.swift */,
 				8E146C791C6BC3F100468A1C /* Onboarding */,
 				8EE04B011BE2A6C10040D5A5 /* LogIn */,
-				8EE04ACD1BE2998A0040D5A5 /* AppDelegate.swift */,
-				8EE04AFB1BE29A030040D5A5 /* FeedViewController.swift */,
-				8EE04AFD1BE29C3A0040D5A5 /* QuestionTableViewCell.swift */,
-				8EE04AFF1BE2A14F0040D5A5 /* AskQuestionViewController.swift */,
-				8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */,
-				8E146C6D1C69221400468A1C /* ShareVideoViewController.swift */,
-				8EA960F51C110A3F00371C77 /* AnswersViewController.swift */,
-				8EA960F71C11185A00371C77 /* AnswerTableViewCell.swift */,
-				8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */,
+				8E0F19851C6C346700F7BC35 /* Feed */,
+				8E146C6A1C656D2B00468A1C /* Following */,
 				8E146C6C1C65756600468A1C /* Notification */,
 				8E146C6B1C656D4900468A1C /* Profile */,
-				8E146C6A1C656D2B00468A1C /* Following */,
 				8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */,
 				8EE04AD11BE2998A0040D5A5 /* Main.storyboard */,
 				8EE04B1A1BE861FE0040D5A5 /* Models */,
@@ -419,8 +439,11 @@
 				TargetAttributes = {
 					8EE04AC91BE299890040D5A5 = {
 						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = L38XWG77QV;
+						DevelopmentTeam = 87ULRSSW65;
 						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
 							com.apple.Push = {
 								enabled = 1;
 							};
@@ -553,6 +576,7 @@
 			files = (
 				8E146C8E1C6C043500468A1C /* Onboarding3ViewController.swift in Sources */,
 				8EB945751C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift in Sources */,
+				8E0F19891C72596900F7BC35 /* ChannelTitleTableViewCell.swift in Sources */,
 				8EE04B051BE2A77D0040D5A5 /* StartViewController.swift in Sources */,
 				8EE04B1C1BE862160040D5A5 /* Question.swift in Sources */,
 				8E9D70E51C164A920073CA17 /* AnsweredQuestionTableViewCell.swift in Sources */,
@@ -566,11 +590,13 @@
 				8EE04B281BE97D6B0040D5A5 /* Notification.swift in Sources */,
 				8EE04B2A1BEAA92F0040D5A5 /* Answer.swift in Sources */,
 				8E146C5E1C5BEE8500468A1C /* EditProfileTableViewController.swift in Sources */,
+				8E0F198D1C72602800F7BC35 /* PickChannelTableViewCell.swift in Sources */,
 				8E146C5A1C5AC1FE00468A1C /* NotificationFollowTableViewCell.swift in Sources */,
 				8E146C641C5FEFC800468A1C /* ChangeEmailViewController.swift in Sources */,
 				8E146C5C1C5BE89200468A1C /* SettingsTableViewController.swift in Sources */,
 				8E146C901C6C0C2200468A1C /* PushViewController.swift in Sources */,
 				8EB9456D1C498B5200FA01E2 /* FollowingAnswerTableViewCell.swift in Sources */,
+				8E0F198F1C7294EF00F7BC35 /* FeedSegmentedTableViewCell.swift in Sources */,
 				8EA960F61C110A3F00371C77 /* AnswersViewController.swift in Sources */,
 				8EE04B001BE2A14F0040D5A5 /* AskQuestionViewController.swift in Sources */,
 				8EA960FA1C12277900371C77 /* QuestionTitleTableViewCell.swift in Sources */,
@@ -587,15 +613,16 @@
 				8E146C691C62B5EE00468A1C /* WebViewController.swift in Sources */,
 				8E146C671C62901000468A1C /* TwitterSignupViewController.swift in Sources */,
 				8E146C621C5FE42D00468A1C /* ChangePasswordViewController.swift in Sources */,
+				8E0F198B1C725F3F00F7BC35 /* PickChannelViewController.swift in Sources */,
 				8E146C6E1C69221400468A1C /* ShareVideoViewController.swift in Sources */,
 				8E146C561C5AA55500468A1C /* NameViewController.swift in Sources */,
 				8E9D70E91C1776860073CA17 /* ProfileRelayTableViewCell.swift in Sources */,
 				8EB945731C53151200FA01E2 /* FollowHeaderTableViewCell.swift in Sources */,
 				8EE04B1E1BE95D7B0040D5A5 /* NotificationViewController.swift in Sources */,
-				8E9D70ED1C1A65350073CA17 /* ProfileSegmentedTableViewCell.swift in Sources */,
 				8E146C601C5C334800468A1C /* FollowingSearchTableViewCell.swift in Sources */,
 				8EE04AFE1BE29C3A0040D5A5 /* QuestionTableViewCell.swift in Sources */,
 				8EE04AFC1BE29A030040D5A5 /* FeedViewController.swift in Sources */,
+				8E0F19871C72590200F7BC35 /* ChannelViewController.swift in Sources */,
 				8EE04ACE1BE2998A0040D5A5 /* AppDelegate.swift in Sources */,
 				8EB9456F1C49B00D00FA01E2 /* FollowingQuestionTableViewCell.swift in Sources */,
 				8EB945651C487B1100FA01E2 /* UserListViewController.swift in Sources */,
@@ -745,10 +772,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				INFOPLIST_FILE = Baton/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.brianendo.Baton;
+				PRODUCT_BUNDLE_IDENTIFIER = io.thoughtless.Baton;
 				PRODUCT_NAME = Baton;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -765,7 +793,7 @@
 				INFOPLIST_FILE = Baton/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.brianendo.Baton;
+				PRODUCT_BUNDLE_IDENTIFIER = io.thoughtless.Baton;
 				PRODUCT_NAME = Baton;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;

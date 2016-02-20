@@ -8,18 +8,19 @@
 
 import UIKit
 
+// FollowingViewController TableViewCell
 class FollowingQuestionTableViewCell: UITableViewCell {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var usernameButton: UIButton!
     @IBOutlet weak var contentTextView: UITextView!
     @IBOutlet weak var profileImageView: UIImageView!
-    
-    
+    @IBOutlet weak var timeAgoLabel: UILabel!
+    // MARK: - override
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         
-        self.profileImageView.frame = CGRectMake(0, 0, 35, 35)
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor
@@ -28,8 +29,6 @@ class FollowingQuestionTableViewCell: UITableViewCell {
         
         usernameButton.titleLabel?.font = UIFont(name: "HelveticaNeue-Bold", size: 12)
         usernameButton.titleLabel?.textColor = UIColor.blackColor()
-        
-        
     }
 
     override func setSelected(selected: Bool, animated: Bool) {

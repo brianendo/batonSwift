@@ -8,8 +8,10 @@
 
 import UIKit
 
+// ProfileViewController TableViewCell
 class ProfileTableViewCell: UITableViewCell {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var followersButton: UIButton!
     @IBOutlet weak var followingButton: UIButton!
@@ -18,12 +20,11 @@ class ProfileTableViewCell: UITableViewCell {
     @IBOutlet weak var viewButton: UIButton!
     @IBOutlet weak var twitterButton: UIButton!
     
+    // MARK: - override
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         
-        
-        self.profileImageView.frame = CGRectMake(0, 0, 60, 60)
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor

@@ -13,8 +13,10 @@ import KeychainSwift
 
 class SettingsTableViewController: UITableViewController {
 
+    // MARK: - Variables
     let keychain = KeychainSwift()
     
+    // MARK: - viewDid/viewWill
     override func viewDidAppear(animated: Bool) {
         self.tabBarController!.tabBar.hidden = false
     }
@@ -34,9 +36,10 @@ class SettingsTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - functions
     func configurationTextField(textField: UITextField!)
     {
-        if let aTextField = textField {
+        if let _ = textField {
             textField.text = ""
         }
     }
@@ -45,7 +48,7 @@ class SettingsTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 0 {
             self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            var alert = UIAlertController(title: "Provide Feedback", message: "Let us know about any problems so we can continue to improve Baton.", preferredStyle:
+            let alert = UIAlertController(title: "Provide Feedback", message: "Let us know about any problems so we can continue to improve Baton.", preferredStyle:
                 UIAlertControllerStyle.Alert)
             
             alert.addTextFieldWithConfigurationHandler(configurationTextField)
@@ -79,9 +82,6 @@ class SettingsTableViewController: UITableViewController {
             self.presentViewController(alert, animated: true, completion: {
                 print("completion block")
             })
-            
-            
-
         }
         
         if indexPath.section == 1 {
@@ -95,10 +95,8 @@ class SettingsTableViewController: UITableViewController {
         }
         
         if indexPath.section == 2 {
-//            let appDomain = NSBundle.mainBundle().bundleIdentifier
-//            NSUserDefaults.standardUserDefaults().removePersistentDomainForName(appDomain!)
+            // Clear all contents of keychain
             keychain.clear()
-            
             let login = UIStoryboard(name: "LogIn", bundle: nil)
             let loginVC = login.instantiateInitialViewController()
             self.presentViewController(loginVC!, animated: true, completion: nil)

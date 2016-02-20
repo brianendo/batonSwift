@@ -8,16 +8,18 @@
 
 import UIKit
 
+// FollowingViewController TableViewCell
 class FollowingSearchTableViewCell: UITableViewCell {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var profileImageView: UIImageView!
     
-    
+    // MARK: - override
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        self.profileImageView.frame = CGRectMake(0, 0, 40, 40)
+        
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor

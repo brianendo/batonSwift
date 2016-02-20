@@ -8,16 +8,19 @@
 
 import UIKit
 
+// NotificationViewController TableViewCell
 class NotificationAnswerTableViewCell: UITableViewCell {
     
+    // MARK: - IBOutlets
     @IBOutlet weak var headerTextView: UITextView!
     @IBOutlet weak var contentTextView: UITextView!
     @IBOutlet weak var profileImageView: UIImageView!
     
+    // MARK: - override
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        self.profileImageView.frame = CGRectMake(0, 0, 35, 35)
+        
         self.profileImageView.layer.borderWidth = 0.5
         self.profileImageView.layer.masksToBounds = false
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor

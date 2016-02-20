@@ -10,14 +10,16 @@ import UIKit
 
 class WebViewController: UIViewController {
 
+    // MARK: - IBOutelts
     @IBOutlet weak var webView: UIWebView!
     
+    // MARK: - Variables
     var urlToLoad: NSURL?
     
+    // MARK: - viewWill/viewDid
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
         let request = NSURLRequest(URL: urlToLoad!)
         webView.loadRequest(request)
     }
@@ -27,6 +29,7 @@ class WebViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - IBAction
     @IBAction func exitButtonPressed(sender: UIBarButtonItem) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
