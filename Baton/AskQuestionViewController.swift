@@ -29,6 +29,9 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
     var fromSpecificChannel = false
     var channelName = ""
     var channelId = ""
+    var forEditPost = false
+    var content = ""
+    var questionId = ""
     
     // MARK: - Keyboard
     func registerForKeyboardNotifications ()-> Void   {
@@ -52,38 +55,70 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
         super.viewDidLoad()
         
         contentTextView.delegate = self
-        
-        // Make the keyboard pop up
         contentTextView.becomeFirstResponder()
         
-        // Placeholder text
-        if fromSpecificChannel {
-            contentTextView.text = "What do you want to share with the " + self.channelName + " community?"
-        } else {
-           contentTextView.text = placeholder
-        }
         
-        contentTextView.textColor = UIColor.lightGrayColor()
-        
-        contentTextView.selectedTextRange = contentTextView.textRangeFromPosition(contentTextView.beginningOfDocument, toPosition: contentTextView.beginningOfDocument)
-        
-        self.sendButton.hidden = true
-//        self.sendButton.layer.masksToBounds = true
-//        self.sendButton.layer.borderColor = UIColor(red:0.89, green:0.89, blue:0.89, alpha:1.0).CGColor
-//        self.sendButton.layer.borderWidth = 0.7
-        
-        
-        if fromSpecificChannel {
-            channelButton.setTitle(self.channelName, forState: .Normal)
-            channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 10.0, bottom: 5.0, right: 10.0)
-            channelButton.layer.cornerRadius = 5
-            channelButton.sizeToFit()
-        } else {
+        if forEditPost {
+            contentTextView.text = self.content
+            self.sendButton.hidden = true
+            let count = 150 - self.content.characters.count
+            self.charRemainingLabel.text = "\(count)"
+            
             channelButton.frame = CGRectMake(0, 0, 0, 0)
             channelButton.hidden = true
             topSpaceForTextView.constant = 15
             self.contentTextView.setNeedsUpdateConstraints()
+        } else {
+            // Placeholder text
+            if fromSpecificChannel {
+                contentTextView.text = "What do you want to share with the " + self.channelName + " community?"
+            } else {
+                contentTextView.text = placeholder
+            }
+            
+            contentTextView.textColor = UIColor.lightGrayColor()
+            
+            contentTextView.selectedTextRange = contentTextView.textRangeFromPosition(contentTextView.beginningOfDocument, toPosition: contentTextView.beginningOfDocument)
+            
+            self.sendButton.hidden = true
+            
+            if fromSpecificChannel {
+                channelButton.setTitle(self.channelName, forState: .Normal)
+                channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 10.0, bottom: 5.0, right: 10.0)
+                channelButton.layer.cornerRadius = 5
+                channelButton.sizeToFit()
+            } else {
+                channelButton.frame = CGRectMake(0, 0, 0, 0)
+                channelButton.hidden = true
+                topSpaceForTextView.constant = 15
+                self.contentTextView.setNeedsUpdateConstraints()
+            }
         }
+        
+//        // Placeholder text
+//        if fromSpecificChannel {
+//            contentTextView.text = "What do you want to share with the " + self.channelName + " community?"
+//        } else {
+//           contentTextView.text = placeholder
+//        }
+//        
+//        contentTextView.textColor = UIColor.lightGrayColor()
+//        
+//        contentTextView.selectedTextRange = contentTextView.textRangeFromPosition(contentTextView.beginningOfDocument, toPosition: contentTextView.beginningOfDocument)
+//        
+//        self.sendButton.hidden = true
+//        
+//        if fromSpecificChannel {
+//            channelButton.setTitle(self.channelName, forState: .Normal)
+//            channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 10.0, bottom: 5.0, right: 10.0)
+//            channelButton.layer.cornerRadius = 5
+//            channelButton.sizeToFit()
+//        } else {
+//            channelButton.frame = CGRectMake(0, 0, 0, 0)
+//            channelButton.hidden = true
+//            topSpaceForTextView.constant = 15
+//            self.contentTextView.setNeedsUpdateConstraints()
+//        }
         
     }
 
@@ -159,99 +194,171 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
     
     // MARK: - IBAction
     @IBAction func sendButtonPressed(sender: UIButton) {
-        if fromSpecificChannel {
-            self.sendButton.enabled = false
-            let text = self.contentTextView.text
+        if forEditPost {
+            print("Money everywhere")
             
-            // Check if JWT is valid before posting question
-            var token = keychain.get("JWT")
+            let url = globalurl + "api/editquestioncontent"
+            let parameters = [
+                "id": questionId,
+                "newContent": contentTextView.text
+            ]
+            Alamofire.request(.PUT, url, parameters: parameters)
+                .responseJSON { response in
+                    print(response.response?.statusCode)
+                    let value = response.result.value
+                    print(value)
+                    NSNotificationCenter.defaultCenter().postNotificationName("questionEdited", object: self)
+                    self.navigationController?.popViewControllerAnimated(true)
+            }
+
             
-            do {
+        } else {
+            if fromSpecificChannel {
+                self.sendButton.enabled = false
+                let text = self.contentTextView.text
                 
-                let jwt = try decode(token!)
-                if jwt.expired == true {
-                    var refresh_token = keychain.get("refresh_token")
-                    
-                    if refresh_token == nil {
-                        refresh_token = ""
-                    }
-                    
-                    let url = globalurl + "api/changetoken/"
-                    let parameters = [
-                        "refresh_token": refresh_token! as String
-                    ]
-                    Alamofire.request(.POST, url, parameters: parameters)
-                        .responseJSON { response in
-                            var value = response.result.value
-                            
-                            if value == nil {
-                                value = []
-                            } else {
-                                let json = JSON(value!)
-                                let newtoken = json["token"].string
-                                self.keychain.set(newtoken!, forKey: "JWT")
-                                token = newtoken
+                // Check if JWT is valid before posting question
+                var token = keychain.get("JWT")
+                
+                do {
+                    if token == nil {
+                        var refresh_token = keychain.get("refresh_token")
+                        
+                        if refresh_token == nil {
+                            refresh_token = ""
+                        }
+                        
+                        let url = globalurl + "api/changetoken/"
+                        let parameters = [
+                            "refresh_token": refresh_token! as String
+                        ]
+                        Alamofire.request(.POST, url, parameters: parameters)
+                            .responseJSON { response in
+                                var value = response.result.value
                                 
-                                let headers = [
-                                    "Authorization": "\(token!)"
-                                ]
-                                let url = globalurl + "api/questions"
-                                let parameters = [
-                                    "content": text,
-                                    "creatorname": myUsername,
-                                    "creator": userid,
-                                    "answercount": 0,
-                                    "likes": 0,
-                                    "channel_id": self.channelId,
-                                    "channel_name": self.channelName
-                                ]
-                                Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
-                                    .responseJSON { response in
-                                        print(response.response?.statusCode)
-                                        Answers.logCustomEventWithName("Question submitted",
-                                            customAttributes: ["channel": self.channelName, "username": myUsername])
-                                        // Update feed with new question
-                                        NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                                        self.navigationController?.popViewControllerAnimated(true)
+                                if value == nil {
+                                    value = []
+                                } else {
+                                    let json = JSON(value!)
+                                    let newtoken = json["token"].string
+                                    self.keychain.set(newtoken!, forKey: "JWT")
+                                    token = newtoken
+                                    
+                                    let headers = [
+                                        "Authorization": "\(token!)"
+                                    ]
+                                    let url = globalurl + "api/questions"
+                                    let parameters = [
+                                        "content": text,
+                                        "creatorname": myUsername,
+                                        "creator": userid,
+                                        "answercount": 0,
+                                        "likes": 0,
+                                        "channel_id": self.channelId,
+                                        "channel_name": self.channelName
+                                    ]
+                                    Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                                        .responseJSON { response in
+                                            print(response.response?.statusCode)
+                                            Answers.logCustomEventWithName("Question submitted",
+                                                customAttributes: ["channel": self.channelName, "username": myUsername])
+                                            // Update feed with new question
+                                            NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                            self.navigationController?.popViewControllerAnimated(true)
+                                    }
                                 }
+                                
+                                
+                        }
+                    } else {
+                        let jwt = try decode(token!)
+                        if jwt.expired == true {
+                            var refresh_token = keychain.get("refresh_token")
+                            
+                            if refresh_token == nil {
+                                refresh_token = ""
                             }
                             
+                            let url = globalurl + "api/changetoken/"
+                            let parameters = [
+                                "refresh_token": refresh_token! as String
+                            ]
+                            Alamofire.request(.POST, url, parameters: parameters)
+                                .responseJSON { response in
+                                    var value = response.result.value
+                                    
+                                    if value == nil {
+                                        value = []
+                                    } else {
+                                        let json = JSON(value!)
+                                        let newtoken = json["token"].string
+                                        self.keychain.set(newtoken!, forKey: "JWT")
+                                        token = newtoken
+                                        
+                                        let headers = [
+                                            "Authorization": "\(token!)"
+                                        ]
+                                        let url = globalurl + "api/questions"
+                                        let parameters = [
+                                            "content": text,
+                                            "creatorname": myUsername,
+                                            "creator": userid,
+                                            "answercount": 0,
+                                            "likes": 0,
+                                            "channel_id": self.channelId,
+                                            "channel_name": self.channelName
+                                        ]
+                                        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                                            .responseJSON { response in
+                                                print(response.response?.statusCode)
+                                                Answers.logCustomEventWithName("Question submitted",
+                                                    customAttributes: ["channel": self.channelName, "username": myUsername])
+                                                // Update feed with new question
+                                                NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                                self.navigationController?.popViewControllerAnimated(true)
+                                        }
+                                    }
+                                    
+                                    
+                            }
+                        } else {
+                            let headers = [
+                                "Authorization": "\(token!)"
+                            ]
                             
+                            let url = globalurl + "api/questions"
+                            let parameters = [
+                                "content": text,
+                                "creatorname": myUsername,
+                                "creator": userid,
+                                "answercount": 0,
+                                "likes": 0,
+                                "channel_id": self.channelId,
+                                "channel_name": self.channelName
+                            ]
+                            Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                                .responseJSON { response in
+                                    print(response.request)
+                                    print(response.response)
+                                    print(response.result)
+                                    print(response.response?.statusCode)
+                                    Answers.logCustomEventWithName("Question submitted",
+                                        customAttributes: ["channel": self.channelName, "username": myUsername])
+                                    NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                    self.navigationController?.popViewControllerAnimated(true)
+                                    
+                            }
+                        }
+                        
                     }
-                } else {
-                    let headers = [
-                        "Authorization": "\(token!)"
-                    ]
-                    
-                    let url = globalurl + "api/questions"
-                    let parameters = [
-                        "content": text,
-                        "creatorname": myUsername,
-                        "creator": userid,
-                        "answercount": 0,
-                        "likes": 0,
-                        "channel_id": self.channelId,
-                        "channel_name": self.channelName
-                    ]
-                    Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
-                        .responseJSON { response in
-                            print(response.request)
-                            print(response.response)
-                            print(response.result)
-                            print(response.response?.statusCode)
-                            Answers.logCustomEventWithName("Question submitted",
-                                customAttributes: ["channel": self.channelName, "username": myUsername])
-                            NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                            self.navigationController?.popViewControllerAnimated(true)
-                            
-                    }
+                } catch {
+                    print("Failed to decode JWT: \(error)")
                 }
-            } catch {
-                print("Failed to decode JWT: \(error)")
+            } else {
+                self.performSegueWithIdentifier("segueToPickChannel", sender: self)
             }
-        } else {
-            self.performSegueWithIdentifier("segueToPickChannel", sender: self)
         }
+        
         
     }
     

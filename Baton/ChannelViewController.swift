@@ -29,7 +29,9 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
         self.tabBarController!.tabBar.hidden = false
         
         // Check if there are any unread notifications
-//        self.checkNotifications()
+        if userid != "" {
+            self.checkNotifications()
+        }
     }
     
     // Check if there are any unread notifications
@@ -44,13 +46,12 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
                 if statuscode == 200 {
                     print("unread notifcations")
                     let tabItem = self.tabBarController?.viewControllers![2]
-//                    tabItem?.tabBarItem.badgeValue = ""
-                    tabItem?.tabBarItem.image = UIImage(named: "bellUnread")
+                    tabItem?.tabBarItem.badgeValue = "1"
+                    NSNotificationCenter.defaultCenter().postNotificationName("newNotification", object: self)
                 } else if statuscode == 400 {
                     print("no new notifications")
                     let tabItem = self.tabBarController?.viewControllers![2]
-//                    tabItem?.tabBarItem.badgeValue = ""
-                    tabItem?.tabBarItem.image = UIImage(named: "thickerBell")
+                    tabItem?.tabBarItem.badgeValue = nil
                 } else if statuscode == 404 {
                     
                 } else {
@@ -66,10 +67,8 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
         var token = keychain.get("JWT")
         
         do {
-            let jwt = try decode(token!)
             
-            // Check if JWT expired
-            if jwt.expired == true {
+            if token == nil {
                 var refresh_token = keychain.get("refresh_token")
                 
                 if refresh_token == nil {
@@ -150,18 +149,13 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
                                         }
                                         
                                         let deviceToken = json["deviceToken"].string
-                                        if deviceToken == nil {
-                                            if(UIApplication.instancesRespondToSelector(Selector("registerUserNotificationSettings:"))) {
-                                                let settings = UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: nil)
-                                                UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-                                                
-                                                // This is an asynchronous method to retrieve a Device Token
-                                                // Callbacks are in AppDelegate.swift
-                                                // Success = didRegisterForRemoteNotificationsWithDeviceToken
-                                                // Fail = didFailToRegisterForRemoteNotificationsWithError
-                                                UIApplication.sharedApplication().registerForRemoteNotifications()
+                                        
+                                        if(UIApplication.instancesRespondToSelector(Selector("registerUserNotificationSettings:"))) {
+                                            let settings = UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: nil)
+                                            UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+                                            
+                                            UIApplication.sharedApplication().registerForRemoteNotifications()
                                             }
-                                        }
                                         
                                         
                                         
@@ -175,77 +169,176 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
                         
                 }
             } else {
-                let headers = [
-                    "Authorization": "\(token!)"
-                ]
-                let url = globalurl + "api/users/" + userid
-                Alamofire.request(.GET, url, parameters: nil, headers: headers)
-                    .responseJSON { response in
-                        var value = response.result.value
-                        
-                        let statuscode = response.response?.statusCode
-                        print(statuscode)
-                        
-                        if value == nil {
-                            value = []
-                        } else {
-                            let json = JSON(value!)
-                            //                            print("JSON: \(json)")
-                            let firstname = json["firstname"].string
-                            let lastname = json["lastname"].string
-                            var username = json["username"].string
-                            let email = json["email"].string
+                let jwt = try decode(token!)
+                
+                // Check if JWT expired
+                if jwt.expired == true {
+                    var refresh_token = keychain.get("refresh_token")
+                    
+                    if refresh_token == nil {
+                        refresh_token = ""
+                    }
+                    
+                    // Use refresh token to get new JWT
+                    let url = globalurl + "api/changetoken/"
+                    let parameters = [
+                        "refresh_token": refresh_token! as String
+                    ]
+                    
+                    Alamofire.request(.POST, url, parameters: parameters)
+                        .responseJSON { response in
+                            var value = response.result.value
                             
-                            name = firstname! + " " + lastname!
-                            
-                            if username == nil {
-                                username = firstname! + lastname!
+                            if value == nil {
+                                value = []
                             } else {
-                                username = username!
-                            }
-                            
-                            myfirstname = firstname!
-                            mylastname = lastname!
-                            myUsername = username!
-                            
-                            if email ==  nil {
-                                myemail = ""
-                            } else {
-                                myemail = email!
-                            }
-                            
-                            let channels = json["channels"]
-                            if channels ==  nil {
+                                let json = JSON(value!)
+                                //                            print("JSON: \(json)")
+                                //                            print(json["token"].string)
+                                let newtoken = json["token"].string
+                                self.keychain.set(newtoken!, forKey: "JWT")
+                                token = newtoken
                                 
-                            } else {
-                                for (_,subJson):(String, JSON) in channels {
-                                    let channelId = subJson["_id"].string
-                                    let channelName = subJson["name"].string
-                                    
-                                    self.myChannelIdArray.append(channelId!)
-                                    self.myChannelNameArray.append(channelName!)
+                                // Use JWT to access users route
+                                let headers = [
+                                    "Authorization": "\(token!)"
+                                ]
+                                let url = globalurl + "api/users/" + userid
+                                Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                                    .responseJSON { response in
+                                        var value = response.result.value
+                                        
+                                        let statuscode = (response.response?.statusCode)!
+                                        print(statuscode)
+                                        
+                                        if value == nil {
+                                            value = []
+                                        } else {
+                                            let json = JSON(value!)
+                                            //                                        print("JSON: \(json)")
+                                            let firstname = json["firstname"].string
+                                            let lastname = json["lastname"].string
+                                            var username = json["username"].string
+                                            let email = json["email"].string
+                                            
+                                            name = firstname! + " " + lastname!
+                                            
+                                            if username == nil {
+                                                username = firstname! + lastname!
+                                            } else {
+                                                username = username!
+                                            }
+                                            
+                                            myfirstname = firstname!
+                                            mylastname = lastname!
+                                            myUsername = username!
+                                            
+                                            if email ==  nil {
+                                                myemail = ""
+                                            } else {
+                                                myemail = email!
+                                            }
+                                            
+                                            let channels = json["channels"]
+                                            if channels ==  nil {
+                                                
+                                            } else {
+                                                for (_,subJson):(String, JSON) in channels {
+                                                    let channelId = subJson["_id"].string
+                                                    let channelName = subJson["name"].string
+                                                    
+                                                    self.myChannelIdArray.append(channelId!)
+                                                    self.myChannelNameArray.append(channelName!)
+                                                }
+                                            }
+                                            
+                                            let deviceToken = json["deviceToken"].string
+                                            if(UIApplication.instancesRespondToSelector(Selector("registerUserNotificationSettings:"))) {
+                                                let settings = UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: nil)
+                                                UIApplication.sharedApplication().registerUserNotificationSettings(settings)
+                                                
+                                                UIApplication.sharedApplication().registerForRemoteNotifications()
+                                            }
+                                            
+                                            
+                                            
+                                            self.tableView.reloadData()
+                                            // Load all types of questions
+                                            self.loadChannels()
+                                        }
                                 }
                             }
                             
-                            let deviceToken = json["deviceToken"].string
-                            if deviceToken == nil {
+                            
+                    }
+                } else {
+                    let headers = [
+                        "Authorization": "\(token!)"
+                    ]
+                    let url = globalurl + "api/users/" + userid
+                    Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                        .responseJSON { response in
+                            var value = response.result.value
+                            
+                            let statuscode = response.response?.statusCode
+                            print(statuscode)
+                            
+                            if value == nil {
+                                value = []
+                            } else {
+                                let json = JSON(value!)
+                                //                            print("JSON: \(json)")
+                                let firstname = json["firstname"].string
+                                let lastname = json["lastname"].string
+                                var username = json["username"].string
+                                let email = json["email"].string
+                                
+                                name = firstname! + " " + lastname!
+                                
+                                if username == nil {
+                                    username = firstname! + lastname!
+                                } else {
+                                    username = username!
+                                }
+                                
+                                myfirstname = firstname!
+                                mylastname = lastname!
+                                myUsername = username!
+                                
+                                if email ==  nil {
+                                    myemail = ""
+                                } else {
+                                    myemail = email!
+                                }
+                                
+                                let channels = json["channels"]
+                                if channels ==  nil {
+                                    
+                                } else {
+                                    for (_,subJson):(String, JSON) in channels {
+                                        let channelId = subJson["_id"].string
+                                        let channelName = subJson["name"].string
+                                        
+                                        self.myChannelIdArray.append(channelId!)
+                                        self.myChannelNameArray.append(channelName!)
+                                    }
+                                }
+                                
+                                let deviceToken = json["deviceToken"].string
                                 if(UIApplication.instancesRespondToSelector(Selector("registerUserNotificationSettings:"))) {
                                     let settings = UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: nil)
                                     UIApplication.sharedApplication().registerUserNotificationSettings(settings)
                                     
-                                    // This is an asynchronous method to retrieve a Device Token
-                                    // Callbacks are in AppDelegate.swift
-                                    // Success = didRegisterForRemoteNotificationsWithDeviceToken
-                                    // Fail = didFailToRegisterForRemoteNotificationsWithError
                                     UIApplication.sharedApplication().registerForRemoteNotifications()
                                 }
+                                
+                                self.tableView.reloadData()
+                                self.loadChannels()
                             }
-                            
-                            self.tableView.reloadData()
-                            self.loadChannels()
-                        }
+                    }
                 }
             }
+            
         } catch {
             print("Failed to decode JWT: \(error)")
         }
@@ -361,13 +454,19 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
                     let id = subJson["_id"].string
                     let name = subJson["name"].string
                     
-                    if self.myChannelIdArray.contains(id!) {
+                    if name == nil  {
                         
                     } else {
-                        self.channelIdArray.append(id!)
-                        self.channelNameArray.append(name!)
-                        
+                        if self.myChannelIdArray.contains(id!) {
+                            
+                        } else {
+                            self.channelIdArray.append(id!)
+                            self.channelNameArray.append(name!)
+                            
+                        }
                     }
+                    
+                    
                     
                 }
                 self.tableView.reloadData()
@@ -378,6 +477,41 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Empty data
+        do {
+            let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+            let documentsDirectory = paths[0]
+            let documentsDirectoryURL = NSURL(fileURLWithPath: paths[0])
+            
+            let directoryContents = try NSFileManager.defaultManager().contentsOfDirectoryAtPath(documentsDirectory)
+            
+            var totalMegaBytes: Double = 0
+            var nrOfFiles = 0
+            
+            for filename in directoryContents {
+                let file = documentsDirectoryURL.URLByAppendingPathComponent(filename)
+                
+                
+                let fileAttributes = try NSFileManager.defaultManager().attributesOfItemAtPath(file.path!)
+                let fileSize = fileAttributes[NSFileSize] as! Double
+                totalMegaBytes += fileSize/1024/1024
+                
+                do {
+                    try NSFileManager.defaultManager().removeItemAtURL(file)
+                    nrOfFiles++
+                }catch let error as NSError{
+                    print("> Emptying sandbox: could not delete file", filename, error)
+                }
+            }
+            
+            print("> Emptying sandbox: Removed \(nrOfFiles) files with a total of \(round(totalMegaBytes))MB")
+            
+        } catch let error as NSError {
+            print("> Emptying sandbox: Error emptying sandbox", error)
+        }
+        
+        
         // Do any additional setup after loading the view.
         tableView.dataSource = self
         tableView.delegate = self
@@ -432,7 +566,12 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
         if section == 0 {
             return "My Channels:"
         } else {
-            return "Channels:"
+            if channelIdArray.count == 0 {
+                return ""
+            } else {
+               return "Channels:"
+            }
+            
         }
     }
     
@@ -452,29 +591,50 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
         if indexPath.section == 0 {
             if indexPath.row == 0 {
                 let cell: ChannelTitleTableViewCell = tableView.dequeueReusableCellWithIdentifier("ChannelTitleCell", forIndexPath: indexPath) as! ChannelTitleTableViewCell
-                
+                cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
                 cell.preservesSuperviewLayoutMargins = false
                 cell.separatorInset = UIEdgeInsetsZero
                 cell.layoutMargins = UIEdgeInsetsZero
                 
-                cell.titleLabel.text = "Top Posts"
+                cell.titleLabel.text = "Today's Top Posts"
                 cell.toggleChannelButton.hidden = true
                 
                 return cell
             } else if indexPath.row == 1 {
                 let cell: ChannelTitleTableViewCell = tableView.dequeueReusableCellWithIdentifier("ChannelTitleCell", forIndexPath: indexPath) as! ChannelTitleTableViewCell
-                
+                cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
                 cell.preservesSuperviewLayoutMargins = false
                 cell.separatorInset = UIEdgeInsetsZero
                 cell.layoutMargins = UIEdgeInsetsZero
                 
-                cell.titleLabel.text = "Favorites"
                 cell.toggleChannelButton.hidden = true
                 if myChannelIdArray.count == 0 {
+                    cell.titleLabel.text = "Multi Channel ( +2 channels )"
                     cell.backgroundColor = UIColor(white:0.98, alpha:1.0)
                     cell.titleLabel.textColor = UIColor(white:0.65, alpha:1.0)
                     cell.userInteractionEnabled = false
-                } else {
+                } else if myChannelNameArray.count == 1 {
+                    cell.titleLabel.text = "Multi Channel ( +1 channel )"
+                    cell.backgroundColor = UIColor(white:0.98, alpha:1.0)
+                    cell.titleLabel.textColor = UIColor(white:0.65, alpha:1.0)
+                    cell.userInteractionEnabled = false
+                }else {
+                    var channelNames = ""
+                    let count = myChannelNameArray.count
+//                    for name in myChannelNameArray {
+//                        channelNames = channelNames + " " + name
+//                    }
+                    let lastIndex = count - 1
+                    var index: Int
+                    for index = 0; index < count; ++index {
+                        if index < lastIndex {
+                            channelNames = channelNames + myChannelNameArray[index] + "+"
+                        } else {
+                            channelNames = channelNames + myChannelNameArray[index]
+                        }
+                    }
+                    
+                    cell.titleLabel.text = "Multi Channel ( " + channelNames + " )"
                     cell.backgroundColor = UIColor.whiteColor()
                     cell.userInteractionEnabled = true
                     cell.titleLabel.textColor = UIColor.blackColor()
@@ -483,7 +643,7 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
                 return cell
             }else {
                 let cell: ChannelTitleTableViewCell = tableView.dequeueReusableCellWithIdentifier("ChannelTitleCell", forIndexPath: indexPath) as! ChannelTitleTableViewCell
-                
+                cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
                 cell.preservesSuperviewLayoutMargins = false
                 cell.separatorInset = UIEdgeInsetsZero
                 cell.layoutMargins = UIEdgeInsetsZero
@@ -498,7 +658,7 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
             }
         } else {
             let cell: ChannelTitleTableViewCell = tableView.dequeueReusableCellWithIdentifier("ChannelTitleCell", forIndexPath: indexPath) as! ChannelTitleTableViewCell
-            
+            cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
             cell.preservesSuperviewLayoutMargins = false
             cell.separatorInset = UIEdgeInsetsZero
             cell.layoutMargins = UIEdgeInsetsZero
@@ -626,9 +786,9 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
                 let feedVC: FeedViewController = segue.destinationViewController as! FeedViewController
                 feedVC.myChannelIdArray = myChannelIdArray
                 feedVC.fromFavorites = true
-                feedVC.channelName = "Favorites"
+                feedVC.channelName = "Multi Channel"
                 Answers.logCustomEventWithName("Channel Clicked",
-                    customAttributes: ["name": "Favorites"])
+                    customAttributes: ["name": "Multi Channel"])
             }
             else {
                 if section == 0 {

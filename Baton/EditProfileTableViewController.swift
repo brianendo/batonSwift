@@ -12,7 +12,7 @@ import SwiftyJSON
 import KeychainSwift
 import JWTDecode
 
-class EditProfileTableViewController: UITableViewController, UITextFieldDelegate {
+class EditProfileTableViewController: UITableViewController, UITextFieldDelegate, UITextViewDelegate {
 
     // MARK: - IBOutlets
     @IBOutlet weak var saveBarButton: UIBarButtonItem!
@@ -49,6 +49,7 @@ class EditProfileTableViewController: UITableViewController, UITextFieldDelegate
         self.lastNameTextField.addTarget(self, action: "lastNameTextFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
         self.twitterTextField.addTarget(self, action: "twitterTextFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
         
+        self.bioTextView.delegate = self
         self.usernameTextField.delegate = self
         self.firstNameTextField.delegate = self
         self.lastNameTextField.delegate = self
@@ -59,6 +60,18 @@ class EditProfileTableViewController: UITableViewController, UITextFieldDelegate
         // Dispose of any resources that can be recreated.
     }
 
+    func textViewDidChange(textView: UITextView) {
+        let bio = textView.text
+        
+        if bio ==  mybio {
+            self.usernameStatusLabel.text = ""
+            self.saveBarButton.enabled = false
+        } else {
+            self.usernameStatusLabel.text = ""
+            self.saveBarButton.enabled = true
+        }
+    }
+    
     // MARK: - textField delegate
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         

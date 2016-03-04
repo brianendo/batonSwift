@@ -25,9 +25,11 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
     
     // MARK: - viewWill/viewDid
     override func viewWillAppear(animated: Bool) {
+        
         self.tabBarController!.tabBar.hidden = false
         let tabItem = self.tabBarController?.viewControllers![2]
-        tabItem?.tabBarItem.image = UIImage(named: "thickerBell")
+//        tabItem?.tabBarItem.image = UIImage(named: "thickerBell")
+        tabItem?.tabBarItem.badgeValue = nil
     }
     
     override func didReceiveMemoryWarning() {
@@ -47,7 +49,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         super.viewDidLoad()
 
         self.navigationItem.title = "Notifications"
-
+        self.definesPresentationContext = true
         self.tableView.delegate = self
         self.tableView.dataSource = self
         self.tableView.scrollsToTop = true
@@ -55,8 +57,10 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         self.tableView.estimatedRowHeight = 70
         self.tableView.tableFooterView = UIView()
         
-        self.notificationArray.removeAll(keepCapacity: true)
+//        self.notificationArray.removeAll(keepCapacity: true)
         self.loadNotifications()
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "newNotification", object: nil)
         
         self.refreshControl = UIRefreshControl()
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
@@ -84,6 +88,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                     self.view.addSubview(label)
                     
                 } else {
+                    self.notificationArray.removeAll(keepCapacity: true)
                     self.tableView.hidden = false
                     let json = JSON(response.result.value!)
                 for (_,subJson):(String, JSON) in json {
@@ -146,36 +151,14 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                     self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                     self.tableView.reloadData()
                     
-                    // Separate between different types of notifications
-//                    if type == "answer" {
-//                        
-//                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: question_id, read: read, content: question_content, createdAt: yourDate, answer_id: answer_id, thumbnail_url: "", featuredQuestion: featuredQuestion)
-//                        self.notificationArray.append(notification)
-//                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-//                        
-//                        self.tableView.reloadData()
-//                        
-//                    } else if type == "like"{
-//                       
-//                        
-//                        
-//                        
-//                        self.tableView.reloadData()
-//                    }
-//                     else if type == "follow" {
-//                        let notification = Notification(id: id, type: type, sender: sender, sendername: sendername, question_id: "", read: read, content: "", createdAt: yourDate, answer_id: "", thumbnail_url: "", featuredQuestion: featuredQuestion)
-//                        self.notificationArray.append(notification)
-//                        self.notificationArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
-//                        
-//                        self.tableView.reloadData()
-//                    }
                 }
-//                    self.tableView.reloadData()
+
                 }
                                 
         }
         
     }
+    
     
     
     
@@ -190,18 +173,19 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                     value = []
                 }
                 self.counter = 0
-                self.tableView.reloadData()
+                self.loadNotifications()
         }
     }
     
     
+    func refreshFeed(){
+        self.loadNotifications()
+    }
     
     func refresh(sender:AnyObject)
     {
         // Code to refresh table view
-        self.notificationArray.removeAll(keepCapacity: true)
-        self.tableView.reloadData()
-        self.loadNotifications()
+        self.readAll()
         let delayInSeconds = 1.0;
         let popTime = dispatch_time(DISPATCH_TIME_NOW, Int64(delayInSeconds * Double(NSEC_PER_SEC)));
         dispatch_after(popTime, dispatch_get_main_queue()) { () -> Void in
@@ -224,7 +208,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         if type == "answer" {
             let cell: NotificationAnswerTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationAnswerCell", forIndexPath: indexPath) as! NotificationAnswerTableViewCell
             if read == false {
-                cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
+                cell.backgroundColor = UIColor(white:0.91, alpha:1.0)
             } else if read == true {
                 cell.backgroundColor = UIColor.whiteColor()
             }
@@ -289,7 +273,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         } else if type == "like"{
             let cell: NotificationLikedTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationLikedCell", forIndexPath: indexPath) as! NotificationLikedTableViewCell
             if read == false {
-                cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
+                cell.backgroundColor = UIColor(white:0.91, alpha:1.0)
             } else if read == true {
                 cell.backgroundColor = UIColor.whiteColor()
             }
@@ -377,7 +361,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         else {
             let cell: NotificationFollowTableViewCell = tableView.dequeueReusableCellWithIdentifier("notificationFollowCell", forIndexPath: indexPath) as! NotificationFollowTableViewCell
             if read == false {
-                cell.backgroundColor = UIColor(red:0.96, green:0.96, blue:0.96, alpha:1.0)
+                cell.backgroundColor = UIColor(white:0.91, alpha:1.0)
             } else if read == true {
                 cell.backgroundColor = UIColor.whiteColor()
             }
@@ -456,14 +440,12 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                         cell.followButton.selected = true
                     }
             }
-
-            
-            
             
             return cell
         }
         
     }
+    
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let type = notificationArray[indexPath.row].type
@@ -472,13 +454,12 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
         
         
         if read == false  {
-            self.counter--
-            notificationArray[indexPath.row].read = true
-            self.tableView.reloadData()
+            
             let url = globalurl + "api/notifications/" + id + "/read/"
             Alamofire.request(.PUT, url, parameters: nil)
                 .responseJSON { response in
             }
+            
             if type == "answer" || type == "like" {
                 Answers.logCustomEventWithName("Notification Clicked",
                     customAttributes: ["read": false, "type": type])
@@ -487,6 +468,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             } else {
                 Answers.logCustomEventWithName("Notification Clicked",
                     customAttributes: ["read": false, "type": type])
+                notificationIndex = indexPath.row
                 self.performSegueWithIdentifier("segueFromNotificationsToProfile", sender: self)
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }
@@ -500,34 +482,11 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             } else {
                 Answers.logCustomEventWithName("Notification Clicked",
                     customAttributes: ["read": true, "type": type])
+                notificationIndex = indexPath.row
                 self.performSegueWithIdentifier("segueFromNotificationsToProfile", sender: self)
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }
         }
-        
-//        if type == "answer" {
-//            let url = globalurl + "api/notifications/" + id + "/read/"
-//            Alamofire.request(.PUT, url, parameters: nil)
-//                .responseJSON { response in
-//            }
-//            self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
-//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//        } else if type == "like" {
-//            let url = globalurl + "api/notifications/" + id + "/read/"
-//            Alamofire.request(.PUT, url, parameters: nil)
-//                .responseJSON { response in
-//            }
-//            self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
-//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//        } else {
-//            let url = globalurl + "api/notifications/" + id + "/read/"
-//            Alamofire.request(.PUT, url, parameters: nil)
-//                .responseJSON { response in
-//            }
-//            notificationIndex = indexPath.row
-//            self.performSegueWithIdentifier("segueFromNotificationsToProfile", sender: self)
-//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//        }
     }
     
     // MARK: - tableView functions
@@ -589,6 +548,8 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             profileVC.fromOtherVC = true
             profileVC.creatorId = creatorId
             profileVC.creatorname = creatorname
+            notificationArray[notificationIndex].read = true
+            self.tableView.reloadData()
 
         }
     }

@@ -64,6 +64,7 @@ class Onboarding2ViewController: UIViewController {
         let newURL = NSURL(string: videoUrl)
         player = AVPlayer(URL: newURL!)
         playerController.player = player
+        playerController.player?.volume = 0
         videoView.addSubview(playerController.view)
         player.play()
         

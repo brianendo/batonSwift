@@ -306,6 +306,7 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 cell.contentView.bringSubviewToFront(cell.postedByButton)
                 
                 if fromFeatured {
+                    cell.channelButton.hidden = true
                     cell.postedByTextView.hidden = true
                     cell.timeAgoLabel.hidden = true
                     cell.contentView.backgroundColor = UIColor(red:1.0, green:0.97, blue:0.61, alpha:1.0)

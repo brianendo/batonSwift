@@ -46,11 +46,42 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func viewDidAppear(animated: Bool) {
         // Makes sure tabBar is not hidden because AnswersVC hides it
         self.tabBarController!.tabBar.hidden = false
+        
+        if userid != "" {
+            self.checkNotifications()
+        }
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    // Check if there are any unread notifications
+    func checkNotifications() {
+        
+        let url = globalurl + "api/unreadnotifications/" + userid
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                print(response.response?.statusCode)
+                
+                let statuscode = response.response?.statusCode
+                if statuscode == 200 {
+                    print("unread notifcations")
+                    let tabItem = self.tabBarController?.viewControllers![2]
+                    tabItem?.tabBarItem.badgeValue = "1"
+                    NSNotificationCenter.defaultCenter().postNotificationName("newNotification", object: self)
+                } else if statuscode == 400 {
+                    print("no new notifications")
+                    let tabItem = self.tabBarController?.viewControllers![2]
+                    tabItem?.tabBarItem.badgeValue = nil
+                } else if statuscode == 404 {
+                    
+                } else {
+                    
+                }
+        }
+        
     }
     
     override func viewDidLoad() {
@@ -117,7 +148,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //        NSNotificationCenter.defaultCenter().addObserver(self, selector: "changeFeed", name: "submittedAnswer", object: nil)
         // Refresh feed if user asks a question
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "askedQuestion", object: nil)
-        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "questionEdited", object: nil)
         // Add function to segmented control
 //        self.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
         
@@ -140,6 +171,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 if value == nil {
                     value = []
                 }
+                self.questionArray.removeAll(keepCapacity: true)
                 
                 let json = JSON(value!)
                 //                print("JSON: \(json)")
@@ -180,14 +212,20 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         answercount = 0
                     }
                     
+                    
+                    
                     let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName)
+                    
                     self.questionArray.append(question)
                     // Order by date from most recent to latest
                     self.questionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                     
                     
-                    self.tableView.reloadData()
+//                    self.tableView.reloadData()
                 }
+                dispatch_async(dispatch_get_main_queue(),{
+                    self.tableView.reloadData()
+                })
         }
     }
 
@@ -205,6 +243,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 if value == nil {
                     value = []
                 }
+                
+                self.questionArray.removeAll(keepCapacity: true)
                 
                 let json = JSON(value!)
                 print("JSON: \(json)")
@@ -251,8 +291,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     self.questionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                     
                     
-                    self.tableView.reloadData()
+                    
                 }
+                dispatch_async(dispatch_get_main_queue(),{
+                    self.tableView.reloadData()
+                })
         }
     }
     
@@ -315,8 +358,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     self.hotQuestionArray.sortInPlace({ $0.likecount > $1.likecount })
                     
                     
-                    self.tableView.reloadData()
+                    
                 }
+                dispatch_async(dispatch_get_main_queue(),{
+                    self.tableView.reloadData()
+                })
         }
     }
     
@@ -376,8 +422,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     self.hotQuestionArray.sortInPlace({ $0.likecount > $1.likecount })
                     
                     
-                    self.tableView.reloadData()
+                    
                 }
+                dispatch_async(dispatch_get_main_queue(),{
+                    self.tableView.reloadData()
+                })
         }
     }
     
@@ -394,6 +443,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 if value == nil {
                     value = []
                 } else {
+                    self.featuredQuestionArray.removeAll(keepCapacity: true)
                     let json = JSON(value!)
                     //                print("JSON: \(json)")
                     for (_,subJson):(String, JSON) in json {
@@ -408,6 +458,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         let inactive = subJson["inactive"].bool
                         var channelId = subJson["channel_id"].string
                         var channelName = subJson["channel_name"].string
+                        var newVersionActive = subJson["newVersionActive"].bool
+                        
+                        if newVersionActive == nil {
+                            newVersionActive = false
+                        }
                         
                         if channelId == nil {
                             channelId = ""
@@ -417,9 +472,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             channelName = ""
                         }
                         
-                        if inactive == true {
-                            continue
-                        }
                         
                         if likecount == nil {
                             likecount = 0
@@ -432,13 +484,31 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         if answercount == nil {
                             answercount = 0
                         }
+                        print(inactive)
+                        print(newVersionActive)
                         
-                        let question = Question(content: content, creatorname: "", id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: "", likecount: likecount, channel_id: channelId, channel_name: channelName)
-                        self.featuredQuestionArray.append(question)
-                        self.featuredQuestionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+                        if inactive == true {
+                            if newVersionActive! {
+                                let question = Question(content: content, creatorname: "", id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: "", likecount: likecount, channel_id: channelId, channel_name: channelName)
+                                self.featuredQuestionArray.append(question)
+                                self.featuredQuestionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+                                
+                                
+                                self.tableView.reloadData()
+                            } else {
+                                continue
+                            }
+                        } else {
+                            let question = Question(content: content, creatorname: "", id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: "", likecount: likecount, channel_id: channelId, channel_name: channelName)
+                            self.featuredQuestionArray.append(question)
+                            self.featuredQuestionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+                            
+                            
+                            self.tableView.reloadData()
+                        }
                         
                         
-                        self.tableView.reloadData()
+                        
                 }
                 
                 
@@ -457,7 +527,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 if value == nil {
                     value = []
                 }
-                
+                self.questionArray.removeAll(keepCapacity: true)
                 let json = JSON(value!)
 //                print("JSON: \(json)")
                 for (_,subJson):(String, JSON) in json {
@@ -518,7 +588,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 if value == nil {
                     value = []
                 }
-                
+                self.hotQuestionArray.removeAll(keepCapacity: true)
                 let json = JSON(value!)
 //                print("JSON: \(json)")
                 for (_,subJson):(String, JSON) in json {
@@ -679,27 +749,29 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func refreshFeed(){
         if fromSpecificChannel {
-            self.questionArray.removeAll(keepCapacity: true)
-            self.hotQuestionArray.removeAll(keepCapacity: true)
+//            self.questionArray.removeAll(keepCapacity: true)
+//            self.hotQuestionArray.removeAll(keepCapacity: true)
             self.counter = 0
-            self.loadTopChannelData()
+            self.tableView.reloadData()
+//            self.loadTopChannelData()
             self.loadChannelData()
         } else if fromFavorites {
-            self.questionArray.removeAll(keepCapacity: true)
-            self.hotQuestionArray.removeAll(keepCapacity: true)
+//            self.questionArray.removeAll(keepCapacity: true)
+//            self.hotQuestionArray.removeAll(keepCapacity: true)
             self.counter = 0
+            self.tableView.reloadData()
             self.loadFavoritesData()
-            self.loadTopFavoriteData()
+//            self.loadTopFavoriteData()
         } else {
-            self.questionArray.removeAll(keepCapacity: true)
-            self.hotQuestionArray.removeAll(keepCapacity: true)
-            self.featuredQuestionArray.removeAll(keepCapacity: true)
+//            self.questionArray.removeAll(keepCapacity: true)
+//            self.hotQuestionArray.removeAll(keepCapacity: true)
+//            self.featuredQuestionArray.removeAll(keepCapacity: true)
             //        self.currentPage = 0
             //        self.loadPaginatedData()
             self.loadFeaturedData()
-            self.loadData()
+//            self.loadData()
             self.loadHotQuestionData()
-            self.tableView.reloadData()
+//            self.tableView.reloadData()
         }
         
     }
@@ -802,6 +874,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 let cell: FeedSegmentedTableViewCell = tableView.dequeueReusableCellWithIdentifier("SegmentedCell", forIndexPath: indexPath) as! FeedSegmentedTableViewCell
                 
                 cell.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
+                if counter == 0 {
+                    cell.segmentedControl.selectedSegmentIndex = 0
+                } else {
+                    cell.segmentedControl.selectedSegmentIndex = 1
+                }
                 
                 return cell
             } else {

@@ -19,6 +19,8 @@ class ProfileTableViewCell: UITableViewCell {
     @IBOutlet weak var profileDescriptionLabel: UILabel!
     @IBOutlet weak var viewButton: UIButton!
     @IBOutlet weak var twitterButton: UIButton!
+    @IBOutlet weak var twitterButtonHeightConstant: NSLayoutConstraint!
+    @IBOutlet weak var twitterTopSpaceToBioConstraint: NSLayoutConstraint!
     
     // MARK: - override
     override func awakeFromNib() {

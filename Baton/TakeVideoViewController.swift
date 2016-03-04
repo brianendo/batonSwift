@@ -42,7 +42,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     var previewLayer: AVCaptureVideoPreviewLayer?
     var output: AVCaptureMovieFileOutput?
     var moviePlayer:MPMoviePlayerController!
-    var player:AVPlayer!
+    var player: AVPlayer!
     var playerController: AVPlayerViewController!
     var frontCamera: Bool = true
     var recordingInProgress: Bool = false
@@ -108,6 +108,10 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     
     override func viewDidDisappear(animated: Bool) {
         NSNotificationCenter.defaultCenter().removeObserver(self)
+//        if player != nil {
+//            player.removeObserver(self, forKeyPath: "status")
+//        }
+        
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -159,6 +163,10 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
             }
         }
         beginSession()
+//        NSNotificationCenter.defaultCenter().addObserver(self,
+//            selector: "restartVideoFromBeginning",
+//            name: AVPlayerItemDidPlayToEndTimeNotification,
+//            object: player)
         
         // doneButton hidden until a video is recorded
         self.doneButton.hidden = true
@@ -177,7 +185,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         output!.movieFragmentInterval = kCMTimeInvalid
         
         // Set max duration of video recorded in seconds
-        let maxDuration = CMTimeMakeWithSeconds(20, 30)
+        let maxDuration = CMTimeMakeWithSeconds(22, 30)
         output!.maxRecordedDuration = maxDuration
         
         // Add videoOutput to captureSession
@@ -257,9 +265,10 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         self.progressView.layer.sublayers?.removeAll()
         // Stops the recording delegate
         output!.stopRecording()
-        
+        self.recordButton.hidden = true
         self.recordButton.setTitle("Delete", forState: .Normal)
         self.recordButton.setImage(nil, forState: .Normal)
+        
     }
 
     
@@ -269,6 +278,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         } else {
             player.pause()
         }
+        
+//        player.pause()
         
         self.dismissViewControllerAnimated(true, completion: nil)
     }
@@ -319,9 +330,11 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         print(self.recordButton.titleLabel?.text)
         if self.recordButton.titleLabel?.text == "Delete" {
             print("Re-take")
-            if self.player.rate > 0 {
-                self.player.pause()
+            
+            if player != nil {
+                player.pause()
             }
+            self.recordButton.hidden = false
             self.doneButton.hidden = true
             self.switchCameraButton.hidden = false
             
@@ -333,227 +346,86 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
             self.recordButton.titleLabel!.text = ""
             self.recordButton.setTitle("", forState: .Normal)
             self.recordButton.setImage(UIImage(named: "RecordButton"), forState: .Normal)
+        } else if self.recordButton.imageView?.image == UIImage(named: "StopButton") {
+            output!.stopRecording()
+            print("Stop")
+            self.progressView.layer.sublayers?.removeAll()
+            self.recordButton.hidden = true
+            self.recordButton.setTitle("Delete", forState: .Normal)
+            self.recordButton.setImage(nil, forState: .Normal)
+            
+//            if recordingInProgress {
+//                output!.stopRecording()
+//                print("Stop")
+//                self.progressView.layer.sublayers?.removeAll()
+//                self.recordButton.hidden = true
+//                self.recordButton.setTitle("Delete", forState: .Normal)
+//                self.recordButton.setImage(nil, forState: .Normal)
+//
+//            } else {
+//                print("Recording")
+//                // Starts the progress bar
+//                self.progressView.hidden = false
+//                self.animateProgressView(20)
+//                
+//                // Change record button
+//                self.recordButton.setTitle("", forState: .Normal)
+//                self.recordButton.setImage(UIImage(named: "StopButton"), forState: .Normal)
+//                
+//                // Disallow camera switching while recording
+//                self.switchCameraButton.hidden = true
+//                
+//                let formatter = NSDateFormatter()
+//                formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+//                let date = NSDate()
+//                let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString
+//                let outputPath = "\(documentPath)/\(formatter.stringFromDate(date)).mp4"
+//                let outputURL = NSURL(fileURLWithPath: outputPath)
+//                
+//                output!.startRecordingToOutputFileURL(outputURL, recordingDelegate: self)
+//            }
+//            recordingInProgress = !recordingInProgress
+            
         } else {
-            if recordingInProgress {
-                output!.stopRecording()
-                print("Stop")
-                self.progressView.layer.sublayers?.removeAll()
-                self.recordButton.setTitle("Delete", forState: .Normal)
-                self.recordButton.setImage(nil, forState: .Normal)
-            } else {
-                print("Recording")
-                // Starts the progress bar
-                self.progressView.hidden = false
-                self.animateProgressView(20)
-                
-                // Change record button
-                self.recordButton.setTitle("", forState: .Normal)
-                self.recordButton.setImage(UIImage(named: "StopButton"), forState: .Normal)
-                
-                // Disallow camera switching while recording
-                self.switchCameraButton.hidden = true
-                
-                let formatter = NSDateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-                let date = NSDate()
-                let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString
-                let outputPath = "\(documentPath)/\(formatter.stringFromDate(date)).mp4"
-                let outputURL = NSURL(fileURLWithPath: outputPath)
-                
-//                print(output!.connectionWithMediaType(AVMediaTypeVideo).supportsVideoMirroring)
-                
-                // Mirror video for front facing camera
-//                output!.connectionWithMediaType(AVMediaTypeVideo).automaticallyAdjustsVideoMirroring = false
-//                if frontCamera {
-//                    output!.connectionWithMediaType(AVMediaTypeVideo).videoMirrored = true
-//                } else {
-//                    output!.connectionWithMediaType(AVMediaTypeVideo).videoMirrored = false
-//                }
-                
-                output!.startRecordingToOutputFileURL(outputURL, recordingDelegate: self)
+            print("Recording")
+            // Starts the progress bar
+            self.progressView.hidden = false
+            self.animateProgressView(20)
+            
+            // Change record button
+            self.recordButton.setTitle("", forState: .Normal)
+            self.recordButton.setImage(UIImage(named: "StopButton"), forState: .Normal)
+            
+            // Disallow camera switching while recording
+            self.switchCameraButton.hidden = true
+            
+            let formatter = NSDateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
+            let date = NSDate()
+            let documentPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as NSString
+            let outputPath = "\(documentPath)/\(formatter.stringFromDate(date)).mp4"
+            let outputURL = NSURL(fileURLWithPath: outputPath)
+            
+            do {
+                try outputURL.setResourceValue(true, forKey: NSURLIsExcludedFromBackupKey)
+            } catch _{
+                print("Failed")
             }
-            recordingInProgress = !recordingInProgress
+            
+            output!.startRecordingToOutputFileURL(outputURL, recordingDelegate: self)
         }
     }
     
     @IBAction func doneButtonPressed(sender: UIButton) {
         
-//        getThumbnail(videoUrl!)
+        if player != nil {
+            player.pause()
+        }
         self.uploadingLabel.hidden = false
         self.doneButton.hidden = true
         self.recordButton.hidden = true
         
-        // Save video in S3 with the userID
-//        let transferManager = AWSS3TransferManager.defaultS3TransferManager()
-//        let testFileURL1 = NSURL(fileURLWithPath: (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp"))
-//        let uploadRequest1 : AWSS3TransferManagerUploadRequest = AWSS3TransferManagerUploadRequest()
-//        let formatter = NSDateFormatter()
-//        formatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-//        let date = NSDate()
-//        let key = "videos/\(self.id)/\(userid)/\(formatter.stringFromDate(date)).mp4"
-//        uploadRequest1.bucket = S3BucketName
-//        uploadRequest1.key =  key
-//        uploadRequest1.body = videoUrl
-//        
-//        let task = transferManager.upload(uploadRequest1)
-//        task.continueWithBlock { (task) -> AnyObject! in
-//            if task.error != nil {
-//                print("Error: \(task.error)", terminator: "")
-//            } else {
-//                print("Upload successful", terminator: "")
-//                
-//                let clip = AVURLAsset(URL: self.videoUrl!)
-//                let imgGenerator = AVAssetImageGenerator(asset: clip)
-//                let cgImage = try! imgGenerator.copyCGImageAtTime(CMTimeMake(0,1), actualTime: nil)
-//                let uiImage = UIImage(CGImage: cgImage)
-//                
-//                // Save video in S3 with the userID
-//                let transferManager2 = AWSS3TransferManager.defaultS3TransferManager()
-//                let testFileURL2 = NSURL(fileURLWithPath: (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp"))
-//                let uploadRequest2 : AWSS3TransferManagerUploadRequest = AWSS3TransferManagerUploadRequest()
-//                // Image is 0.5 resolution
-//                let data = UIImageJPEGRepresentation(uiImage, 0.5)
-//                data!.writeToURL(testFileURL2, atomically: true)
-//                let formatter2 = NSDateFormatter()
-//                formatter2.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-//                let date2 = NSDate()
-//                
-//                let key2 = "thumbnails/\(self.id)/\(userid)/\(formatter2.stringFromDate(date2))"
-//                uploadRequest2.bucket = S3BucketName
-//                uploadRequest2.key =  key2
-//                uploadRequest2.body = testFileURL2
-//                let task2 = transferManager2.upload(uploadRequest2)
-//                task2.continueWithBlock { (task) -> AnyObject! in
-//                    if task.error != nil {
-//                        print("Error: \(task.error)", terminator: "")
-//                    } else {
-//                        print("Upload successful", terminator: "")
-//                        
-//                        let amazonUrl = "https://s3-us-west-1.amazonaws.com/batonapp/"
-//                        
-//                        var token = self.keychain.get("JWT")
-//                        
-//                        do {
-//                            
-//                            let jwt = try decode(token!)
-//                            if jwt.expired == true {
-//                                var refresh_token = self.keychain.get("refresh_token")
-//                                
-//                                if refresh_token == nil {
-//                                    refresh_token = ""
-//                                }
-//                                let url = globalurl + "api/changetoken/"
-//                                let parameters = [
-//                                    "refresh_token": refresh_token! as String
-//                                ]
-//                                Alamofire.request(.POST, url, parameters: parameters)
-//                                    .responseJSON { response in
-//                                        var value = response.result.value
-//                                        
-//                                        if value == nil {
-//                                            value = []
-//                                        } else {
-//                                            let json = JSON(value!)
-//                                            print("JSON: \(json)")
-//                                            print(json["token"].string)
-//                                            let newtoken = json["token"].string
-//                                            self.keychain.set(newtoken!, forKey: "JWT")
-//                                            token = newtoken
-//                                            
-//                                            let headers = [
-//                                                "Authorization": "\(token!)"
-//                                            ]
-//                                            let parameters = [
-//                                                "question_id": self.id,
-//                                                "creator": userid,
-//                                                "creatorname": myUsername,
-//                                                "video_url": amazonUrl + key,
-//                                                "thumbnail_url": amazonUrl + key2,
-//                                                "featuredQuestion": self.fromFeatured
-//                                            ]
-//                                            let url = globalurl + "api/answers"
-//                                            Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
-//                                                .responseJSON { response in
-//                                                    print(response.request)
-//                                                    print(response.response)
-//                                                    print(response.result)
-//                                                    print(response.response?.statusCode)
-//                                                    var value = response.result.value
-//                                                    
-//                                                    if value == nil {
-//                                                        value = []
-//                                                    }
-//                                                    let json = JSON(value!)
-//                                                    print("JSON: \(json)")
-//                                                    print(json["_id"].string)
-//                                                    let answerId = json["_id"].string
-//                                                    
-//                                                    Answers.logCustomEventWithName("Video Submitted",
-//                                                        customAttributes: ["length": self.videoTime, "username": myUsername])
-//                                                    
-//                                                    
-//                                                    self.answerId = answerId!
-//                                                    NSNotificationCenter.defaultCenter().postNotificationName("madeVideo", object: self)
-//                                                    self.performSegueWithIdentifier("segueToShareVideo", sender: self)
-//                                                    
-//                                            }
-//                                        }
-//                                        
-//                                        
-//                                }
-//                            } else {
-//                                let headers = [
-//                                    "Authorization": "\(token!)"
-//                                ]
-//                                
-//                                let parameters = [
-//                                    "question_id": self.id,
-//                                    "creator": userid,
-//                                    "creatorname": myUsername,
-//                                    "video_url": amazonUrl + key,
-//                                    "thumbnail_url": amazonUrl + key2,
-//                                    "featuredQuestion": self.fromFeatured
-//                                ]
-//                                let url = globalurl + "api/answers"
-//                                Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
-//                                    .responseJSON { response in
-//                                        print(response.request)
-//                                        print(response.response)
-//                                        print(response.result)
-//                                        print(response.response?.statusCode)
-//                                        var value = response.result.value
-//                                        
-//                                        if value == nil {
-//                                            value = []
-//                                        }
-//                                        let json = JSON(value!)
-//                                        print("JSON: \(json)")
-//                                        print(json["_id"].string)
-//                                        let answerId = json["_id"].string
-//                                        
-//                                        Answers.logCustomEventWithName("Video Submitted",
-//                                            customAttributes: ["length": self.videoTime, "username": myUsername])
-//                                        
-//                                        self.answerId = answerId!
-//                                        NSNotificationCenter.defaultCenter().postNotificationName("madeVideo", object: self)
-//                                        self.performSegueWithIdentifier("segueToShareVideo", sender: self)
-//                                }
-//                            }
-//                        } catch {
-//                            print("Failed to decode JWT: \(error)")
-//                        }
-//
-//                    }
-//                    return nil
-//                }
-//                
-//            }
-//            return nil
-//        }
-//        if player.rate > 0 {
-//            player.pause()
-//        }
-        let amazonUrl = "https://s3-us-west-1.amazonaws.com/batonapp/"
+        let amazonUrl = "https://s3-us-west-1.amazonaws.com/" + S3BucketName + "/"
         
         let transferManager = AWSS3TransferManager.defaultS3TransferManager()
         let testFileURL1 = NSURL(fileURLWithPath: (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp"))
@@ -598,6 +470,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         uploadRequest2.bucket = S3BucketName
         uploadRequest2.key =  key2
         uploadRequest2.body = testFileURL2
+        
         let task2 = transferManager2.upload(uploadRequest2)
         task2.continueWithBlock { (task) -> AnyObject! in
             if task.error != nil {
@@ -611,8 +484,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         var token = self.keychain.get("JWT")
         
         do {
-            let jwt = try decode(token!)
-            if jwt.expired == true {
+            if token == nil {
                 var refresh_token = self.keychain.get("refresh_token")
                 
                 if refresh_token == nil {
@@ -667,9 +539,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                                     Answers.logCustomEventWithName("Video Submitted",
                                         customAttributes: ["length": self.videoTime, "username": myUsername])
                                     
-                                    
                                     self.answerId = answerId!
-//                                    NSNotificationCenter.defaultCenter().postNotificationName("madeVideo", object: self)
                                     self.performSegueWithIdentifier("segueToShareVideo", sender: self)
                                     
                             }
@@ -678,51 +548,112 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                         
                 }
             } else {
-                let headers = [
-                    "Authorization": "\(token!)"
-                ]
-                
-                let parameters = [
-                    "question_id": self.id,
-                    "creator": userid,
-                    "creatorname": myUsername,
-                    "video_url": amazonUrl + key,
-                    "thumbnail_url": amazonUrl + key2,
-                    "featuredQuestion": self.fromFeatured
-                ]
-                let url = globalurl + "api/answers"
-                Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
-                    .responseJSON { response in
-                        print(response.request)
-                        print(response.response)
-                        print(response.result)
-                        print(response.response?.statusCode)
-                        var value = response.result.value
-                        
-                        if value == nil {
-                            value = []
-                        }
-                        let json = JSON(value!)
-                        print("JSON: \(json)")
-                        print(json["_id"].string)
-                        let answerId = json["_id"].string
-                        
-                        Answers.logCustomEventWithName("Video Submitted",
-                            customAttributes: ["length": self.videoTime, "username": myUsername])
-                        
-                        self.answerId = answerId!
-//                        NSNotificationCenter.defaultCenter().postNotificationName("madeVideo", object: self)
-                        self.performSegueWithIdentifier("segueToShareVideo", sender: self)
+                let jwt = try decode(token!)
+                if jwt.expired == true {
+                    var refresh_token = self.keychain.get("refresh_token")
+                    
+                    if refresh_token == nil {
+                        refresh_token = ""
+                    }
+                    let url = globalurl + "api/changetoken/"
+                    let parameters = [
+                        "refresh_token": refresh_token! as String
+                    ]
+                    Alamofire.request(.POST, url, parameters: parameters)
+                        .responseJSON { response in
+                            var value = response.result.value
+                            
+                            if value == nil {
+                                value = []
+                            } else {
+                                let json = JSON(value!)
+                                print("JSON: \(json)")
+                                print(json["token"].string)
+                                let newtoken = json["token"].string
+                                self.keychain.set(newtoken!, forKey: "JWT")
+                                token = newtoken
+                                
+                                let headers = [
+                                    "Authorization": "\(token!)"
+                                ]
+                                let parameters = [
+                                    "question_id": self.id,
+                                    "creator": userid,
+                                    "creatorname": myUsername,
+                                    "video_url": amazonUrl + key,
+                                    "thumbnail_url": amazonUrl + key2,
+                                    "featuredQuestion": self.fromFeatured
+                                ]
+                                let url = globalurl + "api/answers"
+                                Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
+                                    .responseJSON { response in
+                                        print(response.request)
+                                        print(response.response)
+                                        print(response.result)
+                                        print(response.response?.statusCode)
+                                        var value = response.result.value
+                                        
+                                        if value == nil {
+                                            value = []
+                                        }
+                                        let json = JSON(value!)
+                                        print("JSON: \(json)")
+                                        print(json["_id"].string)
+                                        let answerId = json["_id"].string
+                                        
+                                        Answers.logCustomEventWithName("Video Submitted",
+                                            customAttributes: ["length": self.videoTime, "username": myUsername])
+                                        
+                                        
+                                        self.answerId = answerId!
+                                        self.performSegueWithIdentifier("segueToShareVideo", sender: self)
+                                        
+                                }
+                            }
+                            
+                            
+                    }
+                } else {
+                    let headers = [
+                        "Authorization": "\(token!)"
+                    ]
+                    
+                    let parameters = [
+                        "question_id": self.id,
+                        "creator": userid,
+                        "creatorname": myUsername,
+                        "video_url": amazonUrl + key,
+                        "thumbnail_url": amazonUrl + key2,
+                        "featuredQuestion": self.fromFeatured
+                    ]
+                    let url = globalurl + "api/answers"
+                    Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
+                        .responseJSON { response in
+                            print(response.request)
+                            print(response.response)
+                            print(response.result)
+                            print(response.response?.statusCode)
+                            var value = response.result.value
+                            
+                            if value == nil {
+                                value = []
+                            }
+                            let json = JSON(value!)
+                            print("JSON: \(json)")
+                            print(json["_id"].string)
+                            let answerId = json["_id"].string
+                            
+                            Answers.logCustomEventWithName("Video Submitted",
+                                customAttributes: ["length": self.videoTime, "username": myUsername])
+                            
+                            self.answerId = answerId!
+                            self.performSegueWithIdentifier("segueToShareVideo", sender: self)
+                    }
                 }
             }
+            
         } catch {
             print("Failed to decode JWT: \(error)")
-        }
-
-        
-        
-        if player.rate > 0 {
-            player.pause()
         }
     }
     
@@ -763,7 +694,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         videoComposition.frameDuration = CMTimeMake(1, 30)
         
         let instruction = AVMutableVideoCompositionInstruction()
-        instruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(20, 30))
+        instruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(22, 30))
 
         let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
         let transform1:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, -(clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height)/2)
@@ -789,6 +720,12 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let outputPath = "\(documentPath)/\(formatter.stringFromDate(date))\(userid).mp4"
         let outputURL = NSURL(fileURLWithPath: outputPath)
         
+        do {
+            try outputURL.setResourceValue(true, forKey: NSURLIsExcludedFromBackupKey)
+        } catch _{
+            print("Failed")
+        }
+        
         // Exporting with Medium Quality
         let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetMediumQuality)!
         // videoCompositon uses the instructions from transformer
@@ -805,20 +742,20 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     }
     
     func handleExportCompletion(session: AVAssetExportSession) {
-        let library = ALAssetsLibrary()
-        if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(session.outputURL) {
-            var completionBlock: ALAssetsLibraryWriteVideoCompletionBlock
-            
-            completionBlock = { assetUrl, error in
-                if error != nil {
-                    print("error writing to disk")
-                } else {
-                    
-                }
-            }
+//        let library = ALAssetsLibrary()
+//        if library.videoAtPathIsCompatibleWithSavedPhotosAlbum(session.outputURL) {
+//            var completionBlock: ALAssetsLibraryWriteVideoCompletionBlock
+//            
+//            completionBlock = { assetUrl, error in
+//                if error != nil {
+//                    print("error writing to disk")
+//                } else {
+//                    
+//                }
+//            }
             // Uncomment to save Video to own Phone
 //            library.writeVideoAtPathToSavedPhotosAlbum(session.outputURL, completionBlock: completionBlock)
-        }
+//        }
         
         // Set up video in playerController
         videoUrl = session.outputURL
@@ -833,6 +770,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         self.addChildViewController(playerController)
         self.cameraView.addSubview(playerController.view)
         playerController.didMoveToParentViewController(self)
+//        player.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions(), context: nil)
         player.play()
         print(self.player.currentItem?.asset.duration)
         let time = CMTimeGetSeconds((self.player.currentItem?.asset.duration)!)
@@ -840,9 +778,18 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let intTime = Int(round(time))
         print(intTime)
         self.videoTime = intTime
+        self.recordButton.hidden = false
         self.doneButton.hidden = false
     }
     
+//    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+//        if keyPath == "status" {
+//            if (self.player.status == AVPlayerStatus.ReadyToPlay) {
+//                print("reached")
+//            }
+//            
+//        }
+//    }
     
     
     func getThumbnail(outputFileURL: NSURL) {

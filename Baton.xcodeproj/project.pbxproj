@@ -130,7 +130,7 @@
 		8EB945701C4DA46900FA01E2 /* ProfileLikedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileLikedTableViewCell.swift; sourceTree = "<group>"; };
 		8EB945721C53151100FA01E2 /* FollowHeaderTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FollowHeaderTableViewCell.swift; sourceTree = "<group>"; };
 		8EB945741C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileButtonsTableViewCell.swift; sourceTree = "<group>"; };
-		8EE04ACA1BE299890040D5A5 /* Baton.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Baton.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8EE04ACA1BE299890040D5A5 /* Baton Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Baton Test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE04ACD1BE2998A0040D5A5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8EE04AD21BE2998A0040D5A5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8EE04AD41BE2998A0040D5A5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -289,7 +289,7 @@
 		8EE04ACB1BE299890040D5A5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8EE04ACA1BE299890040D5A5 /* Baton.app */,
+				8EE04ACA1BE299890040D5A5 /* Baton Test.app */,
 				8EE04ADE1BE2998A0040D5A5 /* Baton.xctest */,
 				8EE04AE91BE2998A0040D5A5 /* Baton.xctest */,
 			);
@@ -388,7 +388,7 @@
 			);
 			name = Baton;
 			productName = QuestionSwiftProject;
-			productReference = 8EE04ACA1BE299890040D5A5 /* Baton.app */;
+			productReference = 8EE04ACA1BE299890040D5A5 /* Baton Test.app */;
 			productType = "com.apple.product-type.application";
 		};
 		8EE04ADD1BE2998A0040D5A5 /* BatonTests */ = {
@@ -776,8 +776,8 @@
 				INFOPLIST_FILE = Baton/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = io.thoughtless.Baton;
-				PRODUCT_NAME = Baton;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.thoughtless.Baton-test";
+				PRODUCT_NAME = "Baton Test";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 			};

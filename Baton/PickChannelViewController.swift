@@ -159,9 +159,7 @@ class PickChannelViewController: UIViewController, UITableViewDataSource, UITabl
         var token = keychain.get("JWT")
         
         do {
-            
-            let jwt = try decode(token!)
-            if jwt.expired == true {
+            if token == nil {
                 var refresh_token = keychain.get("refresh_token")
                 
                 if refresh_token == nil {
@@ -204,8 +202,6 @@ class PickChannelViewController: UIViewController, UITableViewDataSource, UITabl
                                         customAttributes: ["channel": "Top Posts", "username": myUsername])
                                     // Update feed with new question
                                     NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-//                                    self.navigationController?.popViewControllerAnimated(true)
-//                                    self.goBackToFeed()
                                     self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
                             }
                         }
@@ -213,50 +209,90 @@ class PickChannelViewController: UIViewController, UITableViewDataSource, UITabl
                         
                 }
             } else {
-                let headers = [
-                    "Authorization": "\(token!)"
-                ]
-                
-                let url = globalurl + "api/questions"
-                let parameters = [
-                    "content": questionText,
-                    "creatorname": myUsername,
-                    "creator": userid,
-                    "answercount": 0,
-                    "likes": 0,
-                    "channel_id": channel_id,
-                    "channel_name": channel_name
-                ]
-                Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
-                    .responseJSON { response in
-                        print(response.request)
-                        print(response.response)
-                        print(response.result)
-                        print(response.response?.statusCode)
-                        Answers.logCustomEventWithName("Question submitted",
-                            customAttributes: ["channel": "Top Posts", "username": myUsername])
-                        NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-//                        self.navigationController?.popViewControllerAnimated(true)
-//                        self.goBackToFeed()
-                        self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
-                        
+                let jwt = try decode(token!)
+                if jwt.expired == true {
+                    var refresh_token = keychain.get("refresh_token")
+                    
+                    if refresh_token == nil {
+                        refresh_token = ""
+                    }
+                    
+                    let url = globalurl + "api/changetoken/"
+                    let parameters = [
+                        "refresh_token": refresh_token! as String
+                    ]
+                    Alamofire.request(.POST, url, parameters: parameters)
+                        .responseJSON { response in
+                            var value = response.result.value
+                            
+                            if value == nil {
+                                value = []
+                            } else {
+                                let json = JSON(value!)
+                                let newtoken = json["token"].string
+                                self.keychain.set(newtoken!, forKey: "JWT")
+                                token = newtoken
+                                
+                                let headers = [
+                                    "Authorization": "\(token!)"
+                                ]
+                                let url = globalurl + "api/questions"
+                                let parameters = [
+                                    "content": self.questionText,
+                                    "creatorname": myUsername,
+                                    "creator": userid,
+                                    "answercount": 0,
+                                    "likes": 0,
+                                    "channel_id": channel_id,
+                                    "channel_name": channel_name
+                                ]
+                                Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                                    .responseJSON { response in
+                                        print(response.response?.statusCode)
+                                        Answers.logCustomEventWithName("Question submitted",
+                                            customAttributes: ["channel": "Top Posts", "username": myUsername])
+                                        // Update feed with new question
+                                        NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                        self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
+                                }
+                            }
+                            
+                            
+                    }
+                } else {
+                    let headers = [
+                        "Authorization": "\(token!)"
+                    ]
+                    
+                    let url = globalurl + "api/questions"
+                    let parameters = [
+                        "content": questionText,
+                        "creatorname": myUsername,
+                        "creator": userid,
+                        "answercount": 0,
+                        "likes": 0,
+                        "channel_id": channel_id,
+                        "channel_name": channel_name
+                    ]
+                    Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                        .responseJSON { response in
+                            print(response.request)
+                            print(response.response)
+                            print(response.result)
+                            print(response.response?.statusCode)
+                            Answers.logCustomEventWithName("Question submitted",
+                                customAttributes: ["channel": "Top Posts", "username": myUsername])
+                            NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                            self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
+                            
+                    }
                 }
+ 
             }
         } catch {
             print("Failed to decode JWT: \(error)")
         }
     }
     
-    func goBackToFeed() {
-        for controller in (self.navigationController?.viewControllers)! {
-            if controller.isKindOfClass(PickChannelViewController) {
-//                self.navigationController?.popViewControllerAnimated(true)
-//                self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
-            }
-            if controller.isKindOfClass(AskQuestionViewController) {
-                self.navigationController?.popViewControllerAnimated(true)
-            }
-        }
-    }
 
 }

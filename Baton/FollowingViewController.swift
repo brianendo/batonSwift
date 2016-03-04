@@ -103,15 +103,17 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
         self.searchController.searchBar.delegate = self
         self.searchController.hidesNavigationBarDuringPresentation = false
         self.searchController.dimsBackgroundDuringPresentation = false
+        // Prevents black screen
+        self.definesPresentationContext = true
+        // Prevents presentation context to overlap
+        self.extendedLayoutIncludesOpaqueBars = true
         
         // Must be after searchController is initialized
         tableView.tableFooterView = UIView(frame: CGRectZero)
         
         self.navigationItem.titleView = searchController.searchBar
-
         self.loadAnswers()
 //        self.loadQuestions()
-        
         label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, 300)
         label.textAlignment = NSTextAlignment.Center
         label.text = "No Notifications"
@@ -307,8 +309,26 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     // MARK: - searchBar functions
+    
     func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        label.hidden = true
         searchBar.autocapitalizationType = UITextAutocapitalizationType.None
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        if searchController.active {
+            
+        } else {
+            if counter == 0 {
+                if answerArray.count == 0 {
+                    label.hidden = false
+                }
+            } else if counter == 1{
+                if questionArray.count == 0 {
+                    label.hidden = false
+                }
+            }
+        }
     }
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
@@ -328,14 +348,10 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             }
         }
         
-        self.filteredUsers.removeAll(keepCapacity: true)
-        self.filteredId.removeAll(keepCapacity: true)
-        
         var token = keychain.get("JWT")
         
         do {
-            let jwt = try decode(token!)
-            if jwt.expired == true {
+            if token == nil {
                 var refresh_token = keychain.get("refresh_token")
                 
                 if refresh_token == nil {
@@ -353,6 +369,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                         if value == nil {
                             value = []
                         } else {
+                            
                             let json = JSON(value!)
                             let newtoken = json["token"].string
                             self.keychain.set(newtoken!, forKey: "JWT")
@@ -368,59 +385,138 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                                 .responseJSON { response in
                                     var value = response.result.value
                                     
+                                    self.filteredUsers.removeAll(keepCapacity: true)
+                                    self.filteredId.removeAll(keepCapacity: true)
+                                    
                                     if value == nil {
                                         value = []
+                                        self.tableView.reloadData()
+                                    } else {
+                                        let json = JSON(value!)
+                                        for (_,subJson):(String, JSON) in json {
+                                            let id = subJson["_id"].string
+                                            let name = subJson["username"].string
+                                            
+                                            if self.filteredUsers.contains(name!) {
+                                                
+                                            } else {
+                                                self.filteredUsers.append(name!)
+                                                self.filteredId.append(id!)
+                                            }
+                                            
+                                            self.tableView.reloadData()
+                                        }
                                     }
                                     
-                                    let json = JSON(value!)
-                                    for (_,subJson):(String, JSON) in json {
-                                        let id = subJson["_id"].string
-                                        let name = subJson["username"].string
+                                    
+                            }
+                        }
+                        
+                        
+                }
+
+            } else {
+                let jwt = try decode(token!)
+                if jwt.expired == true {
+                    var refresh_token = keychain.get("refresh_token")
+                    
+                    if refresh_token == nil {
+                        refresh_token = ""
+                    }
+                    
+                    let url = globalurl + "api/changetoken/"
+                    let parameters = [
+                        "refresh_token": refresh_token! as String
+                    ]
+                    Alamofire.request(.POST, url, parameters: parameters)
+                        .responseJSON { response in
+                            var value = response.result.value
+                            
+                            if value == nil {
+                                value = []
+                            } else {
+                                
+                                let json = JSON(value!)
+                                let newtoken = json["token"].string
+                                self.keychain.set(newtoken!, forKey: "JWT")
+                                token = newtoken
+                                
+                                let headers = [
+                                    "Authorization": "\(token!)"
+                                ]
+                                
+                                let url = globalurl + "api/usersearch/" + searchText.lowercaseString
+                                
+                                Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                                    .responseJSON { response in
+                                        var value = response.result.value
                                         
-                                        if self.filteredUsers.contains(name!) {
-                                            
+                                        self.filteredUsers.removeAll(keepCapacity: true)
+                                        self.filteredId.removeAll(keepCapacity: true)
+                                        
+                                        if value == nil {
+                                            value = []
+                                            self.tableView.reloadData()
                                         } else {
-                                            self.filteredUsers.append(name!)
-                                            self.filteredId.append(id!)
+                                            let json = JSON(value!)
+                                            for (_,subJson):(String, JSON) in json {
+                                                let id = subJson["_id"].string
+                                                let name = subJson["username"].string
+                                                
+                                                if self.filteredUsers.contains(name!) {
+                                                    
+                                                } else {
+                                                    self.filteredUsers.append(name!)
+                                                    self.filteredId.append(id!)
+                                                }
+                                                
+                                                self.tableView.reloadData()
+                                            }
                                         }
                                         
-                                        self.tableView.reloadData()
-                                    }
+                                        
+                                }
                             }
-                        }
-                        
-                        
-                }
-            } else {
-                let headers = [
-                    "Authorization": "\(token!)"
-                ]
-                
-                let url = globalurl + "api/usersearch/" + searchText.lowercaseString
-                
-                Alamofire.request(.GET, url, parameters: nil, headers: headers)
-                    .responseJSON { response in
-                        var value = response.result.value
-                        
-                        if value == nil {
-                            value = []
-                        }
-                        
-                        let json = JSON(value!)
-                        for (_,subJson):(String, JSON) in json {
-                            let id = subJson["_id"].string
-                            let name = subJson["username"].string
                             
-                            if self.filteredUsers.contains(name!) {
-                                
+                            
+                    }
+                } else {
+                    let headers = [
+                        "Authorization": "\(token!)"
+                    ]
+                    
+                    let url = globalurl + "api/usersearch/" + searchText.lowercaseString
+                    
+                    Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                        .responseJSON { response in
+                            var value = response.result.value
+                            
+                            self.filteredUsers.removeAll(keepCapacity: true)
+                            self.filteredId.removeAll(keepCapacity: true)
+                            
+                            if value == nil {
+                                value = []
+                                self.tableView.reloadData()
                             } else {
-                                self.filteredUsers.append(name!)
-                                self.filteredId.append(id!)
-                            }
+                                let json = JSON(value!)
+                                for (_,subJson):(String, JSON) in json {
+                                    let id = subJson["_id"].string
+                                    let name = subJson["username"].string
+                                    
+                                    if self.filteredUsers.contains(name!) {
+                                        
+                                    } else {
+                                        self.filteredUsers.append(name!)
+                                        self.filteredId.append(id!)
+                                    }
+                                    
+                                    self.tableView.reloadData()
+                                }
+                            } 
                             
-                            self.tableView.reloadData()
-                        }
+                    }
                 }
+
             }
         } catch {
             print("Failed to decode JWT: \(error)")
@@ -1047,16 +1143,18 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if searchController.active {
+        if searchController.active || searchController.searchBar.text != ""  {
+            self.searchController.searchBar.endEditing(true)
             userIndexPath = indexPath.row
             self.performSegueWithIdentifier("segueFromSearchToProfile", sender: self)
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        }
-        if counter == 1 {
-            Answers.logCustomEventWithName("Post Clicked",
-                customAttributes: ["from": "Following"])
-            self.performSegueWithIdentifier("segueFromFollowingToAnswers", sender: self)
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        } else {
+            if counter == 1 {
+                Answers.logCustomEventWithName("Post Clicked",
+                    customAttributes: ["from": "Following"])
+                self.performSegueWithIdentifier("segueFromFollowingToAnswers", sender: self)
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            }
         }
     }
     
@@ -1089,7 +1187,8 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
         }
         let answerId = answerArray[tag].id
         let answerUrl = batonUrl + "answers/\(answerId)"
-        var questionContent = self.question!.content
+        
+        var questionContent = answerArray[tag].question_content
         if questionContent.characters.count > 80 {
             let ss1: String = (questionContent as NSString).substringToIndex(80)
             questionContent = ss1 + "..."

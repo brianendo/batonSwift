@@ -16,6 +16,7 @@ import COSTouchVisualizer
 import Crashlytics
 import Alamofire
 import SwiftyJSON
+import KeychainSwift
 
 
 // Global currentuser variable
@@ -29,11 +30,10 @@ var mylastname = ""
 var mybio = ""
 var myemail = ""
 
+let stagingUrl = "https://fierce-cove-25691.herokuapp.com/"
 let herokuUrl = "https://arcane-savannah-8802.herokuapp.com/"
 let batonUrl = "http://batonapp.io/"
 let localUrl = "http://localhost:5000/"
-let globalurl = herokuUrl
-
 let cloudfrontUrl = "https://d1uji1hs8rdjoi.cloudfront.net/"
 
 
@@ -41,7 +41,13 @@ let cloudfrontUrl = "https://d1uji1hs8rdjoi.cloudfront.net/"
 let CognitoRegionType = AWSRegionType.USEast1  // e.g. AWSRegionType.USEast1
 let DefaultServiceRegionType = AWSRegionType.USWest1 // e.g. AWSRegionType.USWest2
 let CognitoIdentityPoolId = "us-east-1:cd887d49-c047-4889-bf49-215cd886036d"
+
 let S3BucketName = "batonapp"
+
+//let S3BucketName = "batonstaging"
+
+let globalurl = herokuUrl
+let keychain = KeychainSwift()
 
 var imageCache: Dictionary<String, NSData?> = Dictionary<String, NSData>()
 
@@ -85,55 +91,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
             region: AWSRegionType.USWest1, credentialsProvider: credentialsProvider)
         AWSServiceManager.defaultServiceManager().defaultServiceConfiguration = defaultServiceConfiguration
         
-//        initializeNotificationServices()
-//        // Register for Push Notitications
-//        if application.applicationState != UIApplicationState.Background {
-//            // Track an app open here if we launch with a push, unless
-//            // "content_available" was used to trigger a background push (introduced in iOS 7).
-//            // In that case, we skip tracking here to avoid double counting the app-open.
-//            
-//            let preBackgroundPush = !application.respondsToSelector("backgroundRefreshStatus")
-//            let oldPushHandlerOnly = !self.respondsToSelector("application:didReceiveRemoteNotification:fetchCompletionHandler:")
-//            var pushPayload = false
-//            if let options = launchOptions {
-//                pushPayload = options[UIApplicationLaunchOptionsRemoteNotificationKey] != nil
-//            }
-////            if (preBackgroundPush || oldPushHandlerOnly || pushPayload) {
-////                PFAnalytics.trackAppOpenedWithLaunchOptions(launchOptions)
-////            }
-//        }
-//        if application.respondsToSelector("registerUserNotificationSettings:") {
-//            let userNotificationTypes: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
-//            let settings = UIUserNotificationSettings(forTypes: userNotificationTypes, categories: nil)
-//            application.registerUserNotificationSettings(settings)
-//            application.registerForRemoteNotifications()
-//        } else {
-//            //            let types: UIRemoteNotificationType = [UIRemoteNotificationType.Badge, UIRemoteNotificationType.Alert, UIRemoteNotificationType.Sound]
-//            let types: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
-//            let settings = UIUserNotificationSettings(forTypes: types, categories: nil)
-//            //            application.registerForRemoteNotificationTypes(types)
-//            application.registerUserNotificationSettings(settings)
-//            application.registerForRemoteNotifications()
-//        }
-        
-        
-        
         // Used for Twitter Login and Compose Tweet
         Fabric.with([Twitter.self, AWSCognito.self, Crashlytics.self])
 
 
         return true
-    }
-
-    func initializeNotificationServices() -> Void {
-        let settings = UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: nil)
-        UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-        
-        // This is an asynchronous method to retrieve a Device Token
-        // Callbacks are in AppDelegate.swift
-        // Success = didRegisterForRemoteNotificationsWithDeviceToken
-        // Fail = didFailToRegisterForRemoteNotificationsWithError
-        UIApplication.sharedApplication().registerForRemoteNotifications()
     }
     
     
@@ -141,30 +103,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
         let deviceTokenStr = convertDeviceTokenToString(deviceToken)
         // ...register device token with our Time Entry API server via REST
         print(deviceTokenStr)
+        let myDeviceToken = keychain.get("deviceToken")
         
         if userid == "" {
             
         } else {
-            let url = globalurl + "api/users/" + userid + "/adddevicetoken/" + deviceTokenStr
-            Alamofire.request(.PUT, url, parameters: nil)
-                .responseJSON { response in
-                    print(response.response?.statusCode)
-                    
-                    let statuscode = response.response?.statusCode
-                    if statuscode == 200 {
-                        print("user updated")
+            if myDeviceToken == deviceTokenStr {
+                
+            } else {
+                let url = globalurl + "api/users/" + userid + "/adddevicetoken/" + deviceTokenStr
+                Alamofire.request(.PUT, url, parameters: nil)
+                    .responseJSON { response in
+                        print(response.response?.statusCode)
                         
-                    } else if statuscode == 400 {
-                        print("user not updated")
-                        
-                    } else if statuscode == 404 {
-                        print("user not updated")
-
-                    } else {
-                        print("user not updated")
-
-                    }
+                        let statuscode = response.response?.statusCode
+                        if statuscode == 200 {
+                            print("user updated")
+                            keychain.set(deviceTokenStr, forKey: "deviceToken")
+                        } else if statuscode == 400 {
+                            print("user not updated")
+                            
+                        } else if statuscode == 404 {
+                            print("user not updated")
+                            
+                        } else {
+                            print("user not updated")
+                            
+                        }
+                }
             }
+            
         }
     }
     
@@ -184,28 +152,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
         deviceTokenStr = deviceTokenStr.lowercaseString
         return deviceTokenStr
     }
-    
-    // Called when a notification is received and the app is in the
-    // foreground (or if the app was in the background and the user clicks on the notification).
-//    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]
-//        , fetchCompletionHandler completionHandler: (UIBackgroundFetchResult) -> Void) {
-//        // display the userInfo
-//        if let notification = userInfo["aps"] as? NSDictionary,
-//            let alert = notification["alert"] as? String {
-//                var alertCtrl = UIAlertController(title: "Time Entry", message: alert as String, preferredStyle: UIAlertControllerStyle.Alert)
-//                alertCtrl.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
-//                // Find the presented VC...
-//                var presentedVC = self.window?.rootViewController
-//                while (presentedVC!.presentedViewController != nil)  {
-//                    presentedVC = presentedVC!.presentedViewController
-//                }
-//                presentedVC!.presentViewController(alertCtrl, animated: true, completion: nil)
-//                
-//                // call the completion handler
-//                // -- pass in NoData, since no new data was fetched from the server.
-//                completionHandler(UIBackgroundFetchResult.NoData)
-//        }
-//    }
     
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
         if (application.applicationState == UIApplicationState.Background || application.applicationState == UIApplicationState.Inactive) {
