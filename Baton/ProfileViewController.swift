@@ -447,7 +447,12 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                             answercount = 0
                         }
                         
-                        let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName)
+                        var thumbnail_url = subJson["thumbnail_url"].string
+                        if thumbnail_url == nil {
+                            thumbnail_url = ""
+                        }
+                        
+                        let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName, thumbnail_url: thumbnail_url)
                         self.myQuestionArray.append(question)
 //                        self.tableView.reloadData()
                     }
@@ -1244,9 +1249,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             
             let likecount = myQuestionArray[indexPath.row].likecount
             let formattedlikecount = likecount.abbreviateNumberAtThousand()
-            cell.likeCountTextView.text = "\(formattedlikecount)"
-            cell.likeCountTextView.editable = false
-            cell.likeCountTextView.selectable = false
+            cell.likeCountLabel.text = "\(formattedlikecount)"
+//            cell.likeCountTextView.editable = false
+//            cell.likeCountTextView.selectable = false
             
             var channelName = myQuestionArray[indexPath.row].channel_name
             if channelName == "" {

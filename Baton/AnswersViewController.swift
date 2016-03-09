@@ -55,7 +55,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 self.loadQuestion()
             }
         }
-        self.relayButton.backgroundColor = UIColor.whiteColor()
+//        self.relayButton.backgroundColor = UIColor.whiteColor()
         self.tabBarController?.tabBar.hidden = true
     }
     
@@ -90,9 +90,12 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         self.tableView.estimatedRowHeight = 300
         self.tableView.scrollsToTop = true
         
-        self.relayButton.layer.borderColor = UIColor.lightGrayColor().CGColor
+        
+        self.relayButton.layer.borderColor = UIColor(red:0.17, green:0.18, blue:0.29, alpha:1.0).CGColor
         self.relayButton.layer.borderWidth = 0.5
-        self.relayButton.backgroundColor = UIColor.whiteColor()
+//        self.relayButton.backgroundColor = UIColor.whiteColor()
+        
+        self.relayButton.backgroundColor = UIColor(red:0.9, green:0.9, blue:0.93, alpha:1.0)
         
         self.moreInfoBarButton.setTitleTextAttributes([NSForegroundColorAttributeName:UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0), NSFontAttributeName: UIFont(name: "HelveticaNeue-Medium", size: 28)!], forState: .Normal)
         
@@ -188,7 +191,12 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     channelName = ""
                 }
                 
-                let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName)
+                var thumbnail_url = subJson["thumbnail_url"].string
+                if thumbnail_url == nil {
+                    thumbnail_url = ""
+                }
+                
+                let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName, thumbnail_url: thumbnail_url)
                 
                 self.question = question
                 
@@ -392,9 +400,10 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 
                 let likecount = question!.likecount
                 let formattedlikecount = likecount.abbreviateNumberAtThousand()
-                cell.likeCountTextView.text = "\(formattedlikecount)"
-                cell.likeCountTextView.editable = false
-                cell.likeCountTextView.selectable = false
+                cell.likeCountLabel.text = "\(formattedlikecount)"
+                cell.likeCountLabel.alpha = 2
+//                cell.likeCountTextView.editable = false
+//                cell.likeCountTextView.selectable = false
                 
                 let date = question!.createdAt
                 let timeAgo = timeAgoSinceDate(date, numericDates: true)
@@ -1025,6 +1034,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.likeImageView.image = UIImage(named: "replayImage")
                     cell.likeImageView.hidden = false
                     cell.likeImageView.alpha = 0.7
+                    
                     if (cell.player.rate > 0) {
                         
                         
@@ -1263,7 +1273,8 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             feedVC.channelId = channelId
             feedVC.channelName = channelName
         } else if segue.identifier == "segueToEditPost" {
-            let askQuestionVC: AskQuestionViewController = segue.destinationViewController as! AskQuestionViewController
+            let nav = segue.destinationViewController as! UINavigationController
+            let askQuestionVC: AskQuestionViewController = nav.topViewController as! AskQuestionViewController
             askQuestionVC.forEditPost = true
             askQuestionVC.content = question!.content
             askQuestionVC.questionId = question!.id
@@ -1402,7 +1413,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     @IBAction func relayButtonPressed(sender: UIButton) {
         Answers.logCustomEventWithName("Record Method",
             customAttributes: ["method":"From Answers","userid":userid,"username": myUsername])
-        self.relayButton.backgroundColor = UIColor(white:0.87, alpha:1.0)
+//        self.relayButton.backgroundColor = UIColor(white:0.87, alpha:1.0)
         self.performSegueWithIdentifier("segueFromAnswerToTakeVideo", sender: self)
     }
     

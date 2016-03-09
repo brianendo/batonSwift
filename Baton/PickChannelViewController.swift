@@ -25,6 +25,7 @@ class PickChannelViewController: UIViewController, UITableViewDataSource, UITabl
     var channelNameArray = [String]()
     let keychain = KeychainSwift()
     var questionText = ""
+    var questionId = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -198,11 +199,24 @@ class PickChannelViewController: UIViewController, UITableViewDataSource, UITabl
                             Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
                                 .responseJSON { response in
                                     print(response.response?.statusCode)
+                                    
+                                    var value = response.result.value
+                                    if value == nil {
+                                        value = []
+                                    }
+                                    let json = JSON(value!)
+                                    print("JSON: \(json)")
+                                    let id = json["_id"].string
+                                    print(id)
+                                    self.questionId = id!
+                                    
                                     Answers.logCustomEventWithName("Question submitted",
                                         customAttributes: ["channel": "Top Posts", "username": myUsername])
                                     // Update feed with new question
                                     NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                                    self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
+//                                    self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
+//                                    self.dismissViewControllerAnimated(true, completion: nil)
+                                    self.performSegueWithIdentifier("segueFromPickChannelToAddTake", sender: self)
                             }
                         }
                         
@@ -249,11 +263,24 @@ class PickChannelViewController: UIViewController, UITableViewDataSource, UITabl
                                 Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
                                     .responseJSON { response in
                                         print(response.response?.statusCode)
+                                        
+                                        var value = response.result.value
+                                        if value == nil {
+                                            value = []
+                                        }
+                                        let json = JSON(value!)
+                                        print("JSON: \(json)")
+                                        let id = json["_id"].string
+                                        print(id)
+                                        self.questionId = id!
+                                        
                                         Answers.logCustomEventWithName("Question submitted",
                                             customAttributes: ["channel": "Top Posts", "username": myUsername])
                                         // Update feed with new question
                                         NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                                        self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
+//                                        self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
+//                                        self.dismissViewControllerAnimated(true, completion: nil)
+                                        self.performSegueWithIdentifier("segueFromPickChannelToAddTake", sender: self)
                                 }
                             }
                             
@@ -280,10 +307,23 @@ class PickChannelViewController: UIViewController, UITableViewDataSource, UITabl
                             print(response.response)
                             print(response.result)
                             print(response.response?.statusCode)
+                            
+                            var value = response.result.value
+                            if value == nil {
+                                value = []
+                            }
+                            let json = JSON(value!)
+                            print("JSON: \(json)")
+                            let id = json["_id"].string
+                            print(id)
+                            self.questionId = id!
+                            
                             Answers.logCustomEventWithName("Question submitted",
                                 customAttributes: ["channel": "Top Posts", "username": myUsername])
                             NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                            self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
+//                            self.navigationController?.popToViewController((self.navigationController?.viewControllers[(self.navigationController?.viewControllers.count)! - 3])!, animated: true)
+//                            self.dismissViewControllerAnimated(true, completion: nil)
+                            self.performSegueWithIdentifier("segueFromPickChannelToAddTake", sender: self)
                             
                     }
                 }
@@ -291,6 +331,14 @@ class PickChannelViewController: UIViewController, UITableViewDataSource, UITabl
             }
         } catch {
             print("Failed to decode JWT: \(error)")
+        }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "segueFromPickChannelToAddTake" {
+            let addTakeVC: AddTakeViewController = segue.destinationViewController as! AddTakeViewController
+            addTakeVC.questionContent = self.questionText
+            addTakeVC.questionId = self.questionId
         }
     }
     

@@ -52,6 +52,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     var answerId = ""
     var fromFeatured = false
     var videoTime = 0
+    var fromAddTake = false
     
     // MARK: - touchesBegan
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -101,8 +102,10 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let seconds : Int64 = 0
         let preferredTimeScale : Int32 = 1
         let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
-        player.seekToTime(seekTime)
-        player.play()
+        if player != nil {
+            player.seekToTime(seekTime)
+            player.play()
+        }
         
     }
     
@@ -280,8 +283,12 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         }
         
 //        player.pause()
+        if fromAddTake {
+            self.presentingViewController?.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        } else {
+            self.dismissViewControllerAnimated(true, completion: nil)
+        }
         
-        self.dismissViewControllerAnimated(true, completion: nil)
     }
     
     // Switch between front and back Camera
@@ -660,9 +667,11 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     // MARK: - Segues
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "segueToShareVideo" {
+            NSNotificationCenter.defaultCenter().postNotificationName("postedVideo", object: self)
             let shareVideoVC: ShareVideoViewController = segue.destinationViewController as! ShareVideoViewController
             shareVideoVC.answerId = self.answerId
             shareVideoVC.questionContent = self.content
+            shareVideoVC.fromAddTake = self.fromAddTake
         }
     }
     

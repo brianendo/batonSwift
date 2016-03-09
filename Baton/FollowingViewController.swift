@@ -183,7 +183,12 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                             answercount = 0
                         }
                         
-                        let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName)
+                        var thumbnail_url = subJson["thumbnail_url"].string
+                        if thumbnail_url == nil {
+                            thumbnail_url = ""
+                        }
+                        
+                        let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName, thumbnail_url: thumbnail_url)
                         self.questionArray.append(question)
                         self.questionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         
@@ -735,7 +740,7 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.separatorInset = UIEdgeInsetsZero
             cell.layoutMargins = UIEdgeInsetsZero
             
-            var question_content = answerArray[indexPath.row].question_content
+            let question_content = answerArray[indexPath.row].question_content
             let question_id = answerArray[indexPath.row].question_id
             
             cell.questionContentTextView.text = question_content
@@ -1603,36 +1608,9 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 if visibleHeight > cellHeight {
                     if (cell.player.rate > 0) {
                         print("Playing")
-                        
-//                        let url = globalurl + "api/answers/" + answerArray[(indexPath?.row)!].id + "/viewed/"
-//                        
-//                        Alamofire.request(.PUT, url, parameters: nil)
-//                            .responseJSON { response in
-//                                let result = response.result.value
-//                                print(result)
-//                                if result == nil {
-//                                    print("Not viewed")
-//                                    
-//                                } else {
-//                                    print("Viewed")
-//                                }
-//                        }
 
                     } else {
                         print("Reached")
-//                        let url = globalurl + "api/answers/" + answerArray[(indexPath?.row)!].id + "/viewed/"
-//                        
-//                        Alamofire.request(.PUT, url, parameters: nil)
-//                            .responseJSON { response in
-//                                let result = response.result.value
-//                                print(result)
-//                                if result == nil {
-//                                    print("Not viewed")
-//                                    
-//                                } else {
-//                                    print("Viewed")
-//                                }
-//                        }
                         let seconds : Int64 = 0
                         let preferredTimeScale : Int32 = 1
                         let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)

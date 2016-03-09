@@ -15,9 +15,9 @@ class QuestionTableViewCell: UITableViewCell {
     @IBOutlet weak var answercountLabel: UILabel!
     @IBOutlet weak var questionTextView: UITextView!
     @IBOutlet weak var timeAgoLabel: UILabel!
-    @IBOutlet weak var bottomMarginImageView: UIImageView!
-    @IBOutlet weak var likecountTextView: UITextView!
     @IBOutlet weak var channelButton: UIButton!
+    @IBOutlet weak var likecountLabel: UILabel!
+    @IBOutlet weak var thumbnailImageView: UIImageView!
     
     // MARK: - override
     override func awakeFromNib() {

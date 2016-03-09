@@ -14,9 +14,9 @@ class ProfileQuestionTableViewCell: UITableViewCell {
     // MARK: - IBOutlets
     @IBOutlet weak var answercountLabel: UILabel!
     @IBOutlet weak var questionTextView: UITextView!
-    @IBOutlet weak var likeCountTextView: UITextView!
     @IBOutlet weak var timeAgoLabel: UILabel!
     @IBOutlet weak var channelButton: UIButton!
+    @IBOutlet weak var likeCountLabel: UILabel!
     
     // MARK: - overrid
     override func awakeFromNib() {

@@ -42,11 +42,11 @@ let CognitoRegionType = AWSRegionType.USEast1  // e.g. AWSRegionType.USEast1
 let DefaultServiceRegionType = AWSRegionType.USWest1 // e.g. AWSRegionType.USWest2
 let CognitoIdentityPoolId = "us-east-1:cd887d49-c047-4889-bf49-215cd886036d"
 
-let S3BucketName = "batonapp"
+//let S3BucketName = "batonapp"
 
-//let S3BucketName = "batonstaging"
+let S3BucketName = "batonstaging"
 
-let globalurl = herokuUrl
+let globalurl = stagingUrl
 let keychain = KeychainSwift()
 
 var imageCache: Dictionary<String, NSData?> = Dictionary<String, NSData>()

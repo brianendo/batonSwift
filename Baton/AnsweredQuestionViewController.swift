@@ -231,7 +231,12 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                     channelName = ""
                 }
                 
-                let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName)
+                var thumbnail_url = subJson["thumbnail_url"].string
+                if thumbnail_url == nil {
+                    thumbnail_url = ""
+                }
+                
+                let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName, thumbnail_url: thumbnail_url)
                 self.question = question
                 self.tableView.reloadData()
         }
@@ -275,9 +280,9 @@ class AnsweredQuestionViewController: UIViewController, UITableViewDataSource, U
                 
                 let likecount = question!.likecount
                 let formattedlikecount = likecount.abbreviateNumberAtThousand()
-                cell.likeCountTextView.text = "\(formattedlikecount)"
-                cell.likeCountTextView.editable = false
-                cell.likeCountTextView.selectable = false
+                cell.likeCountLabel.text = "\(formattedlikecount)"
+//                cell.likeCountTextView.editable = false
+//                cell.likeCountTextView.selectable = false
                 
                 let date = question!.createdAt
                 let timeAgo = timeAgoSinceDate(date, numericDates: true)

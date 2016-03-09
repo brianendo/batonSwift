@@ -31,6 +31,10 @@
 		8E146C8E1C6C043500468A1C /* Onboarding3ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C8D1C6C043500468A1C /* Onboarding3ViewController.swift */; };
 		8E146C901C6C0C2200468A1C /* PushViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C8F1C6C0C2100468A1C /* PushViewController.swift */; };
 		8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */; };
+		8E6A7DF81C8FBC160010BA42 /* AddTakeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6A7DF71C8FBC160010BA42 /* AddTakeViewController.swift */; };
+		8E6A7DFA1C8FD7430010BA42 /* FeaturedTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6A7DF91C8FD7430010BA42 /* FeaturedTableViewCell.swift */; };
+		8E6A7DFC1C8FE7620010BA42 /* FeaturedVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6A7DFB1C8FE7620010BA42 /* FeaturedVideoViewController.swift */; };
+		8E6A7DFE1C8FE86F0010BA42 /* FeaturedVideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E6A7DFD1C8FE86F0010BA42 /* FeaturedVideoTableViewCell.swift */; };
 		8E9D70E31C164A280073CA17 /* AnsweredQuestionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */; };
 		8E9D70E51C164A920073CA17 /* AnsweredQuestionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */; };
 		8E9D70E71C167A960073CA17 /* MyQuestionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70E61C167A960073CA17 /* MyQuestionTitleTableViewCell.swift */; };
@@ -113,6 +117,10 @@
 		8E146C8D1C6C043500468A1C /* Onboarding3ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Onboarding3ViewController.swift; sourceTree = "<group>"; };
 		8E146C8F1C6C0C2100468A1C /* PushViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushViewController.swift; sourceTree = "<group>"; };
 		8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TakeVideoViewController.swift; sourceTree = "<group>"; };
+		8E6A7DF71C8FBC160010BA42 /* AddTakeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddTakeViewController.swift; sourceTree = "<group>"; };
+		8E6A7DF91C8FD7430010BA42 /* FeaturedTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedTableViewCell.swift; sourceTree = "<group>"; };
+		8E6A7DFB1C8FE7620010BA42 /* FeaturedVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedVideoViewController.swift; sourceTree = "<group>"; };
+		8E6A7DFD1C8FE86F0010BA42 /* FeaturedVideoTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedVideoTableViewCell.swift; sourceTree = "<group>"; };
 		8E9D70E21C164A280073CA17 /* AnsweredQuestionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionViewController.swift; sourceTree = "<group>"; };
 		8E9D70E41C164A920073CA17 /* AnsweredQuestionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnsweredQuestionTableViewCell.swift; sourceTree = "<group>"; };
 		8E9D70E61C167A960073CA17 /* MyQuestionTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyQuestionTitleTableViewCell.swift; sourceTree = "<group>"; };
@@ -200,11 +208,15 @@
 			children = (
 				8E0F19861C72590200F7BC35 /* ChannelViewController.swift */,
 				8E0F19881C72596900F7BC35 /* ChannelTitleTableViewCell.swift */,
+				8E6A7DFB1C8FE7620010BA42 /* FeaturedVideoViewController.swift */,
+				8E6A7DFD1C8FE86F0010BA42 /* FeaturedVideoTableViewCell.swift */,
 				8EE04AFB1BE29A030040D5A5 /* FeedViewController.swift */,
+				8E6A7DF91C8FD7430010BA42 /* FeaturedTableViewCell.swift */,
 				8E0F198E1C7294EF00F7BC35 /* FeedSegmentedTableViewCell.swift */,
 				8EE04AFD1BE29C3A0040D5A5 /* QuestionTableViewCell.swift */,
 				8EE04AFF1BE2A14F0040D5A5 /* AskQuestionViewController.swift */,
 				8E0F198A1C725F3E00F7BC35 /* PickChannelViewController.swift */,
+				8E6A7DF71C8FBC160010BA42 /* AddTakeViewController.swift */,
 				8E0F198C1C72602800F7BC35 /* PickChannelTableViewCell.swift */,
 				8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */,
 				8E146C6D1C69221400468A1C /* ShareVideoViewController.swift */,
@@ -600,15 +612,19 @@
 				8EA960F61C110A3F00371C77 /* AnswersViewController.swift in Sources */,
 				8EE04B001BE2A14F0040D5A5 /* AskQuestionViewController.swift in Sources */,
 				8EA960FA1C12277900371C77 /* QuestionTitleTableViewCell.swift in Sources */,
+				8E6A7DFC1C8FE7620010BA42 /* FeaturedVideoViewController.swift in Sources */,
 				8E9D70E71C167A960073CA17 /* MyQuestionTitleTableViewCell.swift in Sources */,
+				8E6A7DFE1C8FE86F0010BA42 /* FeaturedVideoTableViewCell.swift in Sources */,
 				8EE04B071BE2A7A30040D5A5 /* LogInViewController.swift in Sources */,
 				8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */,
 				8EB9456B1C498B3000FA01E2 /* FollowingViewController.swift in Sources */,
 				8EE04B261BE974630040D5A5 /* ProfileQuestionTableViewCell.swift in Sources */,
 				8EB945671C487BA000FA01E2 /* UserTableViewCell.swift in Sources */,
 				8E146C761C6BBC1B00468A1C /* OnboardingViewController.swift in Sources */,
+				8E6A7DFA1C8FD7430010BA42 /* FeaturedTableViewCell.swift in Sources */,
 				8E9D70EB1C17A0300073CA17 /* TabBarViewController.swift in Sources */,
 				8E146C7B1C6BD3C500468A1C /* Onboarding1ViewController.swift in Sources */,
+				8E6A7DF81C8FBC160010BA42 /* AddTakeViewController.swift in Sources */,
 				8E146C7D1C6BE54A00468A1C /* Onboarding2ViewController.swift in Sources */,
 				8E146C691C62B5EE00468A1C /* WebViewController.swift in Sources */,
 				8E146C671C62901000468A1C /* TwitterSignupViewController.swift in Sources */,

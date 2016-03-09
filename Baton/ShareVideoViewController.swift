@@ -28,11 +28,11 @@ class ShareVideoViewController: UIViewController, MFMessageComposeViewController
     var editedQuestionContent = ""
     let composer = TWTRComposer()
     let content: FBSDKShareLinkContent = FBSDKShareLinkContent()
+    var fromAddTake = false
     
     // MARK: - viewDid/viewWill
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         print(answerId)
         answerUrl = batonUrl + "answers/\(answerId)"
         
@@ -134,7 +134,12 @@ class ShareVideoViewController: UIViewController, MFMessageComposeViewController
     
     @IBAction func doneButtonPressed(sender: UIButton) {
         // Dismisses both the ShareVideoVC and TakeVideoVC
-        self.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        if fromAddTake {
+            self.presentingViewController?.presentingViewController?.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        } else {
+            self.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        }
+        
     }
     
     

@@ -27,8 +27,8 @@ class ProfileButtonsTableViewCell: UITableViewCell {
         personalButton.layer.borderWidth = 0.5
         personalButton.layer.borderColor = UIColor(white:0.79, alpha:1.0).CGColor
         
-        pencilButton.setImage(UIImage(named: "pencilSelected"), forState: .Selected)
-        pencilButton.setImage(UIImage(named: "grayPencilProfile"), forState: .Normal)
+        pencilButton.setImage(UIImage(named: "lightbulbProfileSelected"), forState: .Selected)
+        pencilButton.setImage(UIImage(named: "graylightbulbProfile"), forState: .Normal)
         pencilButton.layer.borderWidth = 0.5
         pencilButton.layer.borderColor = UIColor(white:0.79, alpha:1.0).CGColor
         

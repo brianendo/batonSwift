@@ -47,7 +47,9 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
     // MARK: - viewWill/viewDid
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
-        self.tabBarController!.tabBar.hidden = true
+        if self.tabBarController != nil {
+            self.tabBarController!.tabBar.hidden = true
+        }
         self.registerForKeyboardNotifications()
     }
     
@@ -138,7 +140,11 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
         // and set the cursor to the beginning of the text view
         if updatedText.isEmpty {
             
-            contentTextView.text = placeholder
+            if fromSpecificChannel {
+                contentTextView.text = "What do you want to share with the " + self.channelName + " community?"
+            } else {
+                contentTextView.text = placeholder
+            }
             contentTextView.textColor = UIColor.lightGrayColor()
             
             self.charRemainingLabel.text = "150"
@@ -208,7 +214,8 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
                     let value = response.result.value
                     print(value)
                     NSNotificationCenter.defaultCenter().postNotificationName("questionEdited", object: self)
-                    self.navigationController?.popViewControllerAnimated(true)
+//                    self.navigationController?.popViewControllerAnimated(true)
+                    self.dismissViewControllerAnimated(true, completion: nil)
             }
 
             
@@ -260,11 +267,24 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
                                     Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
                                         .responseJSON { response in
                                             print(response.response?.statusCode)
+                                            
+                                            var value = response.result.value
+                                            if value == nil {
+                                                value = []
+                                            }
+                                            let json = JSON(value!)
+                                            print("JSON: \(json)")
+                                            let id = json["_id"].string
+                                            print(id)
+                                            self.questionId = id!
+                                            
+                                            
                                             Answers.logCustomEventWithName("Question submitted",
                                                 customAttributes: ["channel": self.channelName, "username": myUsername])
                                             // Update feed with new question
                                             NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                                            self.navigationController?.popViewControllerAnimated(true)
+//                                            self.navigationController?.popViewControllerAnimated(true)
+                                            self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
                                     }
                                 }
                                 
@@ -311,11 +331,23 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
                                         Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
                                             .responseJSON { response in
                                                 print(response.response?.statusCode)
+                                                
+                                                var value = response.result.value
+                                                if value == nil {
+                                                    value = []
+                                                }
+                                                let json = JSON(value!)
+                                                print("JSON: \(json)")
+                                                let id = json["_id"].string
+                                                print(id)
+                                                self.questionId = id!
+                                                
                                                 Answers.logCustomEventWithName("Question submitted",
                                                     customAttributes: ["channel": self.channelName, "username": myUsername])
                                                 // Update feed with new question
                                                 NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                                                self.navigationController?.popViewControllerAnimated(true)
+//                                                self.navigationController?.popViewControllerAnimated(true)
+                                                self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
                                         }
                                     }
                                     
@@ -342,10 +374,22 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
                                     print(response.response)
                                     print(response.result)
                                     print(response.response?.statusCode)
+                                    
+                                    var value = response.result.value
+                                    if value == nil {
+                                        value = []
+                                    }
+                                    let json = JSON(value!)
+                                    print("JSON: \(json)")
+                                    let id = json["_id"].string
+                                    print(id)
+                                    self.questionId = id!
+                                    
                                     Answers.logCustomEventWithName("Question submitted",
                                         customAttributes: ["channel": self.channelName, "username": myUsername])
                                     NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-                                    self.navigationController?.popViewControllerAnimated(true)
+//                                    self.navigationController?.popViewControllerAnimated(true)
+                                    self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
                                     
                             }
                         }
@@ -362,10 +406,20 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
         
     }
     
+    @IBAction func cancelButtonPressed(sender: UIButton) {
+        self.contentTextView.endEditing(true)
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "segueToPickChannel" {
             let pickChannelVC: PickChannelViewController = segue.destinationViewController as! PickChannelViewController
             pickChannelVC.questionText = self.contentTextView.text
+        } else if segue.identifier == "segueFromAskQuestionToAddTake" {
+            let addTakeVC: AddTakeViewController = segue.destinationViewController as! AddTakeViewController
+            addTakeVC.questionContent = self.contentTextView.text
+            addTakeVC.questionId = self.questionId
         }
     }
     

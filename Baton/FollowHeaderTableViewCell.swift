@@ -27,8 +27,8 @@ class FollowHeaderTableViewCell: UITableViewCell {
         relayButton.backgroundColor = UIColor.whiteColor()
         relayButton.tag = 0
         
-        postButton.setImage(UIImage(named: "bluePencil"), forState: .Selected)
-        postButton.setImage(UIImage(named: "grayPencil"), forState: .Normal)
+        postButton.setImage(UIImage(named: "bluelightbulb"), forState: .Selected)
+        postButton.setImage(UIImage(named: "graylightbulb"), forState: .Normal)
         postButton.setTitleColor(UIColor(white:0.74, alpha:1.0), forState: .Normal)
         postButton.setTitleColor(UIColor(red:0.17, green:0.18, blue:0.29, alpha:1.0), forState: .Selected)
         postButton.backgroundColor = UIColor.whiteColor()
