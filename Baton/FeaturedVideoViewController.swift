@@ -134,6 +134,16 @@ class FeaturedVideoViewController: UIViewController, UITableViewDataSource, UITa
                             likeCount = 0
                         }
                         
+                        var thumbnail_url = subJson["thumbnail_url"].string
+                        if thumbnail_url == nil {
+                            thumbnail_url = ""
+                        }
+                        
+                        var vertical_screen = subJson["vertical_screen"].bool
+                        if vertical_screen == nil {
+                            vertical_screen = false
+                        }
+                        
                         if video_url != nil {
                             print(video_url)
                             
@@ -154,12 +164,12 @@ class FeaturedVideoViewController: UIViewController, UITableViewDataSource, UITa
                                             content = ""
                                         }
                                         
-                                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked")
+                                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked", thumbnail_url: thumbnail_url, vertical_screen: vertical_screen)
                                         self.answerArray.append(answer)
                                         self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                                 }
                             } else {
-                                let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked")
+                                let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked", thumbnail_url: thumbnail_url, vertical_screen: vertical_screen)
                                 self.answerArray.append(answer)
                                 self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                                 

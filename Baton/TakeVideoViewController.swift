@@ -19,6 +19,26 @@ import KeychainSwift
 import JWTDecode
 import Crashlytics
 
+extension UIView {
+    func layerGradient() {
+        let layer : CAGradientLayer = CAGradientLayer()
+        layer.frame.size = self.frame.size
+        layer.frame.origin = CGPointMake(0.0,0.0)
+        layer.cornerRadius = CGFloat(frame.width / 20)
+        
+        let color0 = UIColor(red:250.0/255, green:250.0/255, blue:250.0/255, alpha:0.5).CGColor
+        let color1 = UIColor(red:200.0/255, green:200.0/255, blue: 200.0/255, alpha:0.1).CGColor
+        let color2 = UIColor(red:150.0/255, green:150.0/255, blue: 150.0/255, alpha:0.1).CGColor
+        let color3 = UIColor(red:100.0/255, green:100.0/255, blue: 100.0/255, alpha:0.1).CGColor
+        let color4 = UIColor(red:50.0/255, green:50.0/255, blue:50.0/255, alpha:0.1).CGColor
+        let color5 = UIColor(red:0.0/255, green:0.0/255, blue:0.0/255, alpha:0.1).CGColor
+        let color6 = UIColor(red:150.0/255, green:150.0/255, blue:150.0/255, alpha:0.1).CGColor
+        
+        layer.colors = [color0,color1,color2,color3,color4,color5,color6]
+        self.layer.insertSublayer(layer, atIndex: 0)
+    }
+}
+
 class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
 
     // MARK: - IBOutlets
@@ -32,6 +52,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var uploadingLabel: UILabel!
     @IBOutlet weak var questionLabel: UILabel!
+    @IBOutlet weak var overlayView: UIView!
     
     // MARK: - Variables
     let keychain = KeychainSwift()
@@ -149,6 +170,20 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         flashLightButton.layer.backgroundColor = UIColor.clearColor().CGColor
         flashLightButton.hidden = true
         
+        closeButton.layer.shadowColor = UIColor.grayColor().CGColor
+        closeButton.layer.shadowOffset = CGSizeMake(0.3, 2.0)
+        closeButton.layer.shadowOpacity = 0.5
+        closeButton.layer.shadowRadius = 0.5
+        closeButton.layer.backgroundColor = UIColor.clearColor().CGColor
+        
+        questionLabel.layer.shadowColor = UIColor.grayColor().CGColor
+        questionLabel.layer.shadowOffset = CGSizeMake(0.3, 2.0)
+        questionLabel.layer.shadowOpacity = 0.5
+        questionLabel.layer.shadowRadius = 0.5
+        questionLabel.layer.backgroundColor = UIColor.clearColor().CGColor
+        
+        overlayView.layerGradient()
+        
         self.questionLabel.text = self.content
         
         // Add devices to videoCapture variables
@@ -166,10 +201,6 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
             }
         }
         beginSession()
-//        NSNotificationCenter.defaultCenter().addObserver(self,
-//            selector: "restartVideoFromBeginning",
-//            name: AVPlayerItemDidPlayToEndTimeNotification,
-//            object: player)
         
         // doneButton hidden until a video is recorded
         self.doneButton.hidden = true
@@ -207,9 +238,18 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         previewLayer!.videoGravity = AVLayerVideoGravityResizeAspectFill
         previewLayer!.connection?.videoOrientation = AVCaptureVideoOrientation.Portrait
+        
         cameraView.layer.addSublayer(previewLayer!)
+        cameraView.bringSubviewToFront(overlayView)
+        cameraView.bringSubviewToFront(closeButton)
+        cameraView.bringSubviewToFront(closeButton)
+        cameraView.bringSubviewToFront(progressView)
         cameraView.bringSubviewToFront(flashLightButton)
         cameraView.bringSubviewToFront(switchCameraButton)
+        cameraView.bringSubviewToFront(recordButton)
+        cameraView.bringSubviewToFront(doneButton)
+        cameraView.bringSubviewToFront(uploadingLabel)
+        cameraView.bringSubviewToFront(questionLabel)
         captureSession.commitConfiguration()
         captureSession.startRunning()
     }
@@ -239,7 +279,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         pathLayer.backgroundColor = UIColor.clearColor().CGColor
         pathLayer.strokeColor = UIColor.blackColor().CGColor
         pathLayer.fillColor = nil
-        pathLayer.lineWidth = 8.0
+        pathLayer.lineWidth = 12.0
         pathLayer.strokeStart = 0.0
         pathLayer.strokeEnd = 0.0
         
@@ -524,7 +564,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                                 "creatorname": myUsername,
                                 "video_url": amazonUrl + key,
                                 "thumbnail_url": amazonUrl + key2,
-                                "featuredQuestion": self.fromFeatured
+                                "featuredQuestion": self.fromFeatured,
+                                "vertical_screen": true
                             ]
                             let url = globalurl + "api/answers"
                             Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
@@ -589,7 +630,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                                     "creatorname": myUsername,
                                     "video_url": amazonUrl + key,
                                     "thumbnail_url": amazonUrl + key2,
-                                    "featuredQuestion": self.fromFeatured
+                                    "featuredQuestion": self.fromFeatured,
+                                    "vertical_screen": true
                                 ]
                                 let url = globalurl + "api/answers"
                                 Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
@@ -631,7 +673,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                         "creatorname": myUsername,
                         "video_url": amazonUrl + key,
                         "thumbnail_url": amazonUrl + key2,
-                        "featuredQuestion": self.fromFeatured
+                        "featuredQuestion": self.fromFeatured,
+                        "vertical_screen": true
                     ]
                     let url = globalurl + "api/answers"
                     Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
@@ -699,16 +742,19 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         
         let videoComposition = AVMutableVideoComposition()
         
-        videoComposition.renderSize = CGSizeMake(clipVideoTrack.naturalSize.height, clipVideoTrack.naturalSize.height)
+        
+        videoComposition.renderSize = CGSizeMake(clipVideoTrack.naturalSize.height, clipVideoTrack.naturalSize.width)
+//        videoComposition.renderSize = CGSizeMake((previewLayer?.frame.width)!, (previewLayer?.frame.height)!)
         videoComposition.frameDuration = CMTimeMake(1, 30)
         
         let instruction = AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(22, 30))
-
-        let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
-        let transform1:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, -(clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height)/2)
-        let transform2 = CGAffineTransformRotate(transform1, CGFloat(M_PI_2))
         
+        let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
+        
+        
+        let transform1:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, 0)
+        let transform2 = CGAffineTransformRotate(transform1, CGFloat(M_PI_2))
         if frontCamera {
             let transform4:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, 0)
             let transform3 = CGAffineTransformScale(transform4, -1, 1)
@@ -718,6 +764,29 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
             let finalTransform = transform2
             transformer.setTransform(finalTransform, atTime: kCMTimeZero)
         }
+        
+        
+        
+//        videoComposition.renderSize = CGSizeMake(clipVideoTrack.naturalSize.height, clipVideoTrack.naturalSize.height)
+//        videoComposition.frameDuration = CMTimeMake(1, 30)
+//
+//        let instruction = AVMutableVideoCompositionInstruction()
+//        instruction.timeRange = CMTimeRangeMake(kCMTimeZero, CMTimeMakeWithSeconds(22, 30))
+//
+//        let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: clipVideoTrack)
+//        let transform1:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, -(clipVideoTrack.naturalSize.width - clipVideoTrack.naturalSize.height)/2)
+//        let transform2 = CGAffineTransformRotate(transform1, CGFloat(M_PI_2))
+//        
+//        
+//        if frontCamera {
+//            let transform4:CGAffineTransform = CGAffineTransformMakeTranslation(clipVideoTrack.naturalSize.height, 0)
+//            let transform3 = CGAffineTransformScale(transform4, -1, 1)
+//            let finalTransform = CGAffineTransformConcat(transform2, transform3)
+//            transformer.setTransform(finalTransform, atTime: kCMTimeZero)
+//        } else {
+//            let finalTransform = transform2
+//            transformer.setTransform(finalTransform, atTime: kCMTimeZero)
+//        }
         
         instruction.layerInstructions = [transformer]
         videoComposition.instructions = [instruction]
@@ -737,6 +806,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         
         // Exporting with Medium Quality
         let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetMediumQuality)!
+//        let exporter = AVAssetExportSession(asset: videoAsset, presetName: AVAssetExportPresetHighestQuality)!
         // videoCompositon uses the instructions from transformer
         exporter.videoComposition = videoComposition
         exporter.outputURL = outputURL
@@ -787,6 +857,13 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         let intTime = Int(round(time))
         print(intTime)
         self.videoTime = intTime
+        cameraView.bringSubviewToFront(overlayView)
+        cameraView.bringSubviewToFront(closeButton)
+        cameraView.bringSubviewToFront(progressView)
+        cameraView.bringSubviewToFront(recordButton)
+        cameraView.bringSubviewToFront(doneButton)
+        cameraView.bringSubviewToFront(uploadingLabel)
+        cameraView.bringSubviewToFront(questionLabel)
         self.recordButton.hidden = false
         self.doneButton.hidden = false
     }

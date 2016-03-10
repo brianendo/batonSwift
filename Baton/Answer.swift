@@ -23,8 +23,10 @@ class Answer: NSObject {
     var views: Int
     var featuredQuestion: Bool
     var followingCreator: String
+    var thumbnail_url: String
+    var vertical_screen: Bool
     
-    init(content: String?, creator: String?, creatorname: String?, id: String?, question_id: String?, question_content: String?, video_url: String?, likeCount: Int?, liked_by_user: String?, frontCamera: Bool?, createdAt: NSDate?, views: Int?, featuredQuestion: Bool?, followingCreator: String?) {
+    init(content: String?, creator: String?, creatorname: String?, id: String?, question_id: String?, question_content: String?, video_url: String?, likeCount: Int?, liked_by_user: String?, frontCamera: Bool?, createdAt: NSDate?, views: Int?, featuredQuestion: Bool?, followingCreator: String?, thumbnail_url: String?, vertical_screen: Bool?) {
         self.content = content!
         self.creator = creator!
         self.creatorname = creatorname!
@@ -39,5 +41,7 @@ class Answer: NSObject {
         self.views = views!
         self.featuredQuestion = featuredQuestion!
         self.followingCreator = followingCreator!
+        self.thumbnail_url = thumbnail_url!
+        self.vertical_screen = vertical_screen!
     }
 }

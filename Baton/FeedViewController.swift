@@ -2015,14 +2015,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
                 
             } else {
-                if recordedRow == 1 {
+                if recordedRow == 3 {
                     let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
                     let content = self.featuredQuestionArray[selectedIndexPath].content
                     let id = self.featuredQuestionArray[selectedIndexPath].id
                     takeVideoVC.content = content
                     takeVideoVC.id = id
                     takeVideoVC.fromFeatured = true
-                } else if recordedRow == 2 {
+                } else if recordedRow == 4 {
                     if counter == 0 {
                         let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
                         let content = self.questionArray[selectedIndexPath].content

@@ -40,6 +40,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     var fromFeatured = false
     var answerArray = [Answer]()
     let label = UILabel(frame: CGRectMake(0, 0, 400, 400))
+    var indexPath = 0
     
     // MARK: - viewWill/viewDid
     override func viewWillAppear(animated: Bool) {
@@ -259,10 +260,29 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                             likeCount = 0
                         }
                         
+                        var thumbnail_url = subJson["thumbnail_url"].string
+                        if thumbnail_url == nil {
+                            thumbnail_url = ""
+                        }
+                        
+                        var vertical_screen = subJson["vertical_screen"].bool
+                        if vertical_screen == nil {
+                            vertical_screen = false
+                        }
+                        
+                        var question_id = subJson["question_id"].string
+                        if question_id == nil {
+                            question_id = ""
+                        }
+                        var question_content = subJson["question_content"].string
+                        if question_content == nil {
+                            question_content = ""
+                        }
+                        
                         if video_url != nil {
                             print(video_url)
                             
-                            let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked")
+                            let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked", thumbnail_url: thumbnail_url, vertical_screen: vertical_screen)
                             self.answerArray.append(answer)
                             self.answerArray.sortInPlace({ $0.likeCount > $1.likeCount })
                         }
@@ -335,10 +355,29 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                             likeCount = 0
                         }
                         
+                        var thumbnail_url = subJson["thumbnail_url"].string
+                        if thumbnail_url == nil {
+                            thumbnail_url = ""
+                        }
+                        
+                        var vertical_screen = subJson["vertical_screen"].bool
+                        if vertical_screen == nil {
+                            vertical_screen = false
+                        }
+                        
+                        var question_id = subJson["question_id"].string
+                        if question_id == nil {
+                            question_id = ""
+                        }
+                        var question_content = subJson["question_content"].string
+                        if question_content == nil {
+                            question_content = ""
+                        }
+                        
                         if video_url != nil {
                             print(video_url)
                             
-                            let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: "", question_content: "", video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked")
+                            let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked", thumbnail_url: thumbnail_url, vertical_screen: vertical_screen)
                             self.answerArray.append(answer)
                             self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         }
@@ -461,9 +500,9 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             
             return cell
         } else {
-            let cell = tableView.dequeueReusableCellWithIdentifier("AnswerCell", forIndexPath: indexPath) as! AnswerTableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier("answerPreviewCell", forIndexPath: indexPath) as! AnswerPreviewTableViewCell
             
-            cell.selectionStyle = UITableViewCellSelectionStyle.None
+//            cell.selectionStyle = UITableViewCellSelectionStyle.None
             
             cell.preservesSuperviewLayoutMargins = false
             cell.separatorInset = UIEdgeInsetsZero
@@ -477,58 +516,98 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 let date = answerArray[indexPath.row].createdAt
                 let timeAgo = timeAgoSinceDate(date, numericDates: true)
                 
-                cell.timeAgoLabel.text = timeAgo
                 
                 let views = answerArray[indexPath.row].views
                 let abbrevViews = views.addCommas(views)
                 cell.viewCountLabel.text = "\(abbrevViews) views"
                 
                 
-                cell.nameTextView.text = answerArray[indexPath.row].creatorname
-                cell.nameTextView.selectable = false
-                
-                cell.nameButton.addTarget(self, action: "nameTapped:", forControlEvents: .TouchUpInside)
-                cell.nameButton.tag = indexPath.row
-                cell.contentView.bringSubviewToFront(cell.nameButton)
-                
-                cell.videoView.addSubview(cell.playerController.view)
-                
-                
-                cell.playerController.view.userInteractionEnabled = true
-                
-                let view = UIView(frame: CGRectMake(cell.videoView.frame.origin.x, cell.videoView.frame.origin.y, cell.videoView.frame.size.width, cell.videoView.frame.size.height))
-                cell.videoView.addSubview(view)
-                
-                let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
-                view.addGestureRecognizer(tapGesture)
-                view.tag = indexPath.row
-                
-                cell.likeImageView.image = UIImage(named: "Heart")
-                cell.likeImageView.hidden = true
-                cell.likeImageView.contentMode = UIViewContentMode.ScaleAspectFill
-                cell.videoView.bringSubviewToFront(cell.likeImageView)
-                
-                let doubleTapGesture = UITapGestureRecognizer()
-                doubleTapGesture.numberOfTapsRequired = 2
-                doubleTapGesture.addTarget(self, action: "doubleTapped:")
-                view.addGestureRecognizer(doubleTapGesture)
-                
+                cell.nameLabel.text = answerArray[indexPath.row].creatorname
                 let likeCount = self.answerArray[indexPath.row].likeCount
                 let abbrevLikeCount = likeCount.addCommas(likeCount)
-                cell.likeCountTextView.text = "\(abbrevLikeCount) likes"
-                cell.videoView.bringSubviewToFront(cell.likeCountTextView)
-                cell.videoView.bringSubviewToFront(cell.heartImageView)
+                cell.likeCountLabel.text = "\(abbrevLikeCount) likes"
+//                cell.nameButton.addTarget(self, action: "nameTapped:", forControlEvents: .TouchUpInside)
+//                cell.nameButton.tag = indexPath.row
+//                cell.contentView.bringSubviewToFront(cell.nameButton)
+                
+                
+//                let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
+//                view.addGestureRecognizer(tapGesture)
+//                view.tag = indexPath.row
+                
+                
             }
-            
-            
-            cell.likeButton.tag = indexPath.row
-            cell.likeButton.addTarget(self, action: "toggleLike:", forControlEvents: .TouchUpInside)
-            cell.videoView.bringSubviewToFront(cell.likeButton)
-            
-            cell.extraButton.addTarget(self, action: "extraButtonTapped:", forControlEvents: .TouchUpInside)
-            cell.extraButton.tag = indexPath.row
+        
             
             return cell
+//            let cell = tableView.dequeueReusableCellWithIdentifier("AnswerCell", forIndexPath: indexPath) as! AnswerTableViewCell
+//            
+//            cell.selectionStyle = UITableViewCellSelectionStyle.None
+//            
+//            cell.preservesSuperviewLayoutMargins = false
+//            cell.separatorInset = UIEdgeInsetsZero
+//            cell.layoutMargins = UIEdgeInsetsZero
+//            
+//            if answerArray.count == 0 {
+//                
+//            } else {
+//                let creator = answerArray[indexPath.row].creator
+//                
+//                let date = answerArray[indexPath.row].createdAt
+//                let timeAgo = timeAgoSinceDate(date, numericDates: true)
+//                
+//                cell.timeAgoLabel.text = timeAgo
+//                
+//                let views = answerArray[indexPath.row].views
+//                let abbrevViews = views.addCommas(views)
+//                cell.viewCountLabel.text = "\(abbrevViews) views"
+//                
+//                
+//                cell.nameTextView.text = answerArray[indexPath.row].creatorname
+//                cell.nameTextView.selectable = false
+//                
+//                cell.nameButton.addTarget(self, action: "nameTapped:", forControlEvents: .TouchUpInside)
+//                cell.nameButton.tag = indexPath.row
+//                cell.contentView.bringSubviewToFront(cell.nameButton)
+//                
+//                cell.videoView.addSubview(cell.playerController.view)
+//                
+//                
+//                cell.playerController.view.userInteractionEnabled = true
+//                
+//                let view = UIView(frame: CGRectMake(cell.videoView.frame.origin.x, cell.videoView.frame.origin.y, cell.videoView.frame.size.width, cell.videoView.frame.size.height))
+//                cell.videoView.addSubview(view)
+//
+//                let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
+//                view.addGestureRecognizer(tapGesture)
+//                view.tag = indexPath.row
+//                
+//                cell.likeImageView.image = UIImage(named: "Heart")
+//                cell.likeImageView.hidden = true
+//                cell.likeImageView.contentMode = UIViewContentMode.ScaleAspectFill
+//                cell.videoView.bringSubviewToFront(cell.likeImageView)
+//                
+//                let doubleTapGesture = UITapGestureRecognizer()
+//                doubleTapGesture.numberOfTapsRequired = 2
+//                doubleTapGesture.addTarget(self, action: "doubleTapped:")
+//                view.addGestureRecognizer(doubleTapGesture)
+//                
+//                let likeCount = self.answerArray[indexPath.row].likeCount
+//                let abbrevLikeCount = likeCount.addCommas(likeCount)
+//                cell.likeCountTextView.text = "\(abbrevLikeCount) likes"
+//                cell.videoView.bringSubviewToFront(cell.likeCountTextView)
+//                cell.videoView.bringSubviewToFront(cell.heartImageView)
+//            }
+//            
+//            
+//            cell.likeButton.tag = indexPath.row
+//            cell.likeButton.addTarget(self, action: "toggleLike:", forControlEvents: .TouchUpInside)
+//            cell.videoView.bringSubviewToFront(cell.likeButton)
+//            
+//            cell.extraButton.addTarget(self, action: "extraButtonTapped:", forControlEvents: .TouchUpInside)
+//            cell.extraButton.tag = indexPath.row
+//            
+//            return cell
         }
         
     }
@@ -536,41 +615,17 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     // Separate data binding between cellForRow and willDisplayCell. Better in willDisplayCell
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 1 {
-            let cell = cell as! AnswerTableViewCell
+            let cell = cell as! AnswerPreviewTableViewCell
             
             if answerArray.count == 0 {
                 
             } else {
-                let videoUrl = answerArray[indexPath.row].video_url
-                let newURL = NSURL(string: videoUrl)
-                cell.player = AVPlayer(URL: newURL!)
-                cell.playerController.player = cell.player
+                let thumbnail_url = answerArray[indexPath.row].thumbnail_url
+                let newURL = NSURL(string: thumbnail_url)
+                let data = NSData(contentsOfURL: newURL!)
+                cell.previewImageView.image  = UIImage(data: data!)
                 
-                cell.player.pause()
                 
-                if indexPath.row == 0 {
-                    cell.player.play()
-                    Answers.logCustomEventWithName("Video Viewed",
-                        customAttributes: ["where":"AnswersVC", "row": 0])
-                    NSNotificationCenter.defaultCenter().addObserver(self,
-                        selector: "videoEnd",
-                        name: AVPlayerItemDidPlayToEndTimeNotification,
-                        object: nil)
-                    
-                    let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/viewed/"
-                    
-                    Alamofire.request(.PUT, url, parameters: nil)
-                        .responseJSON { response in
-                            let result = response.result.value
-                            print(result)
-                            if result == nil {
-                                print("Not viewed")
-                                
-                            } else {
-                                print("Viewed")
-                            }
-                    }
-                }
                 
                 
                 let creator = answerArray[indexPath.row].creator
@@ -612,78 +667,170 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                         return nil
                     }
                 }
-                let followingCreator = self.answerArray[indexPath.row].followingCreator
-                cell.followButton.tag = indexPath.row
-                cell.followButton.addTarget(self, action: "toggleFollow:", forControlEvents: .TouchUpInside)
-                //            cell.followButton.setImage(UIImage(named: "addperson"), forState: .Normal)
-                //            cell.followButton.setImage(UIImage(named: "addedperson"), forState: .Selected)
-                
-                if creator == userid {
-                    cell.followButton.hidden = true
-                } else if followingCreator == "not checked"{
-                    cell.followButton.selected = false
-                    
-                    let url = globalurl + "api/user/" + userid + "/follows/" + answerArray[indexPath.row].creator
-                    
-                    Alamofire.request(.GET, url, parameters: nil)
-                        .responseJSON { response in
-                            let result = response.result.value
-                            print(result)
-                            if result == nil {
-                                print("Not Following")
-                                cell.followButton.selected = false
-                                cell.followButton.hidden = false
-                                self.answerArray[indexPath.row].followingCreator = "not following"
-                            } else {
-                                print("Already Following")
-                                //                            cell.followButton.selected = true
-                                cell.followButton.hidden = true
-                                self.answerArray[indexPath.row].followingCreator = "already following"
-                            }
-                    }
-                } else if followingCreator == "not following" {
-                    cell.followButton.selected = false
-                    cell.followButton.hidden = false
-                } else if followingCreator == "already following" {
-                    cell.followButton.hidden = true
-                } else if followingCreator == "just followed" {
-                    cell.followButton.selected = true
-                    cell.followButton.hidden = false
-                }
-                
-                let liked_by_user = self.answerArray[indexPath.row].liked_by_user
-                
-                if liked_by_user == "true" {
-                    cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-                    cell.heartImageView.image = UIImage(named: "redHeartOutline")
-                } else if liked_by_user == "not checked" {
-                    let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/likecheck/" + userid
-                    
-                    Alamofire.request(.GET, url, parameters: nil)
-                        .responseJSON { response in
-                            let result = response.result.value
-                            print(result)
-                            if result == nil {
-                                print("Gobi")
-                                cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
-                                cell.heartImageView.image = UIImage(named: "grayHeartOutline")
-                                self.answerArray[indexPath.row].liked_by_user = "false"
-                            } else {
-                                print("Liked")
-                                cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-                                cell.heartImageView.image = UIImage(named: "redHeartOutline")
-                                self.answerArray[indexPath.row].liked_by_user = "true"
-                            }
-                    }
-                } else if liked_by_user == "false" {
-                    cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
-                    cell.heartImageView.image = UIImage(named: "grayHeartOutline")
-                }
             }
             
             
         }
+
+//        if indexPath.section == 1 {
+//            let cell = cell as! AnswerTableViewCell
+//            
+//            if answerArray.count == 0 {
+//                
+//            } else {
+//                let videoUrl = answerArray[indexPath.row].video_url
+//                let newURL = NSURL(string: videoUrl)
+//                cell.player = AVPlayer(URL: newURL!)
+//                cell.playerController.player = cell.player
+//
+//                cell.player.pause()
+//                
+//                if indexPath.row == 0 {
+//                    cell.player.play()
+//                    Answers.logCustomEventWithName("Video Viewed",
+//                        customAttributes: ["where":"AnswersVC", "row": 0])
+//                    NSNotificationCenter.defaultCenter().addObserver(self,
+//                        selector: "videoEnd",
+//                        name: AVPlayerItemDidPlayToEndTimeNotification,
+//                        object: nil)
+//                    
+//                    let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/viewed/"
+//                    
+//                    Alamofire.request(.PUT, url, parameters: nil)
+//                        .responseJSON { response in
+//                            let result = response.result.value
+//                            print(result)
+//                            if result == nil {
+//                                print("Not viewed")
+//                                
+//                            } else {
+//                                print("Viewed")
+//                            }
+//                    }
+//                }
+//                
+//                
+//                let creator = answerArray[indexPath.row].creator
+//                
+//                if let cachedImageResult = imageCache[creator] {
+//                    print("pull from cache")
+//                    cell.profileImageView.image = UIImage(data: cachedImageResult!)
+//                } else {
+//                    // 3
+//                    cell.profileImageView.image = UIImage(named: "Placeholder")
+//                    
+//                    // 4
+//                    let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
+//                    let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
+//                    let transferManager = AWSS3TransferManager.defaultS3TransferManager()
+//                    
+//                    let key = "profilePics/" + creator
+//                    let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
+//                    readRequest1.bucket = S3BucketName
+//                    readRequest1.key =  key
+//                    readRequest1.downloadingFileURL = downloadingFileURL1
+//                    
+//                    let task = transferManager.download(readRequest1)
+//                    task.continueWithBlock { (task) -> AnyObject! in
+//                        if task.error != nil {
+//                            print("No Profile Pic")
+//                        } else {
+//                            let image = UIImage(contentsOfFile: downloadingFilePath1)
+//                            let imageData = UIImageJPEGRepresentation(image!, 1.0)
+//                            imageCache[creator] = imageData
+//                            dispatch_async(dispatch_get_main_queue()
+//                                , { () -> Void in
+//                                    cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
+//                                    cell.setNeedsLayout()
+//                                    
+//                            })
+//                            print("Fetched image")
+//                        }
+//                        return nil
+//                    }
+//                }
+//                let followingCreator = self.answerArray[indexPath.row].followingCreator
+//                cell.followButton.tag = indexPath.row
+//                cell.followButton.addTarget(self, action: "toggleFollow:", forControlEvents: .TouchUpInside)
+//                //            cell.followButton.setImage(UIImage(named: "addperson"), forState: .Normal)
+//                //            cell.followButton.setImage(UIImage(named: "addedperson"), forState: .Selected)
+//                
+//                if creator == userid {
+//                    cell.followButton.hidden = true
+//                } else if followingCreator == "not checked"{
+//                    cell.followButton.selected = false
+//                    
+//                    let url = globalurl + "api/user/" + userid + "/follows/" + answerArray[indexPath.row].creator
+//                    
+//                    Alamofire.request(.GET, url, parameters: nil)
+//                        .responseJSON { response in
+//                            let result = response.result.value
+//                            print(result)
+//                            if result == nil {
+//                                print("Not Following")
+//                                cell.followButton.selected = false
+//                                cell.followButton.hidden = false
+//                                self.answerArray[indexPath.row].followingCreator = "not following"
+//                            } else {
+//                                print("Already Following")
+//                                //                            cell.followButton.selected = true
+//                                cell.followButton.hidden = true
+//                                self.answerArray[indexPath.row].followingCreator = "already following"
+//                            }
+//                    }
+//                } else if followingCreator == "not following" {
+//                    cell.followButton.selected = false
+//                    cell.followButton.hidden = false
+//                } else if followingCreator == "already following" {
+//                    cell.followButton.hidden = true
+//                } else if followingCreator == "just followed" {
+//                    cell.followButton.selected = true
+//                    cell.followButton.hidden = false
+//                }
+//                
+//                let liked_by_user = self.answerArray[indexPath.row].liked_by_user
+//                
+//                if liked_by_user == "true" {
+//                    cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
+//                    cell.heartImageView.image = UIImage(named: "redHeartOutline")
+//                } else if liked_by_user == "not checked" {
+//                    let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/likecheck/" + userid
+//                    
+//                    Alamofire.request(.GET, url, parameters: nil)
+//                        .responseJSON { response in
+//                            let result = response.result.value
+//                            print(result)
+//                            if result == nil {
+//                                print("Gobi")
+//                                cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
+//                                cell.heartImageView.image = UIImage(named: "grayHeartOutline")
+//                                self.answerArray[indexPath.row].liked_by_user = "false"
+//                            } else {
+//                                print("Liked")
+//                                cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
+//                                cell.heartImageView.image = UIImage(named: "redHeartOutline")
+//                                self.answerArray[indexPath.row].liked_by_user = "true"
+//                            }
+//                    }
+//                } else if liked_by_user == "false" {
+//                    cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
+//                    cell.heartImageView.image = UIImage(named: "grayHeartOutline")
+//                }
+//            }
+//            
+//            
+//        }
     }
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 1 {
+            
+            self.indexPath = indexPath.row
+            self.performSegueWithIdentifier("segueToVideoPage", sender: self)
+            self.tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
+    }
+    
     
     
     // MARK: - tableViewCell functions
@@ -1278,6 +1425,16 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             askQuestionVC.forEditPost = true
             askQuestionVC.content = question!.content
             askQuestionVC.questionId = question!.id
+        } else if segue.identifier == "segueFromAnswersToVideo" {
+            let videoVC: VideoViewController = segue.destinationViewController as! VideoViewController
+            let videoUrl = answerArray[self.indexPath].video_url
+            let vertical_screen = answerArray[self.indexPath].vertical_screen
+            videoVC.videoUrl = videoUrl
+            videoVC.vertical_screen = vertical_screen
+        } else if segue.identifier == "segueToVideoPage" {
+            let videoPageVC: VideoPageViewController = segue.destinationViewController as! VideoPageViewController
+            videoPageVC.answers = answerArray
+            videoPageVC.indexPath = self.indexPath
         }
     }
     
