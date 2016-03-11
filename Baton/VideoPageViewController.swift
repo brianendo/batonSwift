@@ -8,12 +8,13 @@
 
 import UIKit
 
-class VideoPageViewController: UIViewController, UIPageViewControllerDataSource {
+class VideoPageViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 
     private var pageViewController: UIPageViewController?
+    var interactor:Interactor? = nil
     var answers: [Answer]!
     var indexPath = 0
-    
+    var fromFollowing = false
     
     override func viewWillDisappear(animated: Bool) {
         UIApplication.sharedApplication().setStatusBarHidden(false, withAnimation: UIStatusBarAnimation.None)
@@ -22,9 +23,8 @@ class VideoPageViewController: UIViewController, UIPageViewControllerDataSource 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        createPageViewController()
     }
-    
     
     func createPageViewController() {
         
@@ -34,6 +34,7 @@ class VideoPageViewController: UIViewController, UIPageViewControllerDataSource 
         
         if answers.count > 0 {
             let firstController = getItemController(indexPath)!
+            firstController.firstVC = true
             let startingViewControllers: NSArray = [firstController as VideoViewController]
             pageController.setViewControllers(startingViewControllers as! [VideoViewController], direction: UIPageViewControllerNavigationDirection.Forward, animated: false, completion: nil)
         }
@@ -65,6 +66,15 @@ class VideoPageViewController: UIViewController, UIPageViewControllerDataSource 
         return nil
     }
     
+    func pageViewController(pageViewController: UIPageViewController, willTransitionToViewControllers pendingViewControllers: [UIViewController]) {
+//        let count = answers.count - 1
+//        let lastVC = pendingViewControllers[count]
+//        
+//        if indexPath == count {
+//            self.dismissViewControllerAnimated(true, completion: nil)
+//        }
+    }
+    
     func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
         
         let itemController = viewController as! VideoViewController
@@ -72,9 +82,14 @@ class VideoPageViewController: UIViewController, UIPageViewControllerDataSource 
         if itemController.indexPath+1 < answers.count {
             return getItemController(itemController.indexPath+1)
         }
+//        else if itemController.indexPath+1 < answers.count {
+//            return viewController
+//        }
         
         return nil
     }
+    
+    
     
     private func getItemController(itemIndex: Int) -> VideoViewController? {
         
@@ -84,6 +99,16 @@ class VideoPageViewController: UIViewController, UIPageViewControllerDataSource 
 //            pageItemController.videoUrl = answers[itemIndex].video_url
 //            pageItemController.vertical_screen = answers[itemIndex].vertical_screen
             pageItemController.indexPath = itemIndex
+            pageItemController.fromFollowing = fromFollowing
+            pageItemController.interactor = interactor
+            if itemIndex == 0 {
+                pageItemController.firstIndex = true
+                if answers.count == 1 {
+                    pageItemController.oneVC = true
+                }
+            } else if itemIndex == (answers.count-1) {
+                pageItemController.lastIndex = true
+            }
             return pageItemController
         }
         
@@ -104,8 +129,44 @@ class VideoPageViewController: UIViewController, UIPageViewControllerDataSource 
     override func viewWillAppear(animated: Bool) {
         UIApplication.sharedApplication().setStatusBarHidden(true, withAnimation: UIStatusBarAnimation.Slide)
 //        setupPageControl()
-        createPageViewController()
+//        createPageViewController()
     }
+    
+    @IBAction func handleGesture(sender: UIPanGestureRecognizer) {
+        print("Reached")
+        let percentThreshold:CGFloat = 0.3
+        
+        // convert y-position to downward pull progress (percentage)
+        let translation = sender.translationInView(view)
+        let verticalMovement = translation.y / view.bounds.height
+        let downwardMovement = fmaxf(Float(verticalMovement), 0.0)
+        let downwardMovementPercent = fminf(downwardMovement, 1.0)
+        let progress = CGFloat(downwardMovementPercent)
+        
+        guard let interactor = interactor else { return }
+        
+        switch sender.state {
+        case .Began:
+            interactor.hasStarted = true
+            dismissViewControllerAnimated(true, completion: nil)
+        case .Changed:
+            interactor.shouldFinish = progress > percentThreshold
+            interactor.updateInteractiveTransition(progress)
+        case .Cancelled:
+            interactor.hasStarted = false
+            interactor.cancelInteractiveTransition()
+        case .Ended:
+            interactor.hasStarted = false
+            interactor.shouldFinish
+                ? interactor.finishInteractiveTransition()
+                : interactor.cancelInteractiveTransition()
+        default:
+            break
+        }
+    }
+    
+    
+    
 
 }
 

@@ -27,6 +27,7 @@ class FeaturedVideoTableViewCell: UITableViewCell {
     @IBOutlet weak var viewCountLabel: UILabel!
     @IBOutlet weak var extraButton: UIButton!
     
+    
     // MARK: - Variables
     var player: AVPlayer!
     var playerController: AVPlayerViewController!

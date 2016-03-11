@@ -38,6 +38,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var channelName = ""
     var myChannelIdArray:[String]!
     var fromFavorites = false
+    var answerArray = [Answer]()
     
     // MARK: - viewWill/viewDid
     
@@ -83,6 +84,113 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
         }
         
+    }
+    
+    func loadAnswers(){
+        let url = globalurl + "api/featuredanswers"
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                if value == nil {
+                    value = []
+                    
+                } else {
+                    let json = JSON(value!)
+                    //                print("JSON: \(json)")
+                    if json == [] {
+                        print("No answers")
+                    }
+                    for (_,subJson):(String, JSON) in json {
+                        //Do something you want
+                        
+                        let id = subJson["_id"].string
+                        let creator = subJson["creator"].string
+                        let creatorname = subJson["creatorname"].string
+                        let video_url = subJson["video_url"].string
+                        var likeCount = subJson["likes"].int
+                        var frontCamera = subJson["frontCamera"].bool
+                        var question_id = subJson["question_id"].string
+                        var views = subJson["views"].number?.integerValue
+                        if views == nil {
+                            views = 0
+                        }
+                        var featuredQuestion = subJson["featuredQuestion"].bool
+                        
+                        if featuredQuestion == nil {
+                            featuredQuestion = false
+                        }
+                        
+                        var question_content = subJson["question_content"].string
+                        if question_content == nil {
+                            question_content = ""
+                        }
+                        
+                        let createdAt = subJson["created_at"].string
+                        let dateFor: NSDateFormatter = NSDateFormatter()
+                        dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                        let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+                        
+                        if question_id == nil {
+                            question_id = ""
+                        }
+                        
+                        if frontCamera == nil {
+                            frontCamera = false
+                        }
+                        
+                        if likeCount == nil {
+                            likeCount = 0
+                        }
+                        
+                        var thumbnail_url = subJson["thumbnail_url"].string
+                        if thumbnail_url == nil {
+                            thumbnail_url = ""
+                        }
+                        
+                        var vertical_screen = subJson["vertical_screen"].bool
+                        if vertical_screen == nil {
+                            vertical_screen = false
+                        }
+                        
+                        if video_url != nil {
+                            print(video_url)
+                            
+                            if question_content == "" {
+                                let url = globalurl + "api/questions/" + question_id!
+                                
+                                Alamofire.request(.GET, url, parameters: nil)
+                                    .responseJSON { response in
+                                        let json = JSON(response.result.value!)
+                                        print("JSON: \(json)")
+                                        if json == [] {
+                                            print("No answers")
+                                        }
+                                        var content = json["content"].string
+                                        print(content)
+                                        
+                                        if content == nil {
+                                            content = ""
+                                        }
+                                        
+                                        let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked", thumbnail_url: thumbnail_url, vertical_screen: vertical_screen)
+                                        self.answerArray.append(answer)
+                                        self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+                                }
+                            } else {
+                                let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked", thumbnail_url: thumbnail_url, vertical_screen: vertical_screen)
+                                self.answerArray.append(answer)
+                                self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+                                
+                                
+                            }
+                        }
+                        
+                        self.tableView.reloadData()
+                    }
+                }
+                
+        }
     }
     
     override func viewDidLoad() {
@@ -190,6 +298,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 //                    channelBarButton.setBackgroundImage(UIImage(named: "backButton"), forState: .Normal, barMetrics: UIBarMetrics.Default
 //                    channelBarButton.title = "Channels"
                     
+                    self.loadAnswers()
                     self.loadUserInfo()
                     self.updateFollow()
                     self.checkNotifications()
@@ -1678,31 +1787,90 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
             } else if indexPath.section == 1 {
                 
                 let cell: FeaturedTableViewCell = tableView.dequeueReusableCellWithIdentifier("featuredCell", forIndexPath: indexPath) as! FeaturedTableViewCell
-                let url = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56c657e410d40203003d71c6/56c656e110d40203003d71c5/2016-02-18-15-47-37"
-                let newURL = NSURL(string: url)
-                let data = NSData(contentsOfURL: newURL!)
-                cell.featuredImageView.image  = UIImage(data: data!)
                 
-                let url2 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56c6591a10d40203003d71c9/2016-03-08-17-23-14"
-                let newURL2 = NSURL(string: url2)
-                let data2 = NSData(contentsOfURL: newURL2!)
-                cell.featuredImageView2.image  = UIImage(data: data2!)
-                
-                let url3 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56cda0ff448f380300a04bcd/2016-03-08-18-27-58"
-                let newURL3 = NSURL(string: url3)
-                let data3 = NSData(contentsOfURL: newURL3!)
-                cell.featuredImageView3.image  = UIImage(data: data3!)
-                
-                print(cell.contentView.layer.sublayers?.count)
-                if cell.contentView.layer.sublayers?.count > 6 {
-                    
+                if answerArray.count < 3 {
+//                    let url = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56c657e410d40203003d71c6/56c656e110d40203003d71c5/2016-02-18-15-47-37"
+//                    let newURL = NSURL(string: url)
+//                    let data = NSData(contentsOfURL: newURL!)
+//                    cell.featuredImageView.image  = UIImage(data: data!)
+//                    
+//                    
+//                    let url2 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56c6591a10d40203003d71c9/2016-03-08-17-23-14"
+//                    let newURL2 = NSURL(string: url2)
+//                    let data2 = NSData(contentsOfURL: newURL2!)
+//                    cell.featuredImageView2.image  = UIImage(data: data2!)
+//                    
+//                    let url3 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56cda0ff448f380300a04bcd/2016-03-08-18-27-58"
+//                    let newURL3 = NSURL(string: url3)
+//                    let data3 = NSData(contentsOfURL: newURL3!)
+//                    cell.featuredImageView3.image  = UIImage(data: data3!)
                 } else {
-                    let coverLayer3 = CALayer()
-                    coverLayer3.frame = cell.contentView.bounds
-                    coverLayer3.backgroundColor = UIColor.blackColor().CGColor
-                    coverLayer3.opacity = 0.1
-                    cell.contentView.layer.addSublayer(coverLayer3)
+                    let url = answerArray[0].thumbnail_url
+                    let answerId = answerArray[0].id
+                    if let cachedImageResult = imageCache[answerId] {
+                        print("pull from cache")
+                        cell.featuredImageView.image = UIImage(data: cachedImageResult!)
+                    } else {
+                        // 3
+                        let url = NSURL(string: url)
+                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+                        imageCache[answerId] = data
+                        cell.featuredImageView.image = UIImage(data: data!)
+                    }
+                    
+                    
+                    let url2 = answerArray[1].thumbnail_url
+                    let answerId2 = answerArray[1].id
+                    if let cachedImageResult = imageCache[answerId2] {
+                        print("pull from cache")
+                        cell.featuredImageView2.image = UIImage(data: cachedImageResult!)
+                    } else {
+                        // 3
+                        let url = NSURL(string: url2)
+                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+                        imageCache[answerId2] = data
+                        cell.featuredImageView2.image = UIImage(data: data!)
+                    }
+                    
+                    let url3 = answerArray[2].thumbnail_url
+                    let answerId3 = answerArray[2].id
+                    if let cachedImageResult = imageCache[answerId3] {
+                        print("pull from cache")
+                        cell.featuredImageView3.image = UIImage(data: cachedImageResult!)
+                    } else {
+                        // 3
+                        let url = NSURL(string: url3)
+                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+                        imageCache[answerId3] = data
+                        cell.featuredImageView3.image = UIImage(data: data!)
+                    }
                 }
+                
+//                let url = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56c657e410d40203003d71c6/56c656e110d40203003d71c5/2016-02-18-15-47-37"
+//                let newURL = NSURL(string: url)
+//                let data = NSData(contentsOfURL: newURL!)
+//                cell.featuredImageView.image  = UIImage(data: data!)
+//                
+//                let url2 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56c6591a10d40203003d71c9/2016-03-08-17-23-14"
+//                let newURL2 = NSURL(string: url2)
+//                let data2 = NSData(contentsOfURL: newURL2!)
+//                cell.featuredImageView2.image  = UIImage(data: data2!)
+//                
+//                let url3 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56cda0ff448f380300a04bcd/2016-03-08-18-27-58"
+//                let newURL3 = NSURL(string: url3)
+//                let data3 = NSData(contentsOfURL: newURL3!)
+//                cell.featuredImageView3.image  = UIImage(data: data3!)
+                
+//                print(cell.contentView.layer.sublayers?.count)
+//                if cell.contentView.layer.sublayers?.count > 6 {
+//                    
+//                } else {
+//                    let coverLayer3 = CALayer()
+//                    coverLayer3.frame = cell.contentView.bounds
+//                    coverLayer3.backgroundColor = UIColor.blackColor().CGColor
+//                    coverLayer3.opacity = 0.1
+//                    cell.contentView.layer.addSublayer(coverLayer3)
+//                }
                 
                 
                 cell.contentView.bringSubviewToFront(cell.featuredLabel)

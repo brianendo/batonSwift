@@ -22,6 +22,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
     var refreshControl:UIRefreshControl!
     var counter = 0
     var notificationIndex = 0
+    let interactor = Interactor()
     
     // MARK: - viewWill/viewDid
     override func viewWillAppear(animated: Bool) {
@@ -335,7 +336,7 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             }
             
             let thumbnail = notificationArray[indexPath.row].thumbnail_url
-            
+            cell.thumbnailImageView.clipsToBounds = true
             cell.thumbnailImageView.image = UIImage(named: "Placeholder")
             
             if thumbnail == "" {
@@ -354,6 +355,9 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 }
                 
             }
+            
+            cell.thumbnailButton.addTarget(self, action: "thumbnailTapped:", forControlEvents: .TouchUpInside)
+            cell.thumbnailButton.tag = indexPath.row
             
             return cell
         }
@@ -460,10 +464,11 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
                 .responseJSON { response in
             }
             
-            if type == "answer" || type == "like" {
+            if type == "answer"  {
                 Answers.logCustomEventWithName("Notification Clicked",
                     customAttributes: ["read": false, "type": type])
-                self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
+                notificationIndex = indexPath.row
+                self.performSegueWithIdentifier("segueFromNotificationToVideoView", sender: self)
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             } else {
                 Answers.logCustomEventWithName("Notification Clicked",
@@ -474,10 +479,11 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             }
             
         } else {
-            if type == "answer" || type == "like" {
+            if type == "answer" {
                 Answers.logCustomEventWithName("Notification Clicked",
                     customAttributes: ["read": true, "type": type])
-                self.performSegueWithIdentifier("segueToAnsweredQuestionVC", sender: self)
+                notificationIndex = indexPath.row
+                self.performSegueWithIdentifier("segueFromNotificationToVideoView", sender: self)
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             } else {
                 Answers.logCustomEventWithName("Notification Clicked",
@@ -490,6 +496,11 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     // MARK: - tableView functions
+    func thumbnailTapped(sender:UIButton) {
+        self.notificationIndex = sender.tag
+        self.performSegueWithIdentifier("segueFromNotificationToVideoView", sender: self)
+    }
+    
     func toggleFollow(sender:UIButton!) {
         let tag = sender.tag
         let creatorId = self.notificationArray[tag].sender
@@ -551,8 +562,27 @@ class NotificationViewController: UIViewController, UITableViewDataSource, UITab
             notificationArray[notificationIndex].read = true
             self.tableView.reloadData()
 
+        } else if segue.identifier == "segueFromNotificationToVideoView" {
+            let videoVC: VideoViewController = segue.destinationViewController as! VideoViewController
+            let answerId = notificationArray[notificationIndex].answer_id
+            videoVC.answerId = answerId
+            videoVC.fromNotification = true
+            videoVC.transitioningDelegate = self
+            videoVC.interactor = interactor
+            notificationArray[notificationIndex].read = true
+            self.tableView.reloadData()
         }
     }
     
 
+}
+
+extension NotificationViewController: UIViewControllerTransitioningDelegate {
+    func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return DismissAnimator()
+    }
+    
+    func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return interactor.hasStarted ? interactor : nil
+    }
 }

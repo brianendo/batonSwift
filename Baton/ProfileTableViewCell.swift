@@ -27,9 +27,9 @@ class ProfileTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
-        self.profileImageView.layer.borderWidth = 0.5
+        self.profileImageView.layer.borderWidth = 1.5
         self.profileImageView.layer.masksToBounds = false
-        self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor
+        self.profileImageView.layer.borderColor = UIColor.whiteColor().CGColor
         self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2
         self.profileImageView.clipsToBounds = true
     }

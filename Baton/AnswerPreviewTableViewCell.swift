@@ -18,6 +18,8 @@ class AnswerPreviewTableViewCell: UITableViewCell {
     @IBOutlet weak var previewImageView: UIImageView!
     @IBOutlet weak var viewImageView: UIImageView!
     @IBOutlet weak var likeImageView: UIImageView!
+    @IBOutlet weak var usernameButton: UIButton!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

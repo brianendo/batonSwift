@@ -15,6 +15,7 @@ class NotificationLikedTableViewCell: UITableViewCell {
     @IBOutlet weak var contentTextView: UITextView!
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var profileImageView: UIImageView!
+    @IBOutlet weak var thumbnailButton: UIButton!
     
     // MARK: - override
     override func awakeFromNib() {
@@ -22,7 +23,7 @@ class NotificationLikedTableViewCell: UITableViewCell {
         // Initialization code
         
         self.profileImageView.layer.borderWidth = 0.5
-        self.profileImageView.layer.masksToBounds = false
+        self.profileImageView.layer.masksToBounds = true
         self.profileImageView.layer.borderColor = UIColor.lightGrayColor().CGColor
         self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2
         self.profileImageView.clipsToBounds = true

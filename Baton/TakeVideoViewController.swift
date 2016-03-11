@@ -74,6 +74,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     var fromFeatured = false
     var videoTime = 0
     var fromAddTake = false
+    var fromVideoView = false
     
     // MARK: - touchesBegan
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -182,7 +183,13 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
         questionLabel.layer.shadowRadius = 0.5
         questionLabel.layer.backgroundColor = UIColor.clearColor().CGColor
         
-        overlayView.layerGradient()
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = overlayView.bounds
+        gradientLayer.colors = [UIColor(white: 0.0, alpha: 0.6).CGColor,UIColor(white: 0.0, alpha: 0.3).CGColor, UIColor(white: 0.0, alpha: 0.0).CGColor]
+        gradientLayer.locations = [0.0, 0.5, 1.0]
+        gradientLayer.colors = [UIColor(white: 0.0, alpha: 0.6).CGColor,UIColor.clearColor().CGColor]
+        gradientLayer.locations = [0.0, 1.0]
+        overlayView.layer.insertSublayer(gradientLayer, atIndex: 0)
         
         self.questionLabel.text = self.content
         
@@ -325,6 +332,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
 //        player.pause()
         if fromAddTake {
             self.presentingViewController?.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        } else if fromVideoView {
+            self.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
         } else {
             self.dismissViewControllerAnimated(true, completion: nil)
         }
@@ -715,6 +724,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
             shareVideoVC.answerId = self.answerId
             shareVideoVC.questionContent = self.content
             shareVideoVC.fromAddTake = self.fromAddTake
+            shareVideoVC.fromVideoView = self.fromVideoView
         }
     }
     

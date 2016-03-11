@@ -13,6 +13,25 @@ import KeychainSwift
 import JWTDecode
 import Crashlytics
 
+extension Int
+{
+    static func random(range: Range<Int> ) -> Int
+    {
+        var offset = 0
+        
+        if range.startIndex < 0   // allow negative ranges
+        {
+            offset = abs(range.startIndex)
+        }
+        
+        let mini = UInt32(range.startIndex + offset)
+        let maxi = UInt32(range.endIndex   + offset)
+        
+        return Int(mini + arc4random_uniform(maxi - mini)) - offset
+    }
+}
+
+
 class AskQuestionViewController: UIViewController, UITextViewDelegate {
     
     // MARK: - IBOutlets
@@ -55,6 +74,9 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let aRandomInt = Int.random(0...3)
+        print(aRandomInt)
         
         contentTextView.delegate = self
         contentTextView.becomeFirstResponder()

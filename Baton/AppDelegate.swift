@@ -91,8 +91,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
             region: AWSRegionType.USWest1, credentialsProvider: credentialsProvider)
         AWSServiceManager.defaultServiceManager().defaultServiceConfiguration = defaultServiceConfiguration
         
+        
+        
+        // MAKE SURE TO UNCOMMENT THAT PART
         // Used for Twitter Login and Compose Tweet
-        Fabric.with([Twitter.self, AWSCognito.self, Crashlytics.self])
+//        Fabric.with([Twitter.self, AWSCognito.self, Crashlytics.self])
 
 
         return true

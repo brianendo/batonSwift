@@ -41,6 +41,8 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     var answerArray = [Answer]()
     let label = UILabel(frame: CGRectMake(0, 0, 400, 400))
     var indexPath = 0
+    let interactor = Interactor()
+    var fromVideo = false
     
     // MARK: - viewWill/viewDid
     override func viewWillAppear(animated: Bool) {
@@ -79,11 +81,26 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    func dismissVC() {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        if fromVideo {
+            // Create left and right button for navigation item
+            let leftButton =  UIBarButtonItem(title: "X", style:   UIBarButtonItemStyle.Plain, target: self, action: "dismissVC")
+            leftButton.tintColor = UIColor.whiteColor()
+            leftButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "HelveticaNeue-Bold", size: 22)!], forState: .Normal)
+            
+            // Create two buttons for the navigation item
+            self.navigationItem.leftBarButtonItem = leftButton
+        }
+        
         self.navigationItem.title = "Relays"
         self.tabBarController?.tabBar.hidden = true
+        
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.tableView.tableFooterView = UIView()
@@ -92,11 +109,11 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         self.tableView.scrollsToTop = true
         
         
-        self.relayButton.layer.borderColor = UIColor(red:0.17, green:0.18, blue:0.29, alpha:1.0).CGColor
-        self.relayButton.layer.borderWidth = 0.5
+//        self.relayButton.layer.borderColor = UIColor(red:0.17, green:0.18, blue:0.29, alpha:1.0).CGColor
+//        self.relayButton.layer.borderWidth = 0.5
 //        self.relayButton.backgroundColor = UIColor.whiteColor()
         
-        self.relayButton.backgroundColor = UIColor(red:0.9, green:0.9, blue:0.93, alpha:1.0)
+//        self.relayButton.backgroundColor = UIColor(red:0.9, green:0.9, blue:0.93, alpha:1.0)
         
         self.moreInfoBarButton.setTitleTextAttributes([NSForegroundColorAttributeName:UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0), NSFontAttributeName: UIFont(name: "HelveticaNeue-Medium", size: 28)!], forState: .Normal)
         
@@ -502,7 +519,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         } else {
             let cell = tableView.dequeueReusableCellWithIdentifier("answerPreviewCell", forIndexPath: indexPath) as! AnswerPreviewTableViewCell
             
-//            cell.selectionStyle = UITableViewCellSelectionStyle.None
+            cell.selectionStyle = UITableViewCellSelectionStyle.None
             
             cell.preservesSuperviewLayoutMargins = false
             cell.separatorInset = UIEdgeInsetsZero
@@ -526,9 +543,9 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 let likeCount = self.answerArray[indexPath.row].likeCount
                 let abbrevLikeCount = likeCount.addCommas(likeCount)
                 cell.likeCountLabel.text = "\(abbrevLikeCount) likes"
-//                cell.nameButton.addTarget(self, action: "nameTapped:", forControlEvents: .TouchUpInside)
-//                cell.nameButton.tag = indexPath.row
-//                cell.contentView.bringSubviewToFront(cell.nameButton)
+                cell.usernameButton.addTarget(self, action: "nameTapped:", forControlEvents: .TouchUpInside)
+                cell.usernameButton.tag = indexPath.row
+                cell.contentView.bringSubviewToFront(cell.usernameButton)
                 
                 
 //                let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
@@ -620,12 +637,23 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             if answerArray.count == 0 {
                 
             } else {
-                let thumbnail_url = answerArray[indexPath.row].thumbnail_url
-                let newURL = NSURL(string: thumbnail_url)
-                let data = NSData(contentsOfURL: newURL!)
-                cell.previewImageView.image  = UIImage(data: data!)
+//                let thumbnail_url = answerArray[indexPath.row].thumbnail_url
+//                let newURL = NSURL(string: thumbnail_url)
+//                let data = NSData(contentsOfURL: newURL!)
+//                cell.previewImageView.image  = UIImage(data: data!)
                 
+                let answerId = answerArray[indexPath.row].id
                 
+                if let cachedImageResult = imageCache[answerId] {
+                    print("pull from cache")
+                    cell.previewImageView.image = UIImage(data: cachedImageResult!)
+                } else {
+                    let thumbnail_url = answerArray[indexPath.row].thumbnail_url
+                    let newURL = NSURL(string: thumbnail_url)
+                    let data = NSData(contentsOfURL: newURL!)
+                    imageCache[answerId] = data
+                    cell.previewImageView.image  = UIImage(data: data!)
+                }
                 
                 
                 let creator = answerArray[indexPath.row].creator
@@ -787,7 +815,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
 //                    cell.followButton.selected = true
 //                    cell.followButton.hidden = false
 //                }
-//                
+//
 //                let liked_by_user = self.answerArray[indexPath.row].liked_by_user
 //                
 //                if liked_by_user == "true" {
@@ -1433,8 +1461,19 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
             videoVC.vertical_screen = vertical_screen
         } else if segue.identifier == "segueToVideoPage" {
             let videoPageVC: VideoPageViewController = segue.destinationViewController as! VideoPageViewController
+            videoPageVC.transitioningDelegate = self
+            videoPageVC.interactor = interactor
             videoPageVC.answers = answerArray
             videoPageVC.indexPath = self.indexPath
+        } else if segue.identifier == "segueFromAnswersToProfileNav" {
+            let nav = segue.destinationViewController as! UINavigationController
+            let profileVC: ProfileViewController = nav.topViewController as! ProfileViewController
+            let creatorId = answerArray[nameIndex].creator
+            let creatorname = answerArray[nameIndex].creatorname
+            profileVC.fromOtherVC = true
+            profileVC.creatorId = creatorId
+            profileVC.creatorname = creatorname
+            profileVC.fromVideo = true
         }
     }
     
@@ -1579,4 +1618,13 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
 
 }
 
+extension AnswersViewController: UIViewControllerTransitioningDelegate {
+    func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return DismissAnimator()
+    }
+    
+    func interactionControllerForDismissal(animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        return interactor.hasStarted ? interactor : nil
+    }
+}
 

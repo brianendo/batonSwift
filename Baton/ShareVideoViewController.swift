@@ -29,6 +29,7 @@ class ShareVideoViewController: UIViewController, MFMessageComposeViewController
     let composer = TWTRComposer()
     let content: FBSDKShareLinkContent = FBSDKShareLinkContent()
     var fromAddTake = false
+    var fromVideoView = false
     
     // MARK: - viewDid/viewWill
     override func viewDidLoad() {
@@ -136,6 +137,8 @@ class ShareVideoViewController: UIViewController, MFMessageComposeViewController
         // Dismisses both the ShareVideoVC and TakeVideoVC
         if fromAddTake {
             self.presentingViewController?.presentingViewController?.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+        } else if fromVideoView {
+            self.presentingViewController?.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
         } else {
             self.presentingViewController?.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
         }

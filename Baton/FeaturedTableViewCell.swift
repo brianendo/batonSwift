@@ -21,10 +21,10 @@ class FeaturedTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         featuredLabel.layer.borderColor = UIColor.whiteColor().CGColor
-        featuredLabel.layer.borderWidth = 2.0
+        featuredLabel.layer.borderWidth = 1.0
         featuredLabel.layer.cornerRadius = 5
-        featuredLabel.shadowColor = UIColor.blackColor()
-        featuredLabel.shadowOffset = CGSizeMake(0.5, 0.5)
+//        featuredLabel.shadowColor = UIColor.blackColor()
+//        featuredLabel.shadowOffset = CGSizeMake(0.5, 0.5)
         
     }
 
