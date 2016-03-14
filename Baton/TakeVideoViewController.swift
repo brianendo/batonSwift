@@ -78,6 +78,7 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
     
     // MARK: - touchesBegan
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        print("touched")
         let touchPoint = touches.first! as UITouch
         let screenSize = cameraView.bounds.size
         let focusPoint = CGPoint(x: touchPoint.locationInView(cameraView).y / screenSize.height, y: 1.0 - touchPoint.locationInView(cameraView).x / screenSize.width)

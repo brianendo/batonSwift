@@ -164,6 +164,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                         self.keychain.set("1", forKey: "ISLOGGEDIN")
                         self.keychain.set(token!, forKey: "JWT")
                         self.keychain.set(refresh_token!, forKey: "refresh_token")
+                        userid = id!
                         
                         Answers.logSignUpWithMethod("Regular",
                             success: true,

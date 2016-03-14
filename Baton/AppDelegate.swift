@@ -29,6 +29,8 @@ var myfirstname = ""
 var mylastname = ""
 var mybio = ""
 var myemail = ""
+var placeholderArray = ["What would inspire a response from the community? Maybe a question, an observation, a random thought? You got this. You do you.", "Be yourself. \n\nUnless you're a douche - then maybe change it up a bit.","Out of all the users, you’re my favorite \u{2665} Now go make me proud :) ", "Once upon a time…", "Don’t think too hard. Deep breaths. Ready? Inhale (1 mississippi, 2 mississippi, 3 mississippi), Exhale (1 mississippi, 2 mississippi, 3 mississippi)", "Some people ask, “Why did you name this app Baton?” Other people mind their own goddamn business.", "Remember when you stopped caring about what people thought about you? Me neither.", "Jokes are like red-eye inducing farts. When you get one, it’s only fair that you pass it along.", "“There is no can, there is only do-do.” - drunk Yoda"]
+
 
 let stagingUrl = "https://fierce-cove-25691.herokuapp.com/"
 let herokuUrl = "https://arcane-savannah-8802.herokuapp.com/"
@@ -42,11 +44,11 @@ let CognitoRegionType = AWSRegionType.USEast1  // e.g. AWSRegionType.USEast1
 let DefaultServiceRegionType = AWSRegionType.USWest1 // e.g. AWSRegionType.USWest2
 let CognitoIdentityPoolId = "us-east-1:cd887d49-c047-4889-bf49-215cd886036d"
 
-//let S3BucketName = "batonapp"
+let S3BucketName = "batonapp"
 
-let S3BucketName = "batonstaging"
+//let S3BucketName = "batonstaging"
 
-let globalurl = stagingUrl
+let globalurl = herokuUrl
 let keychain = KeychainSwift()
 
 var imageCache: Dictionary<String, NSData?> = Dictionary<String, NSData>()
@@ -62,7 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
 //        customWindow.touchVisualizerWindowDelegate = self
 //        return customWindow
 //    }()
-//
+
 //    func touchVisualizerWindowShouldAlwaysShowFingertip(window: COSTouchVisualizerWindow!) -> Bool {
 //        return true
 //    }
@@ -95,7 +97,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
         
         // MAKE SURE TO UNCOMMENT THAT PART
         // Used for Twitter Login and Compose Tweet
-//        Fabric.with([Twitter.self, AWSCognito.self, Crashlytics.self])
+        Fabric.with([Twitter.self, AWSCognito.self, Crashlytics.self])
 
 
         return true

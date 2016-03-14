@@ -380,6 +380,8 @@ class TwitterSignupViewController: UIViewController, UIImagePickerControllerDele
                         self.keychain.set(id!, forKey: "ID")
                         self.keychain.set("1", forKey: "ISLOGGEDIN")
                         self.keychain.set(token!, forKey: "JWT")
+                        userid = id!
+                        
                         
                         // Get image from profileImageView and upload to S3
                         let image = self.profileImageView.image

@@ -15,7 +15,6 @@ class OnboardingViewController: UIPageViewController {
     private(set) lazy var orderedViewControllers: [UIViewController] = {
         return [self.newColoredViewController("Onboarding1"),
             self.newColoredViewController("Onboarding2"),
-            self.newColoredViewController("Onboarding3"),
             self.newColoredViewController("Push")]
     }()
     

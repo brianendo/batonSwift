@@ -41,7 +41,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var answerArray = [Answer]()
     
     // MARK: - viewWill/viewDid
-    
     override func viewWillAppear(animated: Bool) {
     }
     
@@ -259,7 +258,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 self.presentViewController(loginVC!, animated: true, completion: nil)
             } else {
                 // Set the global userid variable with the id in keychain
+                
+                
+                
                 userid = id!
+
+//                let login = UIStoryboard(name: "Onboarding", bundle: nil)
+//                let loginVC = login.instantiateInitialViewController()
+//                self.presentViewController(loginVC!, animated: true, completion: nil)
                 
                 // Set tableView
                 self.tableView.dataSource = self
@@ -295,8 +301,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     label.textColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
                     
                     self.navigationItem.titleView = label
-//                    channelBarButton.setBackgroundImage(UIImage(named: "backButton"), forState: .Normal, barMetrics: UIBarMetrics.Default
-//                    channelBarButton.title = "Channels"
                     
                     self.loadAnswers()
                     self.loadUserInfo()
@@ -444,6 +448,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                         } else {
                                             myemail = email!
                                         }
+                                        
                                         
                                         let channels = json["channels"]
                                         if channels ==  nil {
@@ -1553,12 +1558,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         } else {
             return 5
         }
-//        if counter == 0 {
-//            return 2
-//        } else {
-//            return 1
-//        }
-        
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -1604,16 +1603,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
             }
         }
-        
-//        if counter == 0 {
-//            if section == 0 {
-//                return featuredQuestionArray.count
-//            } else {
-//                return questionArray.count
-//            }
-//        } else {
-//            return hotQuestionArray.count
-//        }
         
     }
     
@@ -1699,9 +1688,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             imageCache[questionId] = data
                             cell.thumbnailImageView.image = UIImage(data: data!)
                         }
-//                        let url = NSURL(string: thumbnail)
-//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-//                        cell.thumbnailImageView.image = UIImage(data: data!)
                     }
                     
                     return cell
@@ -1762,9 +1748,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             imageCache[questionId] = data
                             cell.thumbnailImageView.image = UIImage(data: data!)
                         }
-//                        let url = NSURL(string: thumbnail)
-//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-//                        cell.thumbnailImageView.image = UIImage(data: data!)
                     }
                     
                     return cell
@@ -1846,32 +1829,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     }
                 }
                 
-//                let url = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56c657e410d40203003d71c6/56c656e110d40203003d71c5/2016-02-18-15-47-37"
-//                let newURL = NSURL(string: url)
-//                let data = NSData(contentsOfURL: newURL!)
-//                cell.featuredImageView.image  = UIImage(data: data!)
-//                
-//                let url2 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56c6591a10d40203003d71c9/2016-03-08-17-23-14"
-//                let newURL2 = NSURL(string: url2)
-//                let data2 = NSData(contentsOfURL: newURL2!)
-//                cell.featuredImageView2.image  = UIImage(data: data2!)
-//                
-//                let url3 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56cda0ff448f380300a04bcd/2016-03-08-18-27-58"
-//                let newURL3 = NSURL(string: url3)
-//                let data3 = NSData(contentsOfURL: newURL3!)
-//                cell.featuredImageView3.image  = UIImage(data: data3!)
-                
-//                print(cell.contentView.layer.sublayers?.count)
-//                if cell.contentView.layer.sublayers?.count > 6 {
-//                    
-//                } else {
-//                    let coverLayer3 = CALayer()
-//                    coverLayer3.frame = cell.contentView.bounds
-//                    coverLayer3.backgroundColor = UIColor.blackColor().CGColor
-//                    coverLayer3.opacity = 0.1
-//                    cell.contentView.layer.addSublayer(coverLayer3)
-//                }
-                
                 
                 cell.contentView.bringSubviewToFront(cell.featuredLabel)
                 cell.contentView.bringSubviewToFront(cell.disclosureImageView)
@@ -1928,9 +1885,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         imageCache[questionId] = data
                         cell.thumbnailImageView.image = UIImage(data: data!)
                     }
-//                    let url = NSURL(string: thumbnail)
-//                    let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-//                    cell.thumbnailImageView.image = UIImage(data: data!)
                 }
                 
                 cell.timeAgoLabel.text = ""
@@ -1994,9 +1948,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             imageCache[questionId] = data
                             cell.thumbnailImageView.image = UIImage(data: data!)
                         }
-//                        let url = NSURL(string: thumbnail)
-//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-//                        cell.thumbnailImageView.image = UIImage(data: data!)
                     }
                     
                     return cell
@@ -2055,9 +2006,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             imageCache[questionId] = data
                             cell.thumbnailImageView.image = UIImage(data: data!)
                         }
-//                        let url = NSURL(string: thumbnail)
-//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-//                        cell.thumbnailImageView.image = UIImage(data: data!)
                     }
                     
                     return cell
@@ -2078,6 +2026,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if indexPath.section == 0 {
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             } else if indexPath.section == 1 {
+                Answers.logCustomEventWithName("Ask Question",
+                    customAttributes: ["from": channelName, "method": "cell"])
                 self.performSegueWithIdentifier("showAskQuestionVC", sender: self)
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }else {
@@ -2089,11 +2039,15 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
             }
         } else {
             if indexPath.section == 0 {
+                Answers.logCustomEventWithName("Featured",
+                    customAttributes: ["from": "Top Posts"])
                tableView.deselectRowAtIndexPath(indexPath, animated: true)
             } else if indexPath.section == 1 {
                 self.performSegueWithIdentifier("segueFromFeedToFeatured", sender: self)
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }else if indexPath.section == 2 {
+                Answers.logCustomEventWithName("Ask Question",
+                    customAttributes: ["from": "Top Posts", "method": "cell"])
                 self.performSegueWithIdentifier("showAskQuestionVC", sender: self)
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }
@@ -2111,21 +2065,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 tableView.deselectRowAtIndexPath(indexPath, animated: true)
             }
         }
-//        if counter == 0 {
-//            // selectedRow helps indicate if user is going to a featured or regular question
-//            if indexPath.section == 0 {
-//                selectedRow = 0
-//                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
-//                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//            } else {
-//                selectedRow = 1
-//                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
-//                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//            }
-//        } else if counter == 1 {
-//            self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
-//            tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//        }
         
     }
     
@@ -2140,7 +2079,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 return false
             }
         }
-        
         if indexPath.section == 1 {
             return false
         } else {
@@ -2204,35 +2142,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         takeVideoVC.content = content
                         takeVideoVC.id = id
                     }
-//                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-//                    let content = self.hotQuestionArray[selectedIndexPath].content
-//                    let id = self.hotQuestionArray[selectedIndexPath].id
-//                    takeVideoVC.content = content
-//                    takeVideoVC.id = id
                 }
             }
-//            if counter == 0 {
-//                if recordedRow == 0 {
-//                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-//                    let content = self.featuredQuestionArray[selectedIndexPath].content
-//                    let id = self.featuredQuestionArray[selectedIndexPath].id
-//                    takeVideoVC.content = content
-//                    takeVideoVC.id = id
-//                    takeVideoVC.fromFeatured = true
-//                } else if recordedRow == 1 {
-//                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-//                    let content = self.questionArray[selectedIndexPath].content
-//                    let id = self.questionArray[selectedIndexPath].id
-//                    takeVideoVC.content = content
-//                    takeVideoVC.id = id
-//                }
-//            } else if counter == 1 {
-//                let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-//                let content = self.hotQuestionArray[selectedIndexPath].content
-//                let id = self.hotQuestionArray[selectedIndexPath].id
-//                takeVideoVC.content = content
-//                takeVideoVC.id = id
-//            }
             
         } else if segue.identifier == "segueToAnswerVC" {
             if fromSpecificChannel || fromFavorites {
@@ -2301,64 +2212,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         answerVC.creatorname = creatorname
                         answerVC.question = question
                     }
-//                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-//                    let indexPath = self.tableView.indexPathForSelectedRow
-//                    let content = self.hotQuestionArray[indexPath!.row].content
-//                    let id = self.hotQuestionArray[indexPath!.row].id
-//                    let creatorname = self.hotQuestionArray[indexPath!.row].creatorname
-//                    let question = self.hotQuestionArray[indexPath!.row]
-//                    self.selectedIndexPath = indexPath!.row
-//                    answerVC.content = content
-//                    answerVC.id = id
-//                    answerVC.creatorname = creatorname
-//                    answerVC.question = question
                 }
             }
-//            if counter == 0 {
-//                if selectedRow == 0 {
-//                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-//                    let indexPath = self.tableView.indexPathForSelectedRow
-//                    let content = self.featuredQuestionArray[indexPath!.row].content
-//                    let id = self.featuredQuestionArray[indexPath!.row].id
-//                    let creatorname = self.featuredQuestionArray[indexPath!.row].creatorname
-//                    let question = self.featuredQuestionArray[indexPath!.row]
-//                    self.selectedIndexPath = indexPath!.row
-//                    answerVC.content = content
-//                    answerVC.id = id
-//                    answerVC.creatorname = creatorname
-//                    answerVC.question = question
-//                    answerVC.fromFeatured = true
-//                } else if selectedRow == 1 {
-//                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-//                    let indexPath = self.tableView.indexPathForSelectedRow
-//                    let content = self.questionArray[indexPath!.row].content
-//                    let id = self.questionArray[indexPath!.row].id
-//                    let creatorname = self.questionArray[indexPath!.row].creatorname
-//                    let question = self.questionArray[indexPath!.row]
-//                    self.selectedIndexPath = indexPath!.row
-//                    answerVC.content = content
-//                    answerVC.id = id
-//                    answerVC.creatorname = creatorname
-//                    answerVC.question = question
-//                }
-//            } else if counter == 1 {
-//                let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-//                let indexPath = self.tableView.indexPathForSelectedRow
-//                let content = self.hotQuestionArray[indexPath!.row].content
-//                let id = self.hotQuestionArray[indexPath!.row].id
-//                let creatorname = self.hotQuestionArray[indexPath!.row].creatorname
-//                let question = self.hotQuestionArray[indexPath!.row]
-//                self.selectedIndexPath = indexPath!.row
-//                answerVC.content = content
-//                answerVC.id = id
-//                answerVC.creatorname = creatorname
-//                answerVC.question = question
-//                
-//            }
         } else if segue.identifier == "showAskQuestionVC" {
             if fromSpecificChannel {
                 let nav = segue.destinationViewController as! UINavigationController
-//                let editProfileVC: EditProfileTableViewController = nav.topViewController as! EditProfileTableViewController
                 let askQuestionVC: AskQuestionViewController = nav.topViewController as! AskQuestionViewController
                 askQuestionVC.channelId = channelId
                 askQuestionVC.channelName = channelName
@@ -2402,13 +2260,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     feedVC.channelId = channelId
                     feedVC.channelName = channelName
                 }
-//                let feedVC: FeedViewController = segue.destinationViewController as! FeedViewController
-//                let mytag = sender!.tag
-//                let channelId = hotQuestionArray[mytag].channel_id
-//                let channelName = hotQuestionArray[mytag].channel_name
-//                feedVC.fromSpecificChannel = true
-//                feedVC.channelId = channelId
-//                feedVC.channelName = channelName
             }
             
         }
@@ -2449,12 +2300,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         return true
                     }
                 }
-//                let channelId = hotQuestionArray[mytag].channel_id
-//                if channelId == "" {
-//                    return false
-//                } else {
-//                    return true
-//                }
             }
         } else {
             return true
@@ -2465,17 +2310,19 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // MARK: - IBAction
     @IBAction func askQuestionBarButtonPressed(sender: UIBarButtonItem) {
         if channelName == "" {
-            Answers.logCustomEventWithName("Ask Question Button Tapped",
-                customAttributes: ["from": "Top Posts"])
+            Answers.logCustomEventWithName("Ask Question",
+                customAttributes: ["from": "Top Posts", "method": "button"])
         } else {
-            Answers.logCustomEventWithName("Ask Question Button Tapped",
-                customAttributes: ["from": channelName])
+            Answers.logCustomEventWithName("Ask Question",
+                customAttributes: ["from": channelName, "method": "button"])
         }
         
         self.performSegueWithIdentifier("showAskQuestionVC", sender: self)
     }
     
     @IBAction func channelButtonPressed(sender: UIButton) {
+        Answers.logCustomEventWithName("Channel Button",
+            customAttributes: ["from": "Top Posts"])
         self.performSegueWithIdentifier("segueFromFeedToChannel", sender: self)
     }
     

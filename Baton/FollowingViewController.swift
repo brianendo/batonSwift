@@ -19,7 +19,7 @@ import MessageUI
 import FBSDKShareKit
 import Crashlytics
 
-class FollowingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UISearchResultsUpdating, UISearchControllerDelegate, MFMessageComposeViewControllerDelegate {
+class FollowingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UISearchResultsUpdating, UISearchControllerDelegate {
     
     // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
@@ -53,35 +53,10 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     override func viewWillDisappear(animated: Bool) {
-        NSNotificationCenter.defaultCenter().removeObserver(self,
-            name: AVPlayerItemDidPlayToEndTimeNotification,
-            object: nil)
     }
     
     override func viewDidDisappear(animated: Bool) {
-        // Pause players when leaving vc
-        for cell in tableView.visibleCells {
-            if cell.isKindOfClass(FollowingAnswerTableViewCell) {
-                let indexPath = tableView.indexPathForCell(cell)
-                let cellRect = tableView.rectForRowAtIndexPath(indexPath!)
-                let superView = tableView.superview
-                let convertedRect = tableView.convertRect(cellRect, toView: superView)
-                let intersect = CGRectIntersection(tableView.frame, convertedRect)
-                let visibleHeight = CGRectGetHeight(intersect)
-                let cellHeight = tableView.frame.height * 0.6
-                let cell = cell as! FollowingAnswerTableViewCell
-                
-                if visibleHeight > cellHeight {
-                    if (cell.player.rate > 0) {
-                        cell.player.pause()
-                        
-                    } else {
-                    }
-                } else {
-                    cell.player.pause()
-                }
-            }
-        }
+        
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -352,17 +327,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
-        for cell in tableView.visibleCells {
-            if cell.isKindOfClass(FollowingAnswerTableViewCell) {
-                let cell = cell as! FollowingAnswerTableViewCell
-                if (cell.player.rate > 0) {
-                    cell.player.pause()
-                    cell.likeImageView.image = UIImage(named: "playImage")
-                    cell.likeImageView.hidden = false
-                    cell.likeImageView.alpha = 0.7
-                }
-            }
-        }
         
         var token = keychain.get("JWT")
         
@@ -661,17 +625,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 
             } else {
                 counter = 1
-                for cell in tableView.visibleCells {
-                    if cell.isKindOfClass(FollowingAnswerTableViewCell) {
-                        let cell = cell as! FollowingAnswerTableViewCell
-                        if (cell.player.rate > 0) {
-                            cell.player.pause()
-                            cell.likeImageView.image = UIImage(named: "playImage")
-                            cell.likeImageView.hidden = false
-                            cell.likeImageView.alpha = 0.7
-                        }
-                    }
-                }
                 header.setNeedsDisplay()
                 header.setNeedsLayout()
                 if questionArray.count == 0 {
@@ -770,99 +723,12 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             cell.likeCountLabel.text = "\(abbrevLikeCount) likes"
             cell.usernameButton.addTarget(self, action: "usernameTapped:", forControlEvents: .TouchUpInside)
             cell.usernameButton.tag = indexPath.row
-//            cell.contentView.bringSubviewToFront(cell.nameButton)
-            
-            
-            //                let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
-            //                view.addGestureRecognizer(tapGesture)
-            //                view.tag = indexPath.row
             
             let question_content = answerArray[indexPath.row].question_content
             cell.questionContentLabel.text = question_content
             
             
             return cell
-
-//            let cell: FollowingAnswerTableViewCell = tableView.dequeueReusableCellWithIdentifier("followingAnswerCell", forIndexPath: indexPath) as! FollowingAnswerTableViewCell
-//            
-//            cell.preservesSuperviewLayoutMargins = false
-//            cell.separatorInset = UIEdgeInsetsZero
-//            cell.layoutMargins = UIEdgeInsetsZero
-//            
-//            let question_content = answerArray[indexPath.row].question_content
-//            let question_id = answerArray[indexPath.row].question_id
-//            
-//            cell.questionContentTextView.text = question_content
-//            cell.questionContentTextView.editable = false
-//            cell.questionContentTextView.selectable = false
-//            
-//            let creatorname = answerArray[indexPath.row].creatorname
-//            
-//            // Add Attributes to specific part of a string
-//            let postedText = "\(creatorname)"
-//            let myFirstString = NSMutableAttributedString(string: postedText, attributes: [NSForegroundColorAttributeName:UIColor.blackColor(), NSFontAttributeName:UIFont(name: "HelveticaNeue-Bold", size: 12.0)!])
-//            
-//            let creatornameText = " relayed:"
-//            let mySecondString = NSMutableAttributedString(string: creatornameText, attributes: [NSForegroundColorAttributeName:UIColor.blackColor(), NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 12.0)!])
-//            
-//            let result = NSMutableAttributedString()
-//            result.appendAttributedString(myFirstString)
-//            result.appendAttributedString(mySecondString)
-//            
-//            cell.extraButton.addTarget(self, action: "extraButtonTapped:", forControlEvents: .TouchUpInside)
-//            cell.extraButton.tag = indexPath.row
-//            
-//            cell.usernameButton.setAttributedTitle(result, forState: .Normal)
-//            cell.usernameButton.addTarget(self, action: "usernameTapped:", forControlEvents: .TouchUpInside)
-//            cell.usernameButton.tag = indexPath.row
-//            
-//            cell.questionContentButton.addTarget(self, action: "questionContentPressed:", forControlEvents: .TouchUpInside)
-//            cell.questionContentButton.tag = indexPath.row
-//            
-//            cell.videoView.addSubview(cell.playerController.view)
-//            
-//            cell.selectionStyle = UITableViewCellSelectionStyle.None
-//            
-//            cell.playerController.view.userInteractionEnabled = true
-//            
-//            let view = UIView(frame: CGRectMake(cell.videoView.frame.origin.x, cell.videoView.frame.origin.y, cell.videoView.frame.size.width, cell.videoView.frame.size.height))
-//            cell.videoView.addSubview(view)
-//            
-//            let tapGesture = UITapGestureRecognizer(target: self, action: "singleTapped:")
-//            view.addGestureRecognizer(tapGesture)
-//            view.tag = indexPath.row
-//            
-//            cell.likeImageView.image = UIImage(named: "playImage")
-//            cell.likeImageView.hidden = false
-//            cell.likeImageView.alpha = 0.7
-//            cell.likeImageView.contentMode = UIViewContentMode.ScaleAspectFill
-//            cell.videoView.bringSubviewToFront(cell.likeImageView)
-//            
-//            let date = answerArray[indexPath.row].createdAt
-//            let timeAgo = timeAgoSinceDate(date, numericDates: true)
-//            
-//            cell.timeAgoLabel.text = timeAgo
-//            
-//            let views = answerArray[indexPath.row].views
-//            let abbrevViews = views.addCommas(views)
-//            cell.viewCountLabel.text = "\(abbrevViews) views"
-//            
-//            let doubleTapGesture = UITapGestureRecognizer()
-//            doubleTapGesture.numberOfTapsRequired = 2
-//            doubleTapGesture.addTarget(self, action: "doubleTapped:")
-//            view.addGestureRecognizer(doubleTapGesture)
-//            
-//            let likeCount = answerArray[indexPath.row].likeCount
-//            let abbrevLikeCount = likeCount.addCommas(likeCount)
-//            cell.likeCountTextView.text = "\(abbrevLikeCount) likes"
-//            cell.videoView.bringSubviewToFront(cell.likeCountTextView)
-//            cell.videoView.bringSubviewToFront(cell.heartImageView)
-//            
-//            cell.likeButton.tag = indexPath.row
-//            cell.likeButton.addTarget(self, action: "toggleLike:", forControlEvents: .TouchUpInside)
-//            cell.videoView.bringSubviewToFront(cell.likeButton)
-//            
-//            return cell
         } else {
             let cell: FollowingQuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("followingQuestionCell", forIndexPath: indexPath) as! FollowingQuestionTableViewCell
             
@@ -999,36 +865,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                     return nil
                 }
             }
-            
-            
-//            let liked_by_user = self.answerArray[indexPath.row].liked_by_user
-//            
-//            if liked_by_user == "true" {
-//                cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-//                cell.heartImageView.image = UIImage(named: "redHeartOutline")
-//            } else if liked_by_user == "not checked"{
-//                let url = globalurl + "api/answers/" + answerArray[indexPath.row].id + "/likecheck/" + userid
-//                
-//                Alamofire.request(.GET, url, parameters: nil)
-//                    .responseJSON { response in
-//                        let result = response.result.value
-//                        print(result)
-//                        if result == nil {
-//                            print("Gobi")
-//                            cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
-//                            cell.heartImageView.image = UIImage(named: "grayHeartOutline")
-//                            self.answerArray[indexPath.row].liked_by_user = "false"
-//                        } else {
-//                            print("Liked")
-//                            cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-//                            cell.heartImageView.image = UIImage(named: "redHeartOutline")
-//                            self.answerArray[indexPath.row].liked_by_user = "true"
-//                        }
-//                }
-//            } else if liked_by_user == "false" {
-//                cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
-//                cell.heartImageView.image = UIImage(named: "grayHeartOutline")
-//            }
         }
     }
     
@@ -1054,119 +890,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     // MARK: - tableView functions
-    func messageComposeViewController(controller: MFMessageComposeViewController, didFinishWithResult result: MessageComposeResult) {
-        
-        switch (result.rawValue) {
-        case MessageComposeResultCancelled.rawValue:
-            print("Message was cancelled")
-            self.dismissViewControllerAnimated(true, completion: nil)
-        case MessageComposeResultFailed.rawValue:
-            print("Message failed")
-            self.dismissViewControllerAnimated(true, completion: nil)
-        case MessageComposeResultSent.rawValue:
-            print("Message was sent")
-            self.dismissViewControllerAnimated(true, completion: nil)
-        default:
-            break;
-        }
-    }
-    
-    func extraButtonTapped(sender: UIButton) {
-        let tag = sender.tag
-        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 0)) as! FollowingAnswerTableViewCell
-        if cell.player.rate > 0 {
-            cell.player.pause()
-            cell.likeImageView.alpha = 0.7
-            cell.likeImageView.image = UIImage(named: "playImage")
-            cell.likeImageView.hidden = false
-        }
-        let answerId = answerArray[tag].id
-        let answerUrl = batonUrl + "answers/\(answerId)"
-        
-        var questionContent = answerArray[tag].question_content
-        if questionContent.characters.count > 80 {
-            let ss1: String = (questionContent as NSString).substringToIndex(80)
-            questionContent = ss1 + "..."
-            
-        }
-        
-        let alert = UIAlertController(title: nil, message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
-        let copyLinkButton = UIAlertAction(title: "Copy Video URL", style: UIAlertActionStyle.Default) { (alert) -> Void in
-            
-            UIPasteboard.generalPasteboard().string = "\(answerUrl)"
-        }
-        let reportButton = UIAlertAction(title: "Report Video", style: UIAlertActionStyle.Default) { (alert) -> Void in
-            print("Video reported")
-            let parameters = [
-                "type" : "reported video",
-                "creator": userid,
-                "relayId": answerId
-            ]
-            let url = globalurl + "api/alerts"
-            
-            Alamofire.request(.POST, url, parameters: parameters)
-                .responseJSON { response in
-                    print(response.request)
-                    print(response.response)
-                    print(response.result)
-                    print(response.response?.statusCode)
-            }
-        }
-        let facebookButton = UIAlertAction(title: "Share to Facebook", style: UIAlertActionStyle.Default) { (alert) -> Void in
-            let thumbnailUrl = "https://s3-us-west-1.amazonaws.com/batonapp/BatonHighQuality.png"
-            let content: FBSDKShareLinkContent = FBSDKShareLinkContent()
-            
-            content.contentURL = NSURL(string: answerUrl)
-            content.contentTitle = "re: \"\(questionContent)\""
-            content.contentDescription = "A platfrom concise video discussions every day"
-            content.imageURL = NSURL(string: thumbnailUrl )
-            FBSDKShareDialog.showFromViewController(self, withContent: content, delegate: nil)
-            
-        }
-        let messageButton = UIAlertAction(title: "Share through Message", style: UIAlertActionStyle.Default) { (alert) -> Void in
-            
-            if (MFMessageComposeViewController.canSendText()) {
-                let messageVC = MFMessageComposeViewController()
-                
-                messageVC.body = "re: \"\(questionContent)\" \(answerUrl) via Baton"
-                print(messageVC.body)
-                
-                messageVC.messageComposeDelegate = self
-                
-                self.presentViewController(messageVC, animated: true, completion:nil)
-            } else {
-                let errorAlert = UIAlertView(title: "Cannot Send Text Message", message: "Your device is not able to send text messages.", delegate: self, cancelButtonTitle: "OK")
-                errorAlert.show()
-            }
-        }
-        let shareToTwitterButton = UIAlertAction(title: "Share to Twitter", style: UIAlertActionStyle.Default) { (alert) -> Void in
-            let composer = TWTRComposer()
-            composer.setText("re: \"\(questionContent)\" \(answerUrl) via @WhatsOnBaton")
-            
-            // Called from a UIViewController
-            composer.showFromViewController(self) { result in
-                if (result == TWTRComposerResult.Cancelled) {
-                    print("Tweet composition cancelled")
-                }
-                else {
-                    print("Sending tweet!")
-                }
-            }
-            
-        }
-        let cancelButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alert) -> Void in
-            print("Cancel Pressed", terminator: "")
-        }
-        
-        alert.addAction(shareToTwitterButton)
-        alert.addAction(facebookButton)
-        alert.addAction(messageButton)
-        alert.addAction(copyLinkButton)
-        alert.addAction(reportButton)
-        alert.addAction(cancelButton)
-        self.presentViewController(alert, animated: true, completion: nil)
-    }
-    
     func usernameTapped(sender: UIButton) {
         let tag = sender.tag
         if counter == 0 {
@@ -1188,211 +911,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
         let tag = sender.tag
         self.questionIndex = tag
         self.performSegueWithIdentifier("segueFromFollowingToAnswers", sender: self)
-    }
-    
-    func toggleLike(sender: UIButton!) {
-        print("button hit")
-        let currentLiked = self.answerArray[sender.tag].liked_by_user
-        let tag = sender.tag
-        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag, inSection: 0)) as! FollowingAnswerTableViewCell
-        let answerId = self.answerArray[sender.tag].id
-        
-        if currentLiked == "true" {
-            print("unliked")
-            self.answerArray[tag].likeCount -= 1
-            self.answerArray[tag].liked_by_user = "false"
-            let likeCount = self.answerArray[tag].likeCount
-            cell.likeCountTextView.text = "\(likeCount) likes"
-            cell.likeCountTextView.textColor = UIColor(white:0.54, alpha:1.0)
-            cell.heartImageView.image = UIImage(named: "grayHeartOutline")
-            
-            let url = globalurl + "api/answers/" + answerId + "/unlikednotifs/" + userid
-            
-            Alamofire.request(.PUT, url, parameters: nil)
-                .responseJSON { response in
-                    let result = response.result.value
-                    print(result)
-                    if result == nil {
-
-                    } else {
-                        print("unliked")
-                        Answers.logCustomEventWithName("Unlike",
-                            customAttributes: ["where": "Following"])
-                        
-                    }
-            }
-        } else {
-            print("liked")
-            self.answerArray[tag].likeCount += 1
-            self.answerArray[tag].liked_by_user = "true"
-            let likeCount = self.answerArray[tag].likeCount
-            cell.likeCountTextView.text = "\(likeCount) likes"
-            cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-            cell.heartImageView.image = UIImage(named: "redHeartOutline")
-            
-            let url = globalurl + "api/answers/" + answerId + "/likednotifs/" + userid
-            
-            Alamofire.request(.PUT, url, parameters: nil)
-                .responseJSON { response in
-                    let result = response.result.value
-                    print(result)
-                    if result == nil {
-                        print("Already liked")
-                        
-                    } else {
-                        print("Liked")
-                        Answers.logCustomEventWithName("Like",
-                            customAttributes: ["method": "Button", "where": "Following"])
-                        
-                    }
-            }
-        }
-    }
-    
-    
-    func doubleTapped(sender: UITapGestureRecognizer) {
-        print("Double Tap")
-        let tag = sender.view?.tag
-        let currentLiked = self.answerArray[tag!].liked_by_user
-        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 0)) as! FollowingAnswerTableViewCell
-        cell.likeImageView.image = UIImage(named: "Heart")
-        cell.likeImageView.hidden = false
-        cell.likeImageView.alpha = 1
-        cell.player.play()
-        
-        if currentLiked == "true" {
-            
-        } else  {
-            self.answerArray[tag!].likeCount += 1
-            self.answerArray[tag!].liked_by_user = "true"
-            let likeCount = self.answerArray[tag!].likeCount
-            cell.likeCountTextView.text = "\(likeCount) likes"
-            cell.likeCountTextView.textColor = UIColor(red: 0.91, green: 0.271, blue: 0.271, alpha: 1)
-            cell.heartImageView.image = UIImage(named: "redHeartOutline")
-            
-            let answerId = self.answerArray[tag!].id
-            
-            let url = globalurl + "api/answers/" + answerId + "/likednotifs/" + userid
-            
-            Alamofire.request(.PUT, url, parameters: nil)
-                .responseJSON { response in
-                    let result = response.result.value
-                    print(result)
-                    if result == nil {
-                        print("Already liked")
-                        
-                    } else {
-                        print("Liked")
-                        Answers.logCustomEventWithName("Like",
-                            customAttributes: ["method": "Double Tap", "where": "Following"])
-                        
-                    }
-            }
-        }
-        
-        UIView.animateWithDuration(1.0, delay: 0.5, options: UIViewAnimationOptions.CurveEaseOut, animations: { () -> Void in
-            cell.likeImageView.alpha = 0
-            }) { (success) -> Void in
-                cell.likeImageView.alpha = 1
-                cell.likeImageView.hidden = true
-                
-        }
-        
-        
-    }
-    
-    func singleTapped(sender: UITapGestureRecognizer) {
-        print("Tapped")
-        let tag = sender.view?.tag
-        
-        let cell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: tag!, inSection: 0)) as! FollowingAnswerTableViewCell
-        if (cell.player.rate > 0) {
-            cell.player.pause()
-            Answers.logCustomEventWithName("Pause Clicked",
-                customAttributes: ["where": "FollowingAnswers","row": tag!])
-            cell.likeImageView.alpha = 0.7
-            cell.likeImageView.image = UIImage(named: "playImage")
-            cell.likeImageView.hidden = false
-        } else {
-            cell.player.play()
-            let url = globalurl + "api/answers/" + answerArray[tag!].id + "/viewed/"
-            
-            Alamofire.request(.PUT, url, parameters: nil)
-                .responseJSON { response in
-                    let result = response.result.value
-                    print(result)
-                    if result == nil {
-                        print("Not viewed")
-                        
-                    } else {
-                        print("Viewed")
-                    }
-            }
-            Answers.logCustomEventWithName("Play Clicked",
-                customAttributes: ["where": "FollowingAnswers","row": tag!])
-            Answers.logCustomEventWithName("Video Viewed",
-                customAttributes: ["where":"FollowingAnswers", "row": tag!])
-            NSNotificationCenter.defaultCenter().addObserver(self,
-                selector: "videoEnd",
-                name: AVPlayerItemDidPlayToEndTimeNotification,
-                object: nil)
-            cell.likeImageView.hidden = true
-        }
-        
-    }
-    
-    func videoEnd() {
-        NSNotificationCenter.defaultCenter().removeObserver(self,
-            name: AVPlayerItemDidPlayToEndTimeNotification,
-            object: nil)
-        for cell in tableView.visibleCells {
-            if cell.isKindOfClass(FollowingAnswerTableViewCell) {
-                let indexPath = tableView.indexPathForCell(cell)
-                let cellRect = tableView.rectForRowAtIndexPath(indexPath!)
-                let superView = tableView.superview
-                let convertedRect = tableView.convertRect(cellRect, toView: superView)
-                let intersect = CGRectIntersection(tableView.frame, convertedRect)
-                let visibleHeight = CGRectGetHeight(intersect)
-                let cellHeight = tableView.frame.height * 0.6
-                let cell = cell as! FollowingAnswerTableViewCell
-                
-                
-                if visibleHeight > cellHeight {
-                    cell.likeImageView.image = UIImage(named: "replayImage")
-                    cell.likeImageView.hidden = false
-                    cell.likeImageView.alpha = 0.7
-                    if (cell.player.rate > 0) {
-                        
-                        
-                    } else {
-                        print("Reached")
-                        Answers.logCustomEventWithName("Full View",
-                            customAttributes: ["where":"FollowingVC"])
-//                        let url = globalurl + "api/answers/" + answerArray[(indexPath?.row)!].id + "/viewed/"
-//                        
-//                        Alamofire.request(.PUT, url, parameters: nil)
-//                            .responseJSON { response in
-//                                let result = response.result.value
-//                                print(result)
-//                                if result == nil {
-//                                    print("Not viewed")
-//                                    
-//                                } else {
-//                                    print("Viewed")
-//                                }
-//                        }
-                        let seconds : Int64 = 0
-                        let preferredTimeScale : Int32 = 1
-                        let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
-                        
-                        cell.player.seekToTime(seekTime)
-                        //                        cell.player.play()
-                    }
-                } else {
-                    cell.player.pause()
-                }
-            }
-        }
     }
     
     // MARK: - Segues
@@ -1429,12 +947,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
         } else if segue.identifier == "segueFromFollowingToProfile" {
             if fromRelays {
                 let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController
-                for cell in tableView.visibleCells {
-                    if cell.isKindOfClass(FollowingAnswerTableViewCell) {
-                        let cell = cell as! FollowingAnswerTableViewCell
-                        cell.player.pause()
-                    }
-                }
                 let creatorId = answerArray[tag].creator
                 let creatorname = answerArray[tag].creatorname
                 profileVC.fromOtherVC = true
@@ -1444,12 +956,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.navigationController?.navigationBarHidden = false
             } else {
                 let profileVC: ProfileViewController = segue.destinationViewController as! ProfileViewController
-                for cell in tableView.visibleCells {
-                    if cell.isKindOfClass(FollowingAnswerTableViewCell) {
-                        let cell = cell as! FollowingAnswerTableViewCell
-                        cell.player.pause()
-                    }
-                }
                 let creatorId = questionArray[tag].creator
                 let creatorname = questionArray[tag].creatorname
                 profileVC.fromOtherVC = true
@@ -1478,49 +984,6 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
             videoPageVC.fromFollowing = true
         }
     }
-    
-    // MARK: - scrollView
-    func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        print("Did end dragging")
-        self.scrollingfinished()
-    }
-    
-    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
-        print("Did end decelerating")
-        self.scrollingfinished()
-    }
-    
-    func scrollingfinished() {
-        for cell in tableView.visibleCells {
-            if cell.isKindOfClass(FollowingAnswerTableViewCell) {
-                let indexPath = tableView.indexPathForCell(cell)
-                let cellRect = tableView.rectForRowAtIndexPath(indexPath!)
-                let superView = tableView.superview
-                let convertedRect = tableView.convertRect(cellRect, toView: superView)
-                let intersect = CGRectIntersection(tableView.frame, convertedRect)
-                let visibleHeight = CGRectGetHeight(intersect)
-                let cellHeight = tableView.frame.height * 0.6
-                let cell = cell as! FollowingAnswerTableViewCell
-                
-                if visibleHeight > cellHeight {
-                    if (cell.player.rate > 0) {
-                        print("Playing")
-
-                    } else {
-                        print("Reached")
-                        let seconds : Int64 = 0
-                        let preferredTimeScale : Int32 = 1
-                        let seekTime : CMTime = CMTimeMake(seconds, preferredTimeScale)
-                        
-                        cell.player.seekToTime(seekTime)
-                    }
-                } else {
-                    cell.player.pause()
-                }
-            }
-        }
-    }
-    
 
 }
 

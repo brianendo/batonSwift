@@ -51,6 +51,7 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
     var forEditPost = false
     var content = ""
     var questionId = ""
+    var randomInt = 0
     
     // MARK: - Keyboard
     func registerForKeyboardNotifications ()-> Void   {
@@ -74,9 +75,12 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let index = placeholderArray.count - 1
         
-        let aRandomInt = Int.random(0...3)
+        let aRandomInt = Int.random(0...index)
         print(aRandomInt)
+        
+        self.randomInt = aRandomInt
         
         contentTextView.delegate = self
         contentTextView.becomeFirstResponder()
@@ -94,11 +98,12 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
             self.contentTextView.setNeedsUpdateConstraints()
         } else {
             // Placeholder text
-            if fromSpecificChannel {
-                contentTextView.text = "What do you want to share with the " + self.channelName + " community?"
-            } else {
-                contentTextView.text = placeholder
-            }
+//            if fromSpecificChannel {
+//                contentTextView.text = "What do you want to share with the " + self.channelName + " community?"
+//            } else {
+//                contentTextView.text = placeholder
+//            }
+            contentTextView.text = placeholderArray[self.randomInt]
             
             contentTextView.textColor = UIColor.lightGrayColor()
             
@@ -162,11 +167,13 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
         // and set the cursor to the beginning of the text view
         if updatedText.isEmpty {
             
-            if fromSpecificChannel {
-                contentTextView.text = "What do you want to share with the " + self.channelName + " community?"
-            } else {
-                contentTextView.text = placeholder
-            }
+//            if fromSpecificChannel {
+//                contentTextView.text = "What do you want to share with the " + self.channelName + " community?"
+//            } else {
+//                contentTextView.text = placeholder
+//            }
+            contentTextView.text = placeholderArray[self.randomInt]
+            
             contentTextView.textColor = UIColor.lightGrayColor()
             
             self.charRemainingLabel.text = "150"
@@ -444,73 +451,5 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
             addTakeVC.questionId = self.questionId
         }
     }
-    
-    // Uncomment for code to check what time question was asked last
-//    func checkLastQuestion() {
-//        let url = globalurl + "api/users/" + userid
-//        
-//        Alamofire.request(.GET, url, parameters: nil, encoding: .JSON).responseJSON { response in
-//            var value = response.result.value
-//            
-//            if value == nil {
-//                value = []
-//            } else {
-//                let json = JSON(value!)
-//                print("JSON: \(json)")
-//                var updated_at = json["updated_at"].string
-//                print(updated_at)
-//                
-//                if updated_at == nil {
-//                    updated_at = "2015-11-03T01:28:21.147Z"
-//                }
-//                
-//                var dateFor: NSDateFormatter = NSDateFormatter()
-//                dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-//                var yourDate: NSDate? = dateFor.dateFromString(updated_at!)
-//                
-//                let difference = NSDate().timeIntervalSinceDate(yourDate!)
-//                print(difference)
-//                
-//                if difference < 86400 {
-//                    let timeRemaining = Int(86400 - difference)
-//                    let timeLeft = self.returnSecondsToHoursMinutesSeconds(timeRemaining)
-//                    
-//                    print(timeLeft)
-//                    
-//                    let alert = UIAlertController(title: "You have to wait \(timeLeft) before your next question", message: nil, preferredStyle: UIAlertControllerStyle.ActionSheet)
-//                    let libButton = UIAlertAction(title: "Invite Friends", style: UIAlertActionStyle.Default) { (alert) -> Void in
-//                    }
-//                    let cancelButton = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alert) -> Void in
-//                        print("Cancel Pressed", terminator: "")
-//                    }
-//                    
-//                    alert.addAction(libButton)
-//                    alert.addAction(cancelButton)
-//                    self.presentViewController(alert, animated: true, completion: nil)
-//                } else {
-//                    
-//                }
-//            }
-//            
-//            
-//            
-//        }
-//    }
-//    
-//    func secondsToHoursMinutesSeconds (seconds : Int) -> (Int, Int, Int) {
-//        return (seconds / 3600, (seconds % 3600) / 60, (seconds % 3600) % 60)
-//    }
-//    
-//    
-//    func returnSecondsToHoursMinutesSeconds (seconds:Int) -> (String) {
-//        let (h, m, s) = secondsToHoursMinutesSeconds (seconds)
-//        if h == 0 && m == 0{
-//            return "\(s)s"
-//        } else if h == 0 {
-//            return "\(m)m \(s)s"
-//        } else {
-//            return "\(h)h \(m)m \(s)s"
-//        }
-//    }
 
 }

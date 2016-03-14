@@ -42,6 +42,11 @@ class ChangePasswordViewController: UIViewController {
         self.newPasswordTextField.addTarget(self, action: "textFieldDidChange:", forControlEvents: UIControlEvents.EditingChanged)
     }
     
+    override func viewWillDisappear(animated: Bool) {
+        self.currentPasswordTextField.endEditing(true)
+        self.newPasswordTextField.endEditing(true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.submitButton.enabled = false

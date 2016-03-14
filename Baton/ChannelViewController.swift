@@ -15,8 +15,10 @@ import Crashlytics
 
 class ChannelViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
+    // MARK: - IBOutlets
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: - Variables
     let keychain = KeychainSwift()
     var channelIdArray = [String]()
     var channelNameArray = [String]()
@@ -25,412 +27,51 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
     var myChannelNameArray = [String]()
     var section = 0
     
+    
+    // MARK: - viewDid/viewWill
     override func viewDidAppear(animated: Bool) {
         self.tabBarController!.tabBar.hidden = false
-        
-        // Check if there are any unread notifications
-//        if userid != "" {
-//            self.checkNotifications()
-//        }
     }
     
-    // Check if there are any unread notifications
-    func checkNotifications() {
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        let url = globalurl + "api/unreadnotifications/" + userid
-        Alamofire.request(.GET, url, parameters: nil)
-            .responseJSON { response in
-                print(response.response?.statusCode)
-                
-                let statuscode = response.response?.statusCode
-                if statuscode == 200 {
-                    print("unread notifcations")
-                    let tabItem = self.tabBarController?.viewControllers![2]
-                    tabItem?.tabBarItem.badgeValue = "1"
-                    NSNotificationCenter.defaultCenter().postNotificationName("newNotification", object: self)
-                } else if statuscode == 400 {
-                    print("no new notifications")
-                    let tabItem = self.tabBarController?.viewControllers![2]
-                    tabItem?.tabBarItem.badgeValue = nil
-                } else if statuscode == 404 {
-                    
-                } else {
-                    
-                }
-        }
+        // Do any additional setup after loading the view.
+        tableView.dataSource = self
+        tableView.delegate = self
         
-    }
-    
-    func loadUserInfo() {
+        self.navigationItem.title = "Channels"
+        let backButton = UIButton(type: UIButtonType.Custom)
+        backButton.addTarget(self, action: "popToRoot:", forControlEvents: UIControlEvents.TouchUpInside)
+        backButton.setTitle("Back ", forState: UIControlState.Normal)
+        backButton.setImage(UIImage(named: "backButton"), forState: .Normal)
+        backButton.setTitleColor(UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0), forState: .Normal)
+        backButton.sizeToFit()
+        backButton.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+        backButton.titleLabel!.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+        let backButtonItem = UIBarButtonItem(customView: backButton)
         
-        // Grab JWT token and then verify if token is expired!
-        var token = keychain.get("JWT")
+        self.navigationItem.rightBarButtonItem = backButtonItem
         
-        do {
-            
-            if token == nil {
-                var refresh_token = keychain.get("refresh_token")
-                
-                if refresh_token == nil {
-                    refresh_token = ""
-                }
-                
-                // Use refresh token to get new JWT
-                let url = globalurl + "api/changetoken/"
-                let parameters = [
-                    "refresh_token": refresh_token! as String
-                ]
-                
-                Alamofire.request(.POST, url, parameters: parameters)
-                    .responseJSON { response in
-                        var value = response.result.value
-                        
-                        if value == nil {
-                            value = []
-                        } else {
-                            let json = JSON(value!)
-                            //                            print("JSON: \(json)")
-                            //                            print(json["token"].string)
-                            let newtoken = json["token"].string
-                            self.keychain.set(newtoken!, forKey: "JWT")
-                            token = newtoken
-                            
-                            // Use JWT to access users route
-                            let headers = [
-                                "Authorization": "\(token!)"
-                            ]
-                            let url = globalurl + "api/users/" + userid
-                            Alamofire.request(.GET, url, parameters: nil, headers: headers)
-                                .responseJSON { response in
-                                    var value = response.result.value
-                                    
-                                    let statuscode = (response.response?.statusCode)!
-                                    print(statuscode)
-                                    
-                                    if value == nil {
-                                        value = []
-                                    } else {
-                                        let json = JSON(value!)
-                                        //                                        print("JSON: \(json)")
-                                        let firstname = json["firstname"].string
-                                        let lastname = json["lastname"].string
-                                        var username = json["username"].string
-                                        let email = json["email"].string
-                                        
-                                        name = firstname! + " " + lastname!
-                                        
-                                        if username == nil {
-                                            username = firstname! + lastname!
-                                        } else {
-                                            username = username!
-                                        }
-                                        
-                                        myfirstname = firstname!
-                                        mylastname = lastname!
-                                        myUsername = username!
-                                        
-                                        if email ==  nil {
-                                            myemail = ""
-                                        } else {
-                                            myemail = email!
-                                        }
-                                        
-                                        let channels = json["channels"]
-                                        if channels ==  nil {
-                                            
-                                        } else {
-                                            for (_,subJson):(String, JSON) in channels {
-                                                let channelId = subJson["_id"].string
-                                                let channelName = subJson["name"].string
-                                                
-                                                self.myChannelIdArray.append(channelId!)
-                                                self.myChannelNameArray.append(channelName!)
-                                            }
-                                        }
-                                        
-                                        let deviceToken = json["deviceToken"].string
-                                        
-                                        if(UIApplication.instancesRespondToSelector(Selector("registerUserNotificationSettings:"))) {
-                                            let settings = UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: nil)
-                                            UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-                                            
-                                            UIApplication.sharedApplication().registerForRemoteNotifications()
-                                            }
-                                        
-                                        
-                                        
-                                        self.tableView.reloadData()
-                                        // Load all types of questions
-                                        self.loadChannels()
-                                    }
-                            }
-                        }
-                        
-                        
-                }
-            } else {
-                let jwt = try decode(token!)
-                
-                // Check if JWT expired
-                if jwt.expired == true {
-                    var refresh_token = keychain.get("refresh_token")
-                    
-                    if refresh_token == nil {
-                        refresh_token = ""
-                    }
-                    
-                    // Use refresh token to get new JWT
-                    let url = globalurl + "api/changetoken/"
-                    let parameters = [
-                        "refresh_token": refresh_token! as String
-                    ]
-                    
-                    Alamofire.request(.POST, url, parameters: parameters)
-                        .responseJSON { response in
-                            var value = response.result.value
-                            
-                            if value == nil {
-                                value = []
-                            } else {
-                                let json = JSON(value!)
-                                //                            print("JSON: \(json)")
-                                //                            print(json["token"].string)
-                                let newtoken = json["token"].string
-                                self.keychain.set(newtoken!, forKey: "JWT")
-                                token = newtoken
-                                
-                                // Use JWT to access users route
-                                let headers = [
-                                    "Authorization": "\(token!)"
-                                ]
-                                let url = globalurl + "api/users/" + userid
-                                Alamofire.request(.GET, url, parameters: nil, headers: headers)
-                                    .responseJSON { response in
-                                        var value = response.result.value
-                                        
-                                        let statuscode = (response.response?.statusCode)!
-                                        print(statuscode)
-                                        
-                                        if value == nil {
-                                            value = []
-                                        } else {
-                                            let json = JSON(value!)
-                                            //                                        print("JSON: \(json)")
-                                            let firstname = json["firstname"].string
-                                            let lastname = json["lastname"].string
-                                            var username = json["username"].string
-                                            let email = json["email"].string
-                                            
-                                            name = firstname! + " " + lastname!
-                                            
-                                            if username == nil {
-                                                username = firstname! + lastname!
-                                            } else {
-                                                username = username!
-                                            }
-                                            
-                                            myfirstname = firstname!
-                                            mylastname = lastname!
-                                            myUsername = username!
-                                            
-                                            if email ==  nil {
-                                                myemail = ""
-                                            } else {
-                                                myemail = email!
-                                            }
-                                            
-                                            let channels = json["channels"]
-                                            if channels ==  nil {
-                                                
-                                            } else {
-                                                for (_,subJson):(String, JSON) in channels {
-                                                    let channelId = subJson["_id"].string
-                                                    let channelName = subJson["name"].string
-                                                    
-                                                    self.myChannelIdArray.append(channelId!)
-                                                    self.myChannelNameArray.append(channelName!)
-                                                }
-                                            }
-                                            
-                                            let deviceToken = json["deviceToken"].string
-                                            if(UIApplication.instancesRespondToSelector(Selector("registerUserNotificationSettings:"))) {
-                                                let settings = UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: nil)
-                                                UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-                                                
-                                                UIApplication.sharedApplication().registerForRemoteNotifications()
-                                            }
-                                            
-                                            
-                                            
-                                            self.tableView.reloadData()
-                                            // Load all types of questions
-                                            self.loadChannels()
-                                        }
-                                }
-                            }
-                            
-                            
-                    }
-                } else {
-                    let headers = [
-                        "Authorization": "\(token!)"
-                    ]
-                    let url = globalurl + "api/users/" + userid
-                    Alamofire.request(.GET, url, parameters: nil, headers: headers)
-                        .responseJSON { response in
-                            var value = response.result.value
-                            
-                            let statuscode = response.response?.statusCode
-                            print(statuscode)
-                            
-                            if value == nil {
-                                value = []
-                            } else {
-                                let json = JSON(value!)
-                                //                            print("JSON: \(json)")
-                                let firstname = json["firstname"].string
-                                let lastname = json["lastname"].string
-                                var username = json["username"].string
-                                let email = json["email"].string
-                                
-                                name = firstname! + " " + lastname!
-                                
-                                if username == nil {
-                                    username = firstname! + lastname!
-                                } else {
-                                    username = username!
-                                }
-                                
-                                myfirstname = firstname!
-                                mylastname = lastname!
-                                myUsername = username!
-                                
-                                if email ==  nil {
-                                    myemail = ""
-                                } else {
-                                    myemail = email!
-                                }
-                                
-                                let channels = json["channels"]
-                                if channels ==  nil {
-                                    
-                                } else {
-                                    for (_,subJson):(String, JSON) in channels {
-                                        let channelId = subJson["_id"].string
-                                        let channelName = subJson["name"].string
-                                        
-                                        self.myChannelIdArray.append(channelId!)
-                                        self.myChannelNameArray.append(channelName!)
-                                    }
-                                }
-                                
-                                let deviceToken = json["deviceToken"].string
-                                if(UIApplication.instancesRespondToSelector(Selector("registerUserNotificationSettings:"))) {
-                                    let settings = UIUserNotificationSettings(forTypes: [.Sound, .Alert, .Badge], categories: nil)
-                                    UIApplication.sharedApplication().registerUserNotificationSettings(settings)
-                                    
-                                    UIApplication.sharedApplication().registerForRemoteNotifications()
-                                }
-                                
-                                self.tableView.reloadData()
-                                self.loadChannels()
-                            }
-                    }
-                }
-            }
-            
-        } catch {
-            print("Failed to decode JWT: \(error)")
-        }
+        self.navigationItem.hidesBackButton = true
         
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
+        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.scrollsToTop = true
+        
+        
+        self.loadChannels()
         
     }
     
-    func updateFollow() {
-        
-        // Use JWT to access updatefollow route
-        var token = keychain.get("JWT")
-        
-        do {
-            let jwt = try decode(token!)
-            //            print(jwt)
-            //            print(jwt.body)
-            //            print(jwt.expiresAt)
-            //            print(jwt.expired)
-            if jwt.expired == true {
-                var refresh_token = keychain.get("refresh_token")
-                
-                if refresh_token == nil {
-                    refresh_token = ""
-                }
-                
-                let url = globalurl + "api/changetoken/"
-                let parameters = [
-                    "refresh_token": refresh_token! as String
-                ]
-                Alamofire.request(.POST, url, parameters: parameters)
-                    .responseJSON { response in
-                        var value = response.result.value
-                        
-                        if value == nil {
-                            value = []
-                        } else {
-                            let json = JSON(value!)
-                            //                            print("JSON: \(json)")
-                            //                            print(json["token"].string)
-                            let newtoken = json["token"].string
-                            self.keychain.set(newtoken!, forKey: "JWT")
-                            token = newtoken
-                            
-                            let headers = [
-                                "Authorization": "\(token!)"
-                            ]
-                            let url = globalurl + "api/updatefollow/" + userid
-                            Alamofire.request(.PUT, url, parameters: nil, headers: headers)
-                                .responseJSON { response in
-                                    print(response.response?.statusCode)
-                                    let statuscode = response.response?.statusCode
-                                    if statuscode == 200 {
-                                        print("follow updated")
-                                    } else if statuscode == 400 {
-                                        print("unable to update follow")
-                                    } else if statuscode == 404 {
-                                        
-                                    } else {
-                                        
-                                    }
-                                    
-                            }
-                        }
-                        
-                        
-                }
-            } else {
-                let headers = [
-                    "Authorization": "\(token!)"
-                ]
-                let url = globalurl + "api/updatefollow/" + userid
-                Alamofire.request(.PUT, url, parameters: nil, headers: headers)
-                    .responseJSON { response in
-                        print(response.response?.statusCode)
-                        
-                        let statuscode = response.response?.statusCode
-                        if statuscode == 200 {
-                            print("follow updated")
-                        } else if statuscode == 400 {
-                            print("unable to update follow")
-                        } else if statuscode == 404 {
-                            
-                        } else {
-                            
-                        }
-                        
-                }
-            }
-        } catch {
-            print("Failed to decode JWT: \(error)")
-        }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
     }
+    
+    
+    // MARK: - loadFunctions
     
     func loadChannels() {
         let newUrl = globalurl + "api/channels/"
@@ -477,120 +118,10 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Empty data
-//        do {
-//            let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
-//            let documentsDirectory = paths[0]
-//            let documentsDirectoryURL = NSURL(fileURLWithPath: paths[0])
-//            
-//            let directoryContents = try NSFileManager.defaultManager().contentsOfDirectoryAtPath(documentsDirectory)
-//            
-//            var totalMegaBytes: Double = 0
-//            var nrOfFiles = 0
-//            
-//            for filename in directoryContents {
-//                let file = documentsDirectoryURL.URLByAppendingPathComponent(filename)
-//                
-//                
-//                let fileAttributes = try NSFileManager.defaultManager().attributesOfItemAtPath(file.path!)
-//                let fileSize = fileAttributes[NSFileSize] as! Double
-//                totalMegaBytes += fileSize/1024/1024
-//                
-//                do {
-//                    try NSFileManager.defaultManager().removeItemAtURL(file)
-//                    nrOfFiles++
-//                }catch let error as NSError{
-//                    print("> Emptying sandbox: could not delete file", filename, error)
-//                }
-//            }
-//            
-//            print("> Emptying sandbox: Removed \(nrOfFiles) files with a total of \(round(totalMegaBytes))MB")
-//            
-//        } catch let error as NSError {
-//            print("> Emptying sandbox: Error emptying sandbox", error)
-//        }
-        
-        
-        // Do any additional setup after loading the view.
-        tableView.dataSource = self
-        tableView.delegate = self
-        
-//        let label = UILabel.init(frame: CGRectMake(0, 0, 100, 30))
-//        label.text = "B"
-//        label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, view.frame.origin.y + 20)
-//        label.textAlignment = NSTextAlignment.Center
-//        label.font = UIFont(name: "Futura", size: 34)
-//        label.textColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
-//        
-//        self.navigationItem.titleView = label
-        self.navigationItem.title = "Channels"
-        let backButton = UIButton(type: UIButtonType.Custom)
-        backButton.addTarget(self, action: "popToRoot:", forControlEvents: UIControlEvents.TouchUpInside)
-        backButton.setTitle("Back ", forState: UIControlState.Normal)
-        backButton.setImage(UIImage(named: "backButton"), forState: .Normal)
-        backButton.setTitleColor(UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0), forState: .Normal)
-        backButton.sizeToFit()
-        backButton.transform = CGAffineTransformMakeScale(-1.0, 1.0)
-        backButton.titleLabel!.transform = CGAffineTransformMakeScale(-1.0, 1.0)
-        let backButtonItem = UIBarButtonItem(customView: backButton)
-        
-        self.navigationItem.rightBarButtonItem = backButtonItem
-        
-        self.navigationItem.hidesBackButton = true
-        
-        self.tableView.dataSource = self
-        self.tableView.delegate = self
-        self.tableView.rowHeight = UITableViewAutomaticDimension
-        self.tableView.scrollsToTop = true
-        
-        
-        self.loadChannels()
-//        self.updateFollow()
-//        self.loadUserInfo()
-        
-//        let isLoggedIn = keychain.get("ISLOGGEDIN")
-//        if (isLoggedIn != "1") {
-//            // Reauthenticate user in LogIn storyboard
-//            let login = UIStoryboard(name: "LogIn", bundle: nil)
-//            let loginVC = login.instantiateInitialViewController()
-//            self.presentViewController(loginVC!, animated: true, completion: nil)
-//        } else {
-//            // Check if the suer ID is available
-//            let id = keychain.get("ID")
-//            if id == nil {
-//                // Reauthenticate user in LogIn storyboard
-//                let login = UIStoryboard(name: "LogIn", bundle: nil)
-//                let loginVC = login.instantiateInitialViewController()
-//                self.presentViewController(loginVC!, animated: true, completion: nil)
-//            } else {
-//                // Set the global userid variable with the id in keychain
-//                userid = id!
-//                
-//                // Set tableView
-//                self.tableView.dataSource = self
-//                self.tableView.delegate = self
-//                self.tableView.rowHeight = UITableViewAutomaticDimension
-//                self.tableView.scrollsToTop = true
-//                
-//                self.updateFollow()
-//                self.loadUserInfo()
-//                self.checkNotifications()
-//            }
-//        }
-        
-    }
-    
     func popToRoot(sender:UIBarButtonItem){
         self.navigationController!.popToRootViewControllerAnimated(true)
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 //        if section == 0 {
@@ -842,7 +373,7 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
         if segue.identifier == "segueToFeed" {
             if counter == -2 {
                 Answers.logCustomEventWithName("Channel Clicked",
-                    customAttributes: ["name": "Top Posts"])
+                    customAttributes: ["name": "All Posts"])
             }
             else if counter == -1 {
                 let feedVC: FeedViewController = segue.destinationViewController as! FeedViewController

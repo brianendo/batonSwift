@@ -60,7 +60,8 @@ class Onboarding1ViewController: UIViewController {
         playerController.showsPlaybackControls = false
         playerController.videoGravity = AVLayerVideoGravityResizeAspectFill
         playerController.view.hidden = false
-        let videoUrl = "https://s3-us-west-1.amazonaws.com/batonapp/Onboarding1Flipped.mp4"
+//        let videoUrl = "https://s3-us-west-1.amazonaws.com/batonapp/Onboarding1Flipped.mp4"
+        let videoUrl = "https://s3-us-west-1.amazonaws.com/batonapp/OnboardingNew1High.mp4"
         let newURL = NSURL(string: videoUrl)
         player = AVPlayer(URL: newURL!)
         playerController.player = player

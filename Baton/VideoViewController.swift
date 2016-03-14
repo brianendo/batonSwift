@@ -18,6 +18,7 @@ import Crashlytics
 import TwitterKit
 import MessageUI
 import FBSDKShareKit
+import Crashlytics
 
 
 class VideoViewController: UIViewController, MFMessageComposeViewControllerDelegate {
@@ -219,10 +220,10 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
                                 self.timer = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: "playPlayer", userInfo: nil, repeats: false)
                             } else {
                                 self.player.play()
+                                Answers.logCustomEventWithName("Video Viewed",
+                                    customAttributes: ["where":"VideoView"])
                                 self.animateProgressView(newVideoTime)
                             }
-//                            self.player.play()
-//                            self.animateProgressView(newVideoTime)
                             self.firstVC = false
                         } else {
                             
@@ -276,6 +277,8 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
                             self.timer = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: "playPlayer", userInfo: nil, repeats: false)
                         } else {
                             self.player.play()
+                            Answers.logCustomEventWithName("Video Viewed",
+                                customAttributes: ["where":"VideoView"])
                             self.animateProgressView(newVideoTime)
                         }
                         
@@ -892,6 +895,8 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
     func singleTapped(sender: UITapGestureRecognizer) {
         print("Tapped")
         if (player.rate > 0) {
+            Answers.logCustomEventWithName("Pause Clicked",
+                customAttributes: ["where": "VideoView"])
             yourTakeButton.hidden = true
             player.pause()
             pauseLayer(progressView.layer)
@@ -910,6 +915,10 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
                 self.progressView.layer.sublayers?.removeAll()
                 player.play()
                 self.animateProgressView(self.videoTime)
+                Answers.logCustomEventWithName("Video Viewed",
+                    customAttributes: ["where":"VideoView"])
+                Answers.logCustomEventWithName("Replay Clicked",
+                    customAttributes: ["where": "VideoView"])
                 let url = globalurl + "api/answers/" + self.answer.id + "/viewed/"
                 
                 Alamofire.request(.PUT, url, parameters: nil)
@@ -924,6 +933,8 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
                         }
                 }
             } else {
+                Answers.logCustomEventWithName("Play Clicked",
+                    customAttributes: ["where": "VideoView"])
                 if time == 0 {
                     animateProgressView(self.videoTime)
                     yourTakeButton.hidden = true
@@ -1036,8 +1047,8 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
                         
                     } else {
                         print("unliked")
-//                        Answers.logCustomEventWithName("Unlike",
-//                            customAttributes: ["where": "AnswersVC"])
+                        Answers.logCustomEventWithName("Unlike",
+                            customAttributes: ["where": "VideoView"])
                         
                     }
             }
@@ -1065,8 +1076,8 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
                         
                     } else {
                         print("Liked")
-//                        Answers.logCustomEventWithName("Like",
-//                            customAttributes: ["method": "Button", "where": "AnswersVC"])
+                        Answers.logCustomEventWithName("Like",
+                            customAttributes: ["method": "Button", "where": "VideoView"])
                         
                     }
             }
@@ -1082,6 +1093,8 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
     
     
     func videoEnd() {
+        Answers.logCustomEventWithName("Full View",
+            customAttributes: ["where":"VideoView"])
         
         let time = CMTimeGetSeconds(player.currentTime())
         print(time)
@@ -1197,6 +1210,8 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
     }
     
     @IBAction func takeVideoButtonPressed(sender: UIButton) {
+        Answers.logCustomEventWithName("Record Method",
+            customAttributes: ["method":"whiteVideoButton"])
         tappedVideoPlayer = true
         if player != nil {
             player.pause()
@@ -1218,6 +1233,8 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
     }
     
     @IBAction func yourTakeButtonPressed(sender: UIButton) {
+        Answers.logCustomEventWithName("Record Method",
+            customAttributes: ["method":"whatsYourTakeButton"])
         tappedVideoPlayer = true
         
         if player != nil {
@@ -1291,7 +1308,6 @@ class VideoViewController: UIViewController, MFMessageComposeViewControllerDeleg
         let navigationController = UINavigationController(rootViewController: vc)
         
         self.presentViewController(navigationController, animated: true, completion: nil)
-//        self.performSegueWithIdentifier("segueFromVideoToAnswers", sender: self)
         print("tapped")
     }
     
