@@ -193,6 +193,11 @@ class StartViewController: UIViewController {
     }
     
     
+    @IBAction func facebookButtonPressed(sender: UIButton) {
+        print("FB Button pressed")
+    }
+    
+    
     
     // MARK: - Segues
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

@@ -78,6 +78,19 @@
                                     <segue destination="nbt-TI-1n1" kind="show" id="XD3-IY-536"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1kl-aW-gQT">
+                                <rect key="frame" x="0.0" y="310" width="600" height="47"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="47" id="scD-Io-esO"/>
+                                </constraints>
+                                <state key="normal" title="Log In with FB">
+                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="facebookButtonPressed:" destination="CLH-aD-suI" eventType="touchUpInside" id="Ex9-8h-oqQ"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.16862745098039217" green="0.1803921568627451" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -88,8 +101,11 @@
                             <constraint firstAttribute="trailingMargin" secondItem="nai-mF-PuB" secondAttribute="trailing" constant="-20" id="CSu-Av-3ay"/>
                             <constraint firstItem="rmj-5i-T7B" firstAttribute="top" secondItem="nai-mF-PuB" secondAttribute="bottom" constant="40" id="D7l-Id-6Kz"/>
                             <constraint firstAttribute="trailingMargin" secondItem="oPa-ST-87a" secondAttribute="trailing" constant="-20" id="MPG-KR-fLm"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="1kl-aW-gQT" secondAttribute="trailing" constant="-20" id="UcQ-5w-Si1"/>
                             <constraint firstItem="PKF-Yl-56T" firstAttribute="top" secondItem="Isf-2e-UvS" secondAttribute="bottom" constant="55" id="kKO-gL-ghD"/>
+                            <constraint firstItem="Du1-Yy-6Bq" firstAttribute="top" secondItem="1kl-aW-gQT" secondAttribute="bottom" constant="20" id="mbE-TH-OZn"/>
                             <constraint firstItem="nai-mF-PuB" firstAttribute="top" secondItem="oPa-ST-87a" secondAttribute="bottom" constant="15" id="npP-hg-aWA"/>
+                            <constraint firstItem="1kl-aW-gQT" firstAttribute="leading" secondItem="ece-pZ-ezr" secondAttribute="leadingMargin" constant="-20" id="pHl-we-yE3"/>
                             <constraint firstItem="nai-mF-PuB" firstAttribute="leading" secondItem="ece-pZ-ezr" secondAttribute="leadingMargin" constant="-20" id="reS-UM-fN2"/>
                             <constraint firstItem="Du1-Yy-6Bq" firstAttribute="leading" secondItem="ece-pZ-ezr" secondAttribute="leadingMargin" constant="-20" id="sah-cA-mTs"/>
                         </constraints>
@@ -102,7 +118,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HV0-X5-Vf9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1174" y="169"/>
+            <point key="canvasLocation" x="915" y="213"/>
         </scene>
         <!--Sign Up View Controller-->
         <scene sceneID="Io7-PX-LYG">
