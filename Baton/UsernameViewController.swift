@@ -34,6 +34,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
     var type = ""
     var schoolName = ""
     var schoolId = ""
+    var collegeEmail = ""
     var characterSet:NSCharacterSet = NSCharacterSet(charactersInString: "abcdefghijklmnopqrstuvwxyz0123456789_")
     
     // MARK: - Keyboard
@@ -140,7 +141,6 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
             if type == "high school" {
                 let parameters = [
                     "email": email,
-                    "password": password,
                     "firstname": firstname,
                     "lastname": lastname,
                     "username": usernameTextField.text! as String,
@@ -180,6 +180,8 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                                 self.keychain.set("1", forKey: "ISLOGGEDIN")
                                 self.keychain.set(token!, forKey: "JWT")
                                 self.keychain.set(refresh_token!, forKey: "refresh_token")
+                                self.keychain.set(self.schoolId, forKey: "schoolID")
+                                schoolID = self.schoolId
                                 userid = id!
                                 
                                 
@@ -241,10 +243,9 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                         
                 }
                 
-            } else {
+            } else if type == "college" {
                 let parameters = [
                     "email": email,
-                    "password": password,
                     "firstname": firstname,
                     "lastname": lastname,
                     "username": usernameTextField.text! as String,
@@ -252,7 +253,8 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                     "collegeId": schoolId,
                     "collegeName": schoolName,
                     "currentSchoolId": schoolId,
-                    "currentSchoolName": schoolName
+                    "currentSchoolName": schoolName,
+                    "collegeEmail": collegeEmail
                 ]
                 
                 let url = globalurl + "api/signup"
@@ -283,6 +285,8 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                                 self.keychain.set("1", forKey: "ISLOGGEDIN")
                                 self.keychain.set(token!, forKey: "JWT")
                                 self.keychain.set(refresh_token!, forKey: "refresh_token")
+                                self.keychain.set(self.schoolId, forKey: "schoolID")
+                                schoolID = self.schoolId
                                 userid = id!
                                 
                                 // Get image from profileImageView and upload to S3

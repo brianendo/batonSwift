@@ -47,6 +47,7 @@
 		8EAA26571CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA26561CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift */; };
 		8EAA26591CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA26581CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift */; };
 		8EAA265B1CAC9EF000FE5B86 /* SchoolTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA265A1CAC9EF000FE5B86 /* SchoolTableViewCell.swift */; };
+		8EAA265D1CAD9B2200FE5B86 /* CollegeEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA265C1CAD9B2200FE5B86 /* CollegeEmailViewController.swift */; };
 		8EB767681C90E69B00FFD127 /* AnswerPreviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB767671C90E69B00FFD127 /* AnswerPreviewTableViewCell.swift */; };
 		8EB7676A1C90F03300FFD127 /* VideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB767691C90F03300FFD127 /* VideoViewController.swift */; };
 		8EB767701C9105E400FFD127 /* VideoPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB7676F1C9105E400FFD127 /* VideoPageViewController.swift */; };
@@ -142,6 +143,7 @@
 		8EAA26561CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmSchoolViewController.swift; sourceTree = "<group>"; };
 		8EAA26581CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickSchoolTypeViewController.swift; sourceTree = "<group>"; };
 		8EAA265A1CAC9EF000FE5B86 /* SchoolTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SchoolTableViewCell.swift; sourceTree = "<group>"; };
+		8EAA265C1CAD9B2200FE5B86 /* CollegeEmailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollegeEmailViewController.swift; sourceTree = "<group>"; };
 		8EB767671C90E69B00FFD127 /* AnswerPreviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnswerPreviewTableViewCell.swift; sourceTree = "<group>"; };
 		8EB767691C90F03300FFD127 /* VideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoViewController.swift; sourceTree = "<group>"; };
 		8EB7676F1C9105E400FFD127 /* VideoPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPageViewController.swift; sourceTree = "<group>"; };
@@ -407,6 +409,7 @@
 				8EE04B041BE2A77D0040D5A5 /* StartViewController.swift */,
 				8EAA26581CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift */,
 				8EAA26561CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift */,
+				8EAA265C1CAD9B2200FE5B86 /* CollegeEmailViewController.swift */,
 				8EAA265A1CAC9EF000FE5B86 /* SchoolTableViewCell.swift */,
 				8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */,
 				8EE04B061BE2A7A30040D5A5 /* LogInViewController.swift */,
@@ -651,6 +654,7 @@
 				8EE04B051BE2A77D0040D5A5 /* StartViewController.swift in Sources */,
 				8EE04B1C1BE862160040D5A5 /* Question.swift in Sources */,
 				8E9D70E51C164A920073CA17 /* AnsweredQuestionTableViewCell.swift in Sources */,
+				8EAA265D1CAD9B2200FE5B86 /* CollegeEmailViewController.swift in Sources */,
 				8EB767761C924F7E00FFD127 /* Interactor.swift in Sources */,
 				8EB945711C4DA46900FA01E2 /* ProfileLikedTableViewCell.swift in Sources */,
 				8EE04B241BE973500040D5A5 /* ProfileViewController.swift in Sources */,

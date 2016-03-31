@@ -207,11 +207,78 @@
                     </view>
                     <connections>
                         <segue destination="sAZ-rL-ddD" kind="show" identifier="segueToConfirmSchool" id="yLz-lq-PXM"/>
+                        <segue destination="EZb-M7-UUK" kind="show" identifier="segueToCollegeEmail" id="wFx-sF-dYs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="69O-ts-je2" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="831" y="1184"/>
+        </scene>
+        <!--College Email View Controller-->
+        <scene sceneID="PDp-N0-W1K">
+            <objects>
+                <viewController id="EZb-M7-UUK" customClass="CollegeEmailViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1Og-XK-vgH"/>
+                        <viewControllerLayoutGuide type="bottom" id="ZXj-Ga-n5t"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="0bu-b0-qZQ">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter your college email address:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="4" translatesAutoresizingMaskIntoConstraints="NO" id="5RS-ag-JQk">
+                                <rect key="frame" x="0.0" y="85" width="600" height="27"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="22"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DHj-Uf-IKv">
+                                <rect key="frame" x="0.0" y="560" width="600" height="40"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="LNp-qg-4Pz"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="24"/>
+                                <state key="normal" title="Next">
+                                    <color key="titleColor" red="0.90980392160000001" green="0.27058823529999998" blue="0.27058823529999998" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="nextButtonPressed:" destination="EZb-M7-UUK" eventType="touchUpInside" id="AYr-Jf-pCO"/>
+                                </connections>
+                            </button>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="studentID@school.edu" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="2Wf-Mj-naN">
+                                <rect key="frame" x="50" y="141.5" width="500" height="50"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="zxj-Pr-Xts"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" red="0.16862745100000001" green="0.18039215689999999" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="2Wf-Mj-naN" firstAttribute="top" secondItem="5RS-ag-JQk" secondAttribute="bottom" constant="30" id="0SJ-HW-yLv"/>
+                            <constraint firstItem="DHj-Uf-IKv" firstAttribute="leading" secondItem="0bu-b0-qZQ" secondAttribute="leadingMargin" constant="-20" id="1mH-Y3-gqg"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="DHj-Uf-IKv" secondAttribute="trailing" constant="-20" id="4wb-xH-BFp"/>
+                            <constraint firstItem="2Wf-Mj-naN" firstAttribute="leading" secondItem="0bu-b0-qZQ" secondAttribute="leadingMargin" constant="30" id="6Yi-U6-QjG"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="5RS-ag-JQk" secondAttribute="trailing" constant="-20" id="8tN-Ul-3qa"/>
+                            <constraint firstItem="5RS-ag-JQk" firstAttribute="leading" secondItem="0bu-b0-qZQ" secondAttribute="leadingMargin" constant="-20" id="H2b-uT-Xrg"/>
+                            <constraint firstItem="ZXj-Ga-n5t" firstAttribute="top" secondItem="DHj-Uf-IKv" secondAttribute="bottom" id="h6y-JK-hGw"/>
+                            <constraint firstItem="5RS-ag-JQk" firstAttribute="top" secondItem="1Og-XK-vgH" secondAttribute="bottom" constant="21" id="jaH-c0-Cna"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="2Wf-Mj-naN" secondAttribute="trailing" constant="30" id="shx-cG-8So"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="bottomLayoutConstraint" destination="h6y-JK-hGw" id="JdH-S6-PJY"/>
+                        <outlet property="emailTextField" destination="2Wf-Mj-naN" id="U4f-0A-DgW"/>
+                        <outlet property="nextButton" destination="DHj-Uf-IKv" id="0TD-R5-rX3"/>
+                        <segue destination="qKm-wh-QpB" kind="show" identifier="segueFromCollegeEmailToUsername" id="OOR-z0-JSe"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oWF-pN-apx" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2011" y="1728"/>
         </scene>
         <!--Confirm School View Controller-->
         <scene sceneID="mpc-0N-GC6">
@@ -824,6 +891,6 @@
         <image name="TwitterLogIn" width="38" height="31"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Qc9-sz-0sE"/>
+        <segue reference="OOR-z0-JSe"/>
     </inferredMetricsTieBreakers>
 </document>

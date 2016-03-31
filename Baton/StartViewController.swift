@@ -215,12 +215,6 @@ class StartViewController: UIViewController {
                 } else {
                     
                 }
-//                if(fbloginresult.grantedPermissions.contains("email"))
-//                {
-//                    self.getFBUserData()
-//                    fbLoginManager.logOut()
-//                    
-//                }
             }
         }
         
@@ -267,7 +261,6 @@ class StartViewController: UIViewController {
 //                        }
 //                    }
                     
-                    // Check if user with Twitter id exists
                     let url = globalurl + "api/findfacebookuser/" + facebook_id!
                     Alamofire.request(.GET, url, parameters: nil)
                         .responseJSON { response in
@@ -288,6 +281,12 @@ class StartViewController: UIViewController {
                                 let id = json["data"]["_id"].string
                                 let token = json["token"].string
                                 let refresh_token = json["data"]["token"].string
+                                var schoolId = json["data"]["currentSchoolId"].string
+                                print(schoolId)
+                                
+                                if schoolId == nil {
+                                    schoolId = ""
+                                }
                                 
                                 if refresh_token == nil {
                                     // Generate refresh token if user does not have one
@@ -316,10 +315,8 @@ class StartViewController: UIViewController {
                                 self.keychain.set(id!, forKey: "ID")
                                 self.keychain.set("1", forKey: "ISLOGGEDIN")
                                 self.keychain.set(token!, forKey: "JWT")
+                                self.keychain.set(schoolId!, forKey: "schoolID")
                                 
-                                Answers.logLoginWithMethod("Twitter",
-                                    success: true,
-                                    customAttributes: [:])
                                 
                                 // Go to main storyboard
                                 let storyboard = UIStoryboard(name: "Main", bundle: nil)

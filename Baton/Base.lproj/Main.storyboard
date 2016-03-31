@@ -1062,7 +1062,7 @@
                                             <action selector="shareButtonPressed:" destination="Vuu-iA-VEV" eventType="touchUpInside" id="utf-Wh-kF3"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mAr-Qy-PaQ">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mAr-Qy-PaQ">
                                         <rect key="frame" x="268" y="11" width="63" height="26"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="14"/>
                                         <state key="normal" title="  100 " image="whiteHeart"/>
@@ -5085,15 +5085,15 @@
         <image name="whitelightbulb" width="28" height="31"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="B5p-fT-ati"/>
+        <segue reference="1rb-zg-BdG"/>
+        <segue reference="Y2z-8A-8NA"/>
+        <segue reference="pQi-xy-U4y"/>
+        <segue reference="ds5-wl-Py7"/>
+        <segue reference="1v4-gj-i1p"/>
+        <segue reference="KSP-dK-TLG"/>
+        <segue reference="zHa-pG-Y26"/>
+        <segue reference="Dpp-YJ-CSh"/>
         <segue reference="S7y-wc-ghI"/>
         <segue reference="qUK-lM-1pa"/>
-        <segue reference="zHa-pG-Y26"/>
-        <segue reference="Y2z-8A-8NA"/>
-        <segue reference="Hwl-7m-Lvp"/>
-        <segue reference="LnO-Zh-i58"/>
-        <segue reference="KSP-dK-TLG"/>
-        <segue reference="1v4-gj-i1p"/>
-        <segue reference="Dpp-YJ-CSh"/>
     </inferredMetricsTieBreakers>
 </document>

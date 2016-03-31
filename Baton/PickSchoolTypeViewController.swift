@@ -33,6 +33,7 @@ class PickSchoolTypeViewController: UIViewController {
     }
     
     @IBAction func collegeButtonPressed(sender: UIButton) {
+        self.performSegueWithIdentifier("segueToCollegeEmail", sender: self)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -43,6 +44,13 @@ class PickSchoolTypeViewController: UIViewController {
             confirmSchoolVC.profileImageUrl = profileImageUrl
             confirmSchoolVC.facebookId = facebookId
             confirmSchoolVC.email = email
+        } else if segue.identifier == "segueToCollegeEmail" {
+            let collegeEmailVC: CollegeEmailViewController = segue.destinationViewController as! CollegeEmailViewController
+            collegeEmailVC.firstName = firstName
+            collegeEmailVC.lastName = lastName
+            collegeEmailVC.profileImageUrl = profileImageUrl
+            collegeEmailVC.facebookId = facebookId
+            collegeEmailVC.email = email
         }
     }
     

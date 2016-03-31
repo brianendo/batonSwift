@@ -24,6 +24,7 @@ import FBSDKCoreKit
 var currentUser = ""
 var name = ""
 var userid = ""
+var schoolID = ""
 
 var myUsername = ""
 var myfirstname = ""

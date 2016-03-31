@@ -85,6 +85,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
     }
     
+    
+    
     func loadAnswers(){
         let url = globalurl + "api/featuredanswers"
         
@@ -251,6 +253,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         } else {
             // Check if the suer ID is available
             let id = keychain.get("ID")
+            let schoolId = keychain.get("schoolID")
             if id == nil {
                 // Reauthenticate user in LogIn storyboard
                 let login = UIStoryboard(name: "LogIn", bundle: nil)
@@ -260,7 +263,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 // Set the global userid variable with the id in keychain
                 
                 
-                
+                schoolID = schoolId!
                 userid = id!
 
 //                let login = UIStoryboard(name: "Onboarding", bundle: nil)
@@ -1754,7 +1757,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 }
                 
             }
-        } else {
+        }
+        else {
             if indexPath.section == 0 {
                 let cell: FeedSegmentedTableViewCell = tableView.dequeueReusableCellWithIdentifier("SegmentedCell", forIndexPath: indexPath) as! FeedSegmentedTableViewCell
                 
