@@ -17,6 +17,7 @@ import Crashlytics
 import Alamofire
 import SwiftyJSON
 import KeychainSwift
+import FBSDKCoreKit
 
 
 // Global currentuser variable
@@ -48,7 +49,7 @@ let CognitoIdentityPoolId = "us-east-1:cd887d49-c047-4889-bf49-215cd886036d"
 
 let S3BucketName = "batonstaging"
 
-let globalurl = stagingUrl
+let globalurl = localUrl
 let keychain = KeychainSwift()
 
 var imageCache: Dictionary<String, NSData?> = Dictionary<String, NSData>()
@@ -97,12 +98,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowD
         
         // MAKE SURE TO UNCOMMENT THAT PART
         // Used for Twitter Login and Compose Tweet
-        Fabric.with([Twitter.self, AWSCognito.self, Crashlytics.self])
+//        Fabric.with([Twitter.self, AWSCognito.self, Crashlytics.self])
 
-
-        return true
+        return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
+//        return true
     }
     
+    func application(application: UIApplication, openURL url: NSURL, sourceApplication: String?, annotation: AnyObject) -> Bool {
+        return FBSDKApplicationDelegate.sharedInstance().application(application, openURL: url, sourceApplication: sourceApplication, annotation: annotation)
+    }
     
     func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
         let deviceTokenStr = convertDeviceTokenToString(deviceToken)

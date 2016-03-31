@@ -40,8 +40,8 @@
                                                     </constraints>
                                                     <variation key="default">
                                                         <mask key="constraints">
-                                                            <exclude reference="v7T-sI-fgK"/>
                                                             <exclude reference="jjK-WE-GFI"/>
+                                                            <exclude reference="v7T-sI-fgK"/>
                                                         </mask>
                                                     </variation>
                                                 </imageView>
@@ -1062,7 +1062,7 @@
                                             <action selector="shareButtonPressed:" destination="Vuu-iA-VEV" eventType="touchUpInside" id="utf-Wh-kF3"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mAr-Qy-PaQ">
+                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mAr-Qy-PaQ">
                                         <rect key="frame" x="268" y="11" width="63" height="26"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="14"/>
                                         <state key="normal" title="  100 " image="whiteHeart"/>
@@ -3580,7 +3580,7 @@
                                 <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ChannelTitleCell" id="OQU-e2-cyF" customClass="ChannelTitleTableViewCell" customModule="Baton" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="49.5" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="113.5" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="OQU-e2-cyF" id="dBv-Ro-LbP">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>

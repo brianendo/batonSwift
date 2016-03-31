@@ -14,6 +14,8 @@ target 'Baton' do
         pod 'KeychainSwift', '~> 3.0'
         pod 'JWTDecode', '~> 1.0'
         pod 'FBSDKShareKit'
+        pod 'FBSDKCoreKit'
+        pod 'FBSDKLoginKit'
         pod 'COSTouchVisualizer'
         pod 'Crashlytics'
 end

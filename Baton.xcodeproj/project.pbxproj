@@ -44,6 +44,9 @@
 		8E9D70EB1C17A0300073CA17 /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */; };
 		8EA960F61C110A3F00371C77 /* AnswersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F51C110A3F00371C77 /* AnswersViewController.swift */; };
 		8EA960FA1C12277900371C77 /* QuestionTitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */; };
+		8EAA26571CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA26561CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift */; };
+		8EAA26591CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA26581CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift */; };
+		8EAA265B1CAC9EF000FE5B86 /* SchoolTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EAA265A1CAC9EF000FE5B86 /* SchoolTableViewCell.swift */; };
 		8EB767681C90E69B00FFD127 /* AnswerPreviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB767671C90E69B00FFD127 /* AnswerPreviewTableViewCell.swift */; };
 		8EB7676A1C90F03300FFD127 /* VideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB767691C90F03300FFD127 /* VideoViewController.swift */; };
 		8EB767701C9105E400FFD127 /* VideoPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB7676F1C9105E400FFD127 /* VideoPageViewController.swift */; };
@@ -136,6 +139,9 @@
 		8E9D70EA1C17A0300073CA17 /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		8EA960F51C110A3F00371C77 /* AnswersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnswersViewController.swift; sourceTree = "<group>"; };
 		8EA960F91C12277900371C77 /* QuestionTitleTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuestionTitleTableViewCell.swift; sourceTree = "<group>"; };
+		8EAA26561CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmSchoolViewController.swift; sourceTree = "<group>"; };
+		8EAA26581CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PickSchoolTypeViewController.swift; sourceTree = "<group>"; };
+		8EAA265A1CAC9EF000FE5B86 /* SchoolTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SchoolTableViewCell.swift; sourceTree = "<group>"; };
 		8EB767671C90E69B00FFD127 /* AnswerPreviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnswerPreviewTableViewCell.swift; sourceTree = "<group>"; };
 		8EB767691C90F03300FFD127 /* VideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoViewController.swift; sourceTree = "<group>"; };
 		8EB7676F1C9105E400FFD127 /* VideoPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPageViewController.swift; sourceTree = "<group>"; };
@@ -399,6 +405,9 @@
 			children = (
 				8EE04B021BE2A6E20040D5A5 /* LogIn.storyboard */,
 				8EE04B041BE2A77D0040D5A5 /* StartViewController.swift */,
+				8EAA26581CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift */,
+				8EAA26561CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift */,
+				8EAA265A1CAC9EF000FE5B86 /* SchoolTableViewCell.swift */,
 				8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */,
 				8EE04B061BE2A7A30040D5A5 /* LogInViewController.swift */,
 				8EE04B081BE2A7AD0040D5A5 /* SignUpViewController.swift */,
@@ -659,6 +668,7 @@
 				8E146C5C1C5BE89200468A1C /* SettingsTableViewController.swift in Sources */,
 				8EB767701C9105E400FFD127 /* VideoPageViewController.swift in Sources */,
 				8E146C901C6C0C2200468A1C /* PushViewController.swift in Sources */,
+				8EAA26591CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift in Sources */,
 				8E0F198F1C7294EF00F7BC35 /* FeedSegmentedTableViewCell.swift in Sources */,
 				8EA960F61C110A3F00371C77 /* AnswersViewController.swift in Sources */,
 				8EE04B001BE2A14F0040D5A5 /* AskQuestionViewController.swift in Sources */,
@@ -666,6 +676,7 @@
 				8EB767721C921E2200FFD127 /* FollowingPreviewTableViewCell.swift in Sources */,
 				8E6A7DFC1C8FE7620010BA42 /* FeaturedVideoViewController.swift in Sources */,
 				8E9D70E71C167A960073CA17 /* MyQuestionTitleTableViewCell.swift in Sources */,
+				8EAA265B1CAC9EF000FE5B86 /* SchoolTableViewCell.swift in Sources */,
 				8EE04B071BE2A7A30040D5A5 /* LogInViewController.swift in Sources */,
 				8E4EB6C41C92A04F005B078D /* ProfileLikeTableViewCell.swift in Sources */,
 				8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */,
@@ -692,6 +703,7 @@
 				8EE04B1E1BE95D7B0040D5A5 /* NotificationViewController.swift in Sources */,
 				8E146C601C5C334800468A1C /* FollowingSearchTableViewCell.swift in Sources */,
 				8EE04AFE1BE29C3A0040D5A5 /* QuestionTableViewCell.swift in Sources */,
+				8EAA26571CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift in Sources */,
 				8E4EB6C21C929245005B078D /* FeaturedPreviewTableViewCell.swift in Sources */,
 				8EE04AFC1BE29A030040D5A5 /* FeedViewController.swift in Sources */,
 				8E0F19871C72590200F7BC35 /* ChannelViewController.swift in Sources */,

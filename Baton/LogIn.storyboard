@@ -78,19 +78,27 @@
                                     <segue destination="nbt-TI-1n1" kind="show" id="XD3-IY-536"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1kl-aW-gQT">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1kl-aW-gQT">
                                 <rect key="frame" x="0.0" y="310" width="600" height="47"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="47" id="scD-Io-esO"/>
                                 </constraints>
-                                <state key="normal" title="Log In with FB">
-                                    <color key="titleColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="24"/>
+                                <state key="normal" title="Log In with Facebook">
+                                    <color key="titleColor" red="0.1803921568627451" green="0.25882352941176473" blue="0.54509803921568623" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                                 <connections>
                                     <action selector="facebookButtonPressed:" destination="CLH-aD-suI" eventType="touchUpInside" id="Ex9-8h-oqQ"/>
                                 </connections>
                             </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="FBlogo" translatesAutoresizingMaskIntoConstraints="NO" id="gIq-vf-o5e">
+                                <rect key="frame" x="13" y="313" width="35" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="AVa-af-dC0"/>
+                                    <constraint firstAttribute="width" constant="35" id="uB6-ZL-Acq"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.16862745098039217" green="0.1803921568627451" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -100,6 +108,7 @@
                             <constraint firstItem="PKF-Yl-56T" firstAttribute="centerX" secondItem="ece-pZ-ezr" secondAttribute="centerX" id="8bN-tG-P70"/>
                             <constraint firstAttribute="trailingMargin" secondItem="nai-mF-PuB" secondAttribute="trailing" constant="-20" id="CSu-Av-3ay"/>
                             <constraint firstItem="rmj-5i-T7B" firstAttribute="top" secondItem="nai-mF-PuB" secondAttribute="bottom" constant="40" id="D7l-Id-6Kz"/>
+                            <constraint firstItem="1kl-aW-gQT" firstAttribute="leading" secondItem="gIq-vf-o5e" secondAttribute="trailing" constant="-53" id="Gn5-NF-8gm"/>
                             <constraint firstAttribute="trailingMargin" secondItem="oPa-ST-87a" secondAttribute="trailing" constant="-20" id="MPG-KR-fLm"/>
                             <constraint firstAttribute="trailingMargin" secondItem="1kl-aW-gQT" secondAttribute="trailing" constant="-20" id="UcQ-5w-Si1"/>
                             <constraint firstItem="PKF-Yl-56T" firstAttribute="top" secondItem="Isf-2e-UvS" secondAttribute="bottom" constant="55" id="kKO-gL-ghD"/>
@@ -108,17 +117,179 @@
                             <constraint firstItem="1kl-aW-gQT" firstAttribute="leading" secondItem="ece-pZ-ezr" secondAttribute="leadingMargin" constant="-20" id="pHl-we-yE3"/>
                             <constraint firstItem="nai-mF-PuB" firstAttribute="leading" secondItem="ece-pZ-ezr" secondAttribute="leadingMargin" constant="-20" id="reS-UM-fN2"/>
                             <constraint firstItem="Du1-Yy-6Bq" firstAttribute="leading" secondItem="ece-pZ-ezr" secondAttribute="leadingMargin" constant="-20" id="sah-cA-mTs"/>
+                            <constraint firstItem="gIq-vf-o5e" firstAttribute="centerY" secondItem="1kl-aW-gQT" secondAttribute="centerY" id="tSp-Pz-ZDE"/>
+                            <constraint firstItem="gIq-vf-o5e" firstAttribute="leading" secondItem="ece-pZ-ezr" secondAttribute="leadingMargin" id="vYv-2E-1zK"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="Gn5-NF-8gm"/>
+                            </mask>
+                        </variation>
                     </view>
                     <navigationItem key="navigationItem" id="EGy-RS-Z5w"/>
                     <connections>
+                        <outlet property="facebookLoginButton" destination="1kl-aW-gQT" id="ODc-Cx-78h"/>
                         <outlet property="twitterLoginButton" destination="Du1-Yy-6Bq" id="7tQ-LF-hls"/>
                         <segue destination="rgA-fU-lvU" kind="show" identifier="segueToTwitterSignup" id="fGo-ob-8ex"/>
+                        <segue destination="hL5-l6-CFu" kind="show" identifier="segueToPickSchoolType" id="Vvk-YN-pU8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HV0-X5-Vf9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="915" y="213"/>
+            <point key="canvasLocation" x="1051" y="288"/>
+        </scene>
+        <!--Pick School Type View Controller-->
+        <scene sceneID="h98-jf-Myk">
+            <objects>
+                <viewController id="hL5-l6-CFu" customClass="PickSchoolTypeViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="hai-Cb-uCk"/>
+                        <viewControllerLayoutGuide type="bottom" id="8SP-qD-EgE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="JTN-rt-BXL">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Are you in" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="njP-2K-hdN">
+                                <rect key="frame" x="244.5" y="81" width="111" height="29"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="24"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="or" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="raR-Vs-W6Y">
+                                <rect key="frame" x="288.5" y="214" width="23" height="29"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="24"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SZS-93-J6O">
+                                <rect key="frame" x="45" y="138" width="510" height="45"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="7Sq-m3-eBV"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="19"/>
+                                <state key="normal" title="High School">
+                                    <color key="titleColor" red="0.16862745100000001" green="0.18039215689999999" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="highSchoolButtonPressed:" destination="hL5-l6-CFu" eventType="touchUpInside" id="F7T-lB-6QB"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R7X-ay-bs7">
+                                <rect key="frame" x="45" y="271" width="510" height="49"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="49" id="Cr6-XA-g1h"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="19"/>
+                                <state key="normal" title="College">
+                                    <color key="titleColor" red="0.16862745100000001" green="0.18039215689999999" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="collegeButtonPressed:" destination="hL5-l6-CFu" eventType="touchUpInside" id="rus-dJ-lhd"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="0.16862745100000001" green="0.18039215689999999" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="SZS-93-J6O" secondAttribute="trailing" constant="25" id="0Bu-ed-74P"/>
+                            <constraint firstItem="R7X-ay-bs7" firstAttribute="top" secondItem="raR-Vs-W6Y" secondAttribute="bottom" constant="28" id="ESH-n9-0fx"/>
+                            <constraint firstItem="raR-Vs-W6Y" firstAttribute="centerX" secondItem="JTN-rt-BXL" secondAttribute="centerX" id="JUm-DD-zk9"/>
+                            <constraint firstItem="SZS-93-J6O" firstAttribute="leading" secondItem="JTN-rt-BXL" secondAttribute="leadingMargin" constant="25" id="LXJ-uF-tkQ"/>
+                            <constraint firstItem="SZS-93-J6O" firstAttribute="top" secondItem="njP-2K-hdN" secondAttribute="bottom" constant="28" id="NMV-wv-ZzG"/>
+                            <constraint firstItem="R7X-ay-bs7" firstAttribute="leading" secondItem="JTN-rt-BXL" secondAttribute="leadingMargin" constant="25" id="QYl-I0-R6X"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="R7X-ay-bs7" secondAttribute="trailing" constant="25" id="Sgq-ry-cUh"/>
+                            <constraint firstItem="njP-2K-hdN" firstAttribute="top" secondItem="hai-Cb-uCk" secondAttribute="bottom" constant="17" id="TCf-qe-jqW"/>
+                            <constraint firstItem="raR-Vs-W6Y" firstAttribute="top" secondItem="SZS-93-J6O" secondAttribute="bottom" constant="31" id="yFl-gi-rKi"/>
+                            <constraint firstItem="njP-2K-hdN" firstAttribute="centerX" secondItem="JTN-rt-BXL" secondAttribute="centerX" id="yXO-Zj-AO3"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <segue destination="sAZ-rL-ddD" kind="show" identifier="segueToConfirmSchool" id="yLz-lq-PXM"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="69O-ts-je2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="831" y="1184"/>
+        </scene>
+        <!--Confirm School View Controller-->
+        <scene sceneID="mpc-0N-GC6">
+            <objects>
+                <viewController id="sAZ-rL-ddD" customClass="ConfirmSchoolViewController" customModule="Baton" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Js9-sq-e5w"/>
+                        <viewControllerLayoutGuide type="bottom" id="gxU-dW-6SR"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="gEt-FC-OrN">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="66" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="sqa-xz-5Qe">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <color key="backgroundColor" red="0.94117647059999998" green="0.94901960780000005" blue="0.96078431369999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="schoolCell" rowHeight="66" id="Qvr-ro-t76" customClass="SchoolTableViewCell" customModule="Baton" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="92" width="600" height="66"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Qvr-ro-t76" id="vOW-eR-Tdb">
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="65.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Fremont, CA" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Z8-je-33H">
+                                                    <rect key="frame" x="31" y="32" width="220" height="21"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="American" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gsg-4p-k3c">
+                                                    <rect key="frame" x="31" y="8" width="261" height="21"/>
+                                                    <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="18"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <constraints>
+                                                <constraint firstItem="4Z8-je-33H" firstAttribute="leading" secondItem="vOW-eR-Tdb" secondAttribute="leadingMargin" constant="23" id="0Id-3I-KEg"/>
+                                                <constraint firstItem="4Z8-je-33H" firstAttribute="top" secondItem="gsg-4p-k3c" secondAttribute="bottom" constant="3" id="4o4-89-sM8"/>
+                                                <constraint firstAttribute="topMargin" secondItem="gsg-4p-k3c" secondAttribute="top" id="pKF-SS-D4R"/>
+                                                <constraint firstItem="gsg-4p-k3c" firstAttribute="leading" secondItem="vOW-eR-Tdb" secondAttribute="leadingMargin" constant="23" id="qaG-CN-Afi"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <outlet property="locationLabel" destination="4Z8-je-33H" id="6VR-Mx-91V"/>
+                                            <outlet property="nameLabel" destination="gsg-4p-k3c" id="lga-xy-wfm"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.16862745100000001" green="0.18039215689999999" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="gxU-dW-6SR" firstAttribute="top" secondItem="sqa-xz-5Qe" secondAttribute="bottom" id="AW9-3A-pUw"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="sqa-xz-5Qe" secondAttribute="trailing" constant="-20" id="IhI-4A-DGL"/>
+                            <constraint firstItem="sqa-xz-5Qe" firstAttribute="top" secondItem="Js9-sq-e5w" secondAttribute="bottom" id="NgC-vX-8h2"/>
+                            <constraint firstItem="sqa-xz-5Qe" firstAttribute="top" secondItem="Js9-sq-e5w" secondAttribute="bottom" id="kCI-qH-WEQ"/>
+                            <constraint firstItem="sqa-xz-5Qe" firstAttribute="top" secondItem="gEt-FC-OrN" secondAttribute="topMargin" id="uir-3G-QLM"/>
+                            <constraint firstItem="sqa-xz-5Qe" firstAttribute="leading" secondItem="gEt-FC-OrN" secondAttribute="leadingMargin" constant="-20" id="vtd-OG-UUe"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="NgC-vX-8h2"/>
+                                <exclude reference="kCI-qH-WEQ"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="sqa-xz-5Qe" id="cCc-xd-HJy"/>
+                        <segue destination="qKm-wh-QpB" kind="show" identifier="segueToUsernameFromPickSchool" id="Qc9-sz-0sE"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="lcI-H1-fFf" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2672" y="1248"/>
         </scene>
         <!--Sign Up View Controller-->
         <scene sceneID="Io7-PX-LYG">
@@ -649,6 +820,10 @@
         </scene>
     </scenes>
     <resources>
+        <image name="FBlogo" width="512" height="512"/>
         <image name="TwitterLogIn" width="38" height="31"/>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="Qc9-sz-0sE"/>
+    </inferredMetricsTieBreakers>
 </document>
