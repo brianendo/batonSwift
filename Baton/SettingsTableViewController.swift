@@ -95,9 +95,9 @@ class SettingsTableViewController: UITableViewController {
                 self.performSegueWithIdentifier("segueToChangeEmail", sender: self)
             }
             
-            if indexPath.row == 1 {
-                self.performSegueWithIdentifier("segueToChangePassword", sender: self)
-            }
+//            if indexPath.row == 1 {
+//                self.performSegueWithIdentifier("segueToChangePassword", sender: self)
+//            }
         }
         
         if indexPath.section == 2 {

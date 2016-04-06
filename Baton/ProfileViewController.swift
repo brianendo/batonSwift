@@ -87,7 +87,6 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         super.viewDidLoad()
         
         
-        
         if fromOtherVC {
             id = self.creatorId
             self.navigationItem.title = creatorname
@@ -122,13 +121,10 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
 //        self.loadMyQuestions()
         
         self.myAnswerArray.removeAll(keepCapacity: true)
-//        self.loadMyAnswers()
+        self.loadMyAnswers()
         
         self.myLikedAnswerArray.removeAll(keepCapacity: true)
 //        self.loadMyLikedAnswers()
-        
-        self.myFeaturedAnswerArray.removeAll(keepCapacity: true)
-        self.loadMyFeaturedAnswers()
         
         self.refreshControl = UIRefreshControl()
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
@@ -874,9 +870,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         self.myQuestionArray.removeAll(keepCapacity: true)
         self.myAnswerArray.removeAll(keepCapacity: true)
         self.myLikedAnswerArray.removeAll(keepCapacity: true)
-        self.myFeaturedAnswerArray.removeAll(keepCapacity: true)
         
-        self.loadMyFeaturedAnswers()
         self.loadViewInfo()
         self.loadFollowInfo()
         self.loadMyQuestions()
@@ -891,9 +885,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
         self.myQuestionArray.removeAll(keepCapacity: true)
         self.myAnswerArray.removeAll(keepCapacity: true)
         self.myLikedAnswerArray.removeAll(keepCapacity: true)
-        self.myFeaturedAnswerArray.removeAll(keepCapacity: true)
         
-        self.loadMyFeaturedAnswers()
         self.loadViewInfo()
         self.loadFollowInfo()
         self.loadMyQuestions()
@@ -923,11 +915,11 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             return 1
         } else {
             if counter == 0 {
-                if myFeaturedAnswerArray.count == 0 {
+                if myAnswerArray.count == 0 {
                     return 0
                 } else {
                     label.hidden = true
-                    return myFeaturedAnswerArray.count
+                    return myAnswerArray.count
                 }
             } else if counter == 1 {
                 if myQuestionArray.count == 0 {
@@ -936,14 +928,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     label.hidden = true
                     return myQuestionArray.count
                 }
-            } else if counter == 2 {
-                if myAnswerArray.count == 0 {
-                    return 0
-                } else {
-                    label.hidden = true
-                    return myAnswerArray.count
-                }
-            } else {
+            } else  {
                 if myLikedAnswerArray.count == 0 {
                     return 0
                 } else {
@@ -1112,116 +1097,33 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.separatorInset = UIEdgeInsetsZero
             cell.layoutMargins = UIEdgeInsetsZero
             
-            cell.personalButton.addTarget(self, action: "toggleButton:", forControlEvents: .TouchUpInside)
-            cell.pencilButton.addTarget(self, action: "toggleButton:", forControlEvents: .TouchUpInside)
             cell.recorderButton.addTarget(self, action: "toggleButton:", forControlEvents: .TouchUpInside)
+            cell.pencilButton.addTarget(self, action: "toggleButton:", forControlEvents: .TouchUpInside)
             cell.heartButton.addTarget(self, action: "toggleButton:", forControlEvents: .TouchUpInside)
             
-            cell.personalButton.tag = 0
+            cell.recorderButton.tag = 0
             cell.pencilButton.tag = 1
-            cell.recorderButton.tag = 2
-            cell.heartButton.tag = 3
+            cell.heartButton.tag = 2
             
             if counter == 0 {
-                cell.personalButton.selected = true
+                cell.recorderButton.selected = true
                 cell.pencilButton.selected = false
-                cell.recorderButton.selected = false
                 cell.heartButton.selected = false
             } else if counter == 1 {
-                cell.personalButton.selected = false
-                cell.pencilButton.selected = true
                 cell.recorderButton.selected = false
+                cell.pencilButton.selected = true
                 cell.heartButton.selected = false
             } else if counter == 2 {
-                cell.personalButton.selected = false
-                cell.pencilButton.selected = false
-                cell.recorderButton.selected = true
-                cell.heartButton.selected = false
-            } else if counter == 3 {
-                cell.personalButton.selected = false
-                cell.pencilButton.selected = false
                 cell.recorderButton.selected = false
+                cell.pencilButton.selected = false
                 cell.heartButton.selected = true
             }
             
             return cell
 
         }
-        // Sections for the user's featured answers
+        
         if counter == 0 {
-            let cell = tableView.dequeueReusableCellWithIdentifier("likePreviewCell", forIndexPath: indexPath) as! FeaturedPreviewTableViewCell
-            
-            cell.selectionStyle = UITableViewCellSelectionStyle.None
-            
-            cell.preservesSuperviewLayoutMargins = false
-            cell.separatorInset = UIEdgeInsetsZero
-            cell.layoutMargins = UIEdgeInsetsZero
-            
-            let creator = myFeaturedAnswerArray[indexPath.row].creator
-            
-            let date = myFeaturedAnswerArray[indexPath.row].createdAt
-            let timeAgo = timeAgoSinceDate(date, numericDates: true)
-            
-            
-            let views = myFeaturedAnswerArray[indexPath.row].views
-            let abbrevViews = views.addCommas(views)
-            cell.viewCountLabel.text = "\(abbrevViews) views"
-            
-            
-            cell.nameLabel.text = myFeaturedAnswerArray[indexPath.row].creatorname
-            let likeCount = self.myFeaturedAnswerArray[indexPath.row].likeCount
-            let abbrevLikeCount = likeCount.addCommas(likeCount)
-            cell.likeCountLabel.text = "\(abbrevLikeCount) likes"
-            cell.usernameButton.hidden = true
-            
-            let question_content = myFeaturedAnswerArray[indexPath.row].question_content
-            cell.questionContentLabel.text = question_content
-            
-            
-            return cell
-            
-        } else if counter == 1 {
-            let cell: ProfileQuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("profileQuestionCell", forIndexPath: indexPath) as! ProfileQuestionTableViewCell
-            
-            cell.preservesSuperviewLayoutMargins = false
-            cell.separatorInset = UIEdgeInsetsZero
-            cell.layoutMargins = UIEdgeInsetsZero
-            
-            let date = myQuestionArray[indexPath.row].createdAt
-            let timeAgo = timeAgoSinceDate(date, numericDates: true)
-            
-            cell.timeAgoLabel.text = timeAgo
-            
-            cell.questionTextView.text = myQuestionArray[indexPath.row].content
-            cell.questionTextView.userInteractionEnabled = false
-            let answerCount = myQuestionArray[indexPath.row].answercount
-            cell.answercountLabel.text = "\(answerCount)"
-            
-            let likecount = myQuestionArray[indexPath.row].likecount
-            let formattedlikecount = likecount.abbreviateNumberAtThousand()
-            cell.likeCountLabel.text = "\(formattedlikecount)"
-//            cell.likeCountTextView.editable = false
-//            cell.likeCountTextView.selectable = false
-            
-            var channelName = myQuestionArray[indexPath.row].channel_name
-            if channelName == "" {
-                channelName = "Other"
-            } else {
-                cell.channelButton.addTarget(self, action: "goToChannel:", forControlEvents: .TouchUpInside)
-            }
-            
-            cell.channelButton.hidden = false
-            cell.channelButton.setTitle(channelName, forState: .Normal)
-            cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
-            cell.channelButton.layer.cornerRadius = 5
-            cell.channelButton.sizeToFit()
-            cell.channelButton.tag = indexPath.row
-            
-            
-            return cell
-        }
-        // Section for the user's videos
-        else if counter == 2 {
             let cell = tableView.dequeueReusableCellWithIdentifier("likePreviewCell", forIndexPath: indexPath) as! FeaturedPreviewTableViewCell
             
             cell.selectionStyle = UITableViewCellSelectionStyle.None
@@ -1253,8 +1155,45 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             
             return cell
             
+        } else if counter == 1 {
+            let cell: ProfileQuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("profileQuestionCell", forIndexPath: indexPath) as! ProfileQuestionTableViewCell
+            
+            cell.preservesSuperviewLayoutMargins = false
+            cell.separatorInset = UIEdgeInsetsZero
+            cell.layoutMargins = UIEdgeInsetsZero
+            
+            let date = myQuestionArray[indexPath.row].createdAt
+            let timeAgo = timeAgoSinceDate(date, numericDates: true)
+            
+            cell.timeAgoLabel.text = timeAgo
+            
+            cell.questionTextView.text = myQuestionArray[indexPath.row].content
+            cell.questionTextView.userInteractionEnabled = false
+            let answerCount = myQuestionArray[indexPath.row].answercount
+            cell.answercountLabel.text = "\(answerCount)"
+            
+            let likecount = myQuestionArray[indexPath.row].likecount
+            let formattedlikecount = likecount.abbreviateNumberAtThousand()
+            cell.likeCountLabel.text = "\(formattedlikecount)"
+            
+            var channelName = myQuestionArray[indexPath.row].channel_name
+            if channelName == "" {
+                channelName = "Other"
+            } else {
+                cell.channelButton.addTarget(self, action: "goToChannel:", forControlEvents: .TouchUpInside)
+            }
+            
+            cell.channelButton.hidden = false
+            cell.channelButton.setTitle(channelName, forState: .Normal)
+            cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
+            cell.channelButton.layer.cornerRadius = 5
+            cell.channelButton.sizeToFit()
+            cell.channelButton.tag = indexPath.row
+            
+            
+            return cell
         }
-        // Section with the liked videos
+        
         else {
             let cell = tableView.dequeueReusableCellWithIdentifier("likePreviewCell", forIndexPath: indexPath) as! FeaturedPreviewTableViewCell
             
@@ -1299,65 +1238,6 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             if counter == 0 {
                 let cell = cell as! FeaturedPreviewTableViewCell
                 
-                let answerId = myFeaturedAnswerArray[indexPath.row].id
-                
-                if let cachedImageResult = imageCache[answerId] {
-                    print("pull from cache")
-                    cell.previewImageView.image = UIImage(data: cachedImageResult!)
-                } else {
-                    let thumbnail_url = myFeaturedAnswerArray[indexPath.row].thumbnail_url
-                    let newURL = NSURL(string: thumbnail_url)
-                    let data = NSData(contentsOfURL: newURL!)
-                    imageCache[answerId] = data
-                    cell.previewImageView.image  = UIImage(data: data!)
-                }
-                
-                let creator = myFeaturedAnswerArray[indexPath.row].creator
-                
-                
-                cell.profileImageView.image = UIImage(named: "Placeholder")
-                if let cachedImageResult = imageCache[creator] {
-                    print("pull from cache")
-                    cell.profileImageView.image = UIImage(data: cachedImageResult!)
-                } else {
-                    // 3
-                    cell.profileImageView.image = UIImage(named: "Placeholder")
-                    
-                    // 4
-                    let downloadingFilePath1 = (NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("temp-download")
-                    let downloadingFileURL1 = NSURL(fileURLWithPath: downloadingFilePath1 )
-                    let transferManager = AWSS3TransferManager.defaultS3TransferManager()
-                    
-                    let key = "profilePics/" + creator
-                    let readRequest1 : AWSS3TransferManagerDownloadRequest = AWSS3TransferManagerDownloadRequest()
-                    readRequest1.bucket = S3BucketName
-                    readRequest1.key =  key
-                    readRequest1.downloadingFileURL = downloadingFileURL1
-                    
-                    let task = transferManager.download(readRequest1)
-                    task.continueWithBlock { (task) -> AnyObject! in
-                        if task.error != nil {
-                            print("No Profile Pic")
-                        } else {
-                            let image = UIImage(contentsOfFile: downloadingFilePath1)
-                            let imageData = UIImageJPEGRepresentation(image!, 1.0)
-                            imageCache[creator] = imageData
-                            dispatch_async(dispatch_get_main_queue()
-                                , { () -> Void in
-                                    cell.profileImageView.image = UIImage(contentsOfFile: downloadingFilePath1)
-                                    cell.setNeedsLayout()
-                                    
-                            })
-                            print("Fetched image")
-                        }
-                        return nil
-                    }
-                }
-                
-            }
-            else if counter == 2 {
-                let cell = cell as! FeaturedPreviewTableViewCell
-                
                 let answerId = myAnswerArray[indexPath.row].id
                 
                 if let cachedImageResult = imageCache[answerId] {
@@ -1365,10 +1245,29 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.previewImageView.image = UIImage(data: cachedImageResult!)
                 } else {
                     let thumbnail_url = myAnswerArray[indexPath.row].thumbnail_url
-                    let newURL = NSURL(string: thumbnail_url)
-                    let data = NSData(contentsOfURL: newURL!)
-                    imageCache[answerId] = data
-                    cell.previewImageView.image  = UIImage(data: data!)
+//                    let newURL = NSURL(string: thumbnail_url)
+//                    let data = NSData(contentsOfURL: newURL!)
+//                    imageCache[answerId] = data
+//                    cell.previewImageView.image  = UIImage(data: data!)
+                    
+                    let url = NSURL(string: thumbnail_url)
+                    let request: NSURLRequest = NSURLRequest(URL: url!)
+                    let mainQueue = NSOperationQueue.mainQueue()
+                    NSURLConnection.sendAsynchronousRequest(request, queue: mainQueue, completionHandler: { (response, data, error) -> Void in
+                        if error == nil {
+                            // Convert the downloaded data in to a UIImage object
+                            let image = UIImage(data: data!)
+                            // Store the image in to our cache
+                            imageCache[answerId] = data
+                            // Update the cell
+                            dispatch_async(dispatch_get_main_queue(), {
+                                cell.previewImageView.image = image
+                            })
+                        }
+                        else {
+                            print("Error: \(error!.localizedDescription)")
+                        }
+                    })
                 }
                 
                 let creator = myAnswerArray[indexPath.row].creator
@@ -1412,8 +1311,8 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                         return nil
                     }
                 }
-                
-            } else if counter == 3 {
+            }
+            else if counter == 2 {
                 let cell = cell as! FeaturedPreviewTableViewCell
                 
                 let answerId = myLikedAnswerArray[indexPath.row].id
@@ -1423,10 +1322,29 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.previewImageView.image = UIImage(data: cachedImageResult!)
                 } else {
                     let thumbnail_url = myLikedAnswerArray[indexPath.row].thumbnail_url
-                    let newURL = NSURL(string: thumbnail_url)
-                    let data = NSData(contentsOfURL: newURL!)
-                    imageCache[answerId] = data
-                    cell.previewImageView.image  = UIImage(data: data!)
+//                    let newURL = NSURL(string: thumbnail_url)
+//                    let data = NSData(contentsOfURL: newURL!)
+//                    imageCache[answerId] = data
+//                    cell.previewImageView.image  = UIImage(data: data!)
+                    
+                    let url = NSURL(string: thumbnail_url)
+                    let request: NSURLRequest = NSURLRequest(URL: url!)
+                    let mainQueue = NSOperationQueue.mainQueue()
+                    NSURLConnection.sendAsynchronousRequest(request, queue: mainQueue, completionHandler: { (response, data, error) -> Void in
+                        if error == nil {
+                            // Convert the downloaded data in to a UIImage object
+                            let image = UIImage(data: data!)
+                            // Store the image in to our cache
+                            imageCache[answerId] = data
+                            // Update the cell
+                            dispatch_async(dispatch_get_main_queue(), {
+                                cell.previewImageView.image = image
+                            })
+                        }
+                        else {
+                            print("Error: \(error!.localizedDescription)")
+                        }
+                    })
                 }
                 
                 let creator = myLikedAnswerArray[indexPath.row].creator
@@ -1511,26 +1429,16 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             } else {
                 counter = 0
                 Answers.logCustomEventWithName("Profile Tabs Clicked",
-                    customAttributes: ["tab": "Featured"])
-                for cell in tableView.visibleCells {
-                    if cell.isKindOfClass(ProfileRelayTableViewCell) {
-                        let cell = cell as! ProfileRelayTableViewCell
-                        cell.player.pause()
-                    } else if cell.isKindOfClass(ProfileLikedTableViewCell) {
-                        let cell = cell as! ProfileLikedTableViewCell
-                        cell.player.pause()
-                    }
-                }
-                cell.personalButton.selected = true
+                    customAttributes: ["tab": "Relays"])
+                cell.recorderButton.selected = true
                 cell.pencilButton.selected = false
-                cell.recorderButton.selected = false
                 cell.heartButton.selected = false
-                if myFeaturedAnswerArray.count == 0 {
-                    if self.noFeaturedAnswers {
-                        self.label.text = "No featured relays"
+                if myAnswerArray.count == 0 {
+                    if self.noAnswers {
+                        self.label.text = "No relays"
                         self.label.hidden = false
                     } else {
-                       self.loadMyFeaturedAnswers()
+                        self.loadMyAnswers()
                     }
                 } else {
                     self.label.hidden = true
@@ -1544,18 +1452,8 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 counter = 1
                 Answers.logCustomEventWithName("Profile Tabs Clicked",
                     customAttributes: ["tab": "Posts"])
-                for cell in tableView.visibleCells {
-                    if cell.isKindOfClass(ProfileRelayTableViewCell) {
-                        let cell = cell as! ProfileRelayTableViewCell
-                        cell.player.pause()
-                    } else if cell.isKindOfClass(ProfileLikedTableViewCell) {
-                        let cell = cell as! ProfileLikedTableViewCell
-                        cell.player.pause()
-                    }
-                }
-                cell.personalButton.selected = false
-                cell.pencilButton.selected = true
                 cell.recorderButton.selected = false
+                cell.pencilButton.selected = true
                 cell.heartButton.selected = false
                 if myQuestionArray.count == 0 {
                     if self.noQuestions {
@@ -1575,51 +1473,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             } else {
                 counter = 2
                 Answers.logCustomEventWithName("Profile Tabs Clicked",
-                    customAttributes: ["tab": "Relays"])
-                for cell in tableView.visibleCells {
-                    if cell.isKindOfClass(ProfileRelayTableViewCell) {
-                        let cell = cell as! ProfileRelayTableViewCell
-                        cell.player.pause()
-                    } else if cell.isKindOfClass(ProfileLikedTableViewCell) {
-                        let cell = cell as! ProfileLikedTableViewCell
-                        cell.player.pause()
-                    }
-                }
-                cell.personalButton.selected = false
-                cell.pencilButton.selected = false
-                cell.recorderButton.selected = true
-                cell.heartButton.selected = false
-                if myAnswerArray.count == 0 {
-                    if self.noAnswers {
-                        self.label.text = "No relays"
-                        self.label.hidden = false
-                    } else {
-                        self.loadMyAnswers()
-                    }
-                } else {
-                    self.label.hidden = true
-                }
-                self.tableView.reloadData()
-            }
-        } else if tag == 3 {
-            if counter == 3 {
-                
-            } else {
-                counter = 3
-                Answers.logCustomEventWithName("Profile Tabs Clicked",
                     customAttributes: ["tab": "Likes"])
-                for cell in tableView.visibleCells {
-                    if cell.isKindOfClass(ProfileRelayTableViewCell) {
-                        let cell = cell as! ProfileRelayTableViewCell
-                        cell.player.pause()
-                    } else if cell.isKindOfClass(ProfileLikedTableViewCell) {
-                        let cell = cell as! ProfileLikedTableViewCell
-                        cell.player.pause()
-                    }
-                }
-                cell.personalButton.selected = false
-                cell.pencilButton.selected = false
                 cell.recorderButton.selected = false
+                cell.pencilButton.selected = false
                 cell.heartButton.selected = true
                 if myLikedAnswerArray.count == 0 {
                     if self.noLikedAnswers {
@@ -1730,9 +1586,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
             if counter == 0 {
                 let indexPath = self.questionIndex
-                let content = self.myFeaturedAnswerArray[indexPath].question_content
-                let id = self.myFeaturedAnswerArray[indexPath].question_id
-                let featuredQuestion = self.myFeaturedAnswerArray[indexPath].featuredQuestion
+                let content = self.myAnswerArray[indexPath].question_content
+                let id = self.myAnswerArray[indexPath].question_id
+                let featuredQuestion = self.myAnswerArray[indexPath].featuredQuestion
                 if featuredQuestion {
                     answerVC.fromFeatured = true
                 }
@@ -1750,18 +1606,7 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
                 answerVC.creatorname = creatorname
                 answerVC.fromProfile = true
                 answerVC.question = question
-            } else if counter == 2 {
-                let indexPath = self.questionIndex
-                let content = self.myAnswerArray[indexPath].question_content
-                let id = self.myAnswerArray[indexPath].question_id
-                let featuredQuestion = self.myAnswerArray[indexPath].featuredQuestion
-                if featuredQuestion {
-                    answerVC.fromFeatured = true
-                }
-                answerVC.content = content
-                answerVC.id = id
-                answerVC.fromFollowing = true
-            } else if counter == 3 {
+            }  else if counter == 2 {
                 let indexPath = self.questionIndex
                 let content = self.myLikedAnswerArray[indexPath].question_content
                 let id = self.myLikedAnswerArray[indexPath].question_id
@@ -1815,12 +1660,9 @@ class ProfileViewController: UIViewController, UITableViewDataSource, UITableVie
             videoPageVC.transitioningDelegate = self
             videoPageVC.interactor = interactor
             if counter == 0 {
-                videoPageVC.answers = myFeaturedAnswerArray
-            }
-            if counter == 2 {
                 videoPageVC.answers = myAnswerArray
             }
-            if counter == 3 {
+            if counter == 2 {
                 videoPageVC.answers = myLikedAnswerArray
             }
             videoPageVC.indexPath = self.selectedIndexPath

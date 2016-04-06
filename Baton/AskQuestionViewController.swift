@@ -248,16 +248,79 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
             }
 
             
-        } else {
-            if fromSpecificChannel {
-                self.sendButton.enabled = false
-                let text = self.contentTextView.text
-                
-                // Check if JWT is valid before posting question
-                var token = keychain.get("JWT")
-                
-                do {
-                    if token == nil {
+        }
+        else if fromSpecificChannel {
+            let text = self.contentTextView.text
+            
+            // Check if JWT is valid before posting question
+            var token = keychain.get("JWT")
+            
+            do {
+                if token == nil {
+                    var refresh_token = keychain.get("refresh_token")
+                    
+                    if refresh_token == nil {
+                        refresh_token = ""
+                    }
+                    
+                    let url = globalurl + "api/changetoken/"
+                    let parameters = [
+                        "refresh_token": refresh_token! as String
+                    ]
+                    Alamofire.request(.POST, url, parameters: parameters)
+                        .responseJSON { response in
+                            var value = response.result.value
+                            
+                            if value == nil {
+                                value = []
+                            } else {
+                                let json = JSON(value!)
+                                let newtoken = json["token"].string
+                                self.keychain.set(newtoken!, forKey: "JWT")
+                                token = newtoken
+                                
+                                let headers = [
+                                    "Authorization": "\(token!)"
+                                ]
+                                let url = globalurl + "api/questions"
+                                let parameters = [
+                                    "content": text,
+                                    "creatorname": myUsername,
+                                    "creator": userid,
+                                    "answercount": 0,
+                                    "likes": 0,
+                                    "channel_id": self.channelId,
+                                    "channel_name": self.channelName,
+                                    "privateChannel": true
+                                ]
+                                Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                                    .responseJSON { response in
+                                        print(response.response?.statusCode)
+                                        
+                                        var value = response.result.value
+                                        if value == nil {
+                                            value = []
+                                        }
+                                        let json = JSON(value!)
+                                        print("JSON: \(json)")
+                                        let id = json["_id"].string
+                                        print(id)
+                                        self.questionId = id!
+                                        
+                                        
+                                        Answers.logCustomEventWithName("Question submitted",
+                                            customAttributes: ["channel": self.channelName, "username": myUsername])
+                                        // Update feed with new question
+                                        NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                        self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
+                                }
+                            }
+                            
+                            
+                    }
+                } else {
+                    let jwt = try decode(token!)
+                    if jwt.expired == true {
                         var refresh_token = keychain.get("refresh_token")
                         
                         if refresh_token == nil {
@@ -291,7 +354,8 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
                                         "answercount": 0,
                                         "likes": 0,
                                         "channel_id": self.channelId,
-                                        "channel_name": self.channelName
+                                        "channel_name": self.channelName,
+                                        "privateChannel": true
                                     ]
                                     Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
                                         .responseJSON { response in
@@ -307,12 +371,10 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
                                             print(id)
                                             self.questionId = id!
                                             
-                                            
                                             Answers.logCustomEventWithName("Question submitted",
                                                 customAttributes: ["channel": self.channelName, "username": myUsername])
                                             // Update feed with new question
                                             NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-//                                            self.navigationController?.popViewControllerAnimated(true)
                                             self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
                                     }
                                 }
@@ -320,117 +382,410 @@ class AskQuestionViewController: UIViewController, UITextViewDelegate {
                                 
                         }
                     } else {
-                        let jwt = try decode(token!)
-                        if jwt.expired == true {
-                            var refresh_token = keychain.get("refresh_token")
-                            
-                            if refresh_token == nil {
-                                refresh_token = ""
-                            }
-                            
-                            let url = globalurl + "api/changetoken/"
-                            let parameters = [
-                                "refresh_token": refresh_token! as String
-                            ]
-                            Alamofire.request(.POST, url, parameters: parameters)
-                                .responseJSON { response in
-                                    var value = response.result.value
-                                    
-                                    if value == nil {
-                                        value = []
-                                    } else {
-                                        let json = JSON(value!)
-                                        let newtoken = json["token"].string
-                                        self.keychain.set(newtoken!, forKey: "JWT")
-                                        token = newtoken
-                                        
-                                        let headers = [
-                                            "Authorization": "\(token!)"
-                                        ]
-                                        let url = globalurl + "api/questions"
-                                        let parameters = [
-                                            "content": text,
-                                            "creatorname": myUsername,
-                                            "creator": userid,
-                                            "answercount": 0,
-                                            "likes": 0,
-                                            "channel_id": self.channelId,
-                                            "channel_name": self.channelName
-                                        ]
-                                        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
-                                            .responseJSON { response in
-                                                print(response.response?.statusCode)
-                                                
-                                                var value = response.result.value
-                                                if value == nil {
-                                                    value = []
-                                                }
-                                                let json = JSON(value!)
-                                                print("JSON: \(json)")
-                                                let id = json["_id"].string
-                                                print(id)
-                                                self.questionId = id!
-                                                
-                                                Answers.logCustomEventWithName("Question submitted",
-                                                    customAttributes: ["channel": self.channelName, "username": myUsername])
-                                                // Update feed with new question
-                                                NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-//                                                self.navigationController?.popViewControllerAnimated(true)
-                                                self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
-                                        }
-                                    }
-                                    
-                                    
-                            }
-                        } else {
-                            let headers = [
-                                "Authorization": "\(token!)"
-                            ]
-                            
-                            let url = globalurl + "api/questions"
-                            let parameters = [
-                                "content": text,
-                                "creatorname": myUsername,
-                                "creator": userid,
-                                "answercount": 0,
-                                "likes": 0,
-                                "channel_id": self.channelId,
-                                "channel_name": self.channelName
-                            ]
-                            Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
-                                .responseJSON { response in
-                                    print(response.request)
-                                    print(response.response)
-                                    print(response.result)
-                                    print(response.response?.statusCode)
-                                    
-                                    var value = response.result.value
-                                    if value == nil {
-                                        value = []
-                                    }
-                                    let json = JSON(value!)
-                                    print("JSON: \(json)")
-                                    let id = json["_id"].string
-                                    print(id)
-                                    self.questionId = id!
-                                    
-                                    Answers.logCustomEventWithName("Question submitted",
-                                        customAttributes: ["channel": self.channelName, "username": myUsername])
-                                    NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
-//                                    self.navigationController?.popViewControllerAnimated(true)
-                                    self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
-                                    
-                            }
-                        }
+                        let headers = [
+                            "Authorization": "\(token!)"
+                        ]
                         
+                        let url = globalurl + "api/questions"
+                        let parameters = [
+                            "content": text,
+                            "creatorname": myUsername,
+                            "creator": userid,
+                            "answercount": 0,
+                            "likes": 0,
+                            "channel_id": schoolID,
+                            "channel_name": mySchoolName,
+                            "privateChannel": true
+                        ]
+                        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                            .responseJSON { response in
+                                print(response.request)
+                                print(response.response)
+                                print(response.result)
+                                print(response.response?.statusCode)
+                                
+                                var value = response.result.value
+                                if value == nil {
+                                    value = []
+                                }
+                                let json = JSON(value!)
+                                print("JSON: \(json)")
+                                let id = json["_id"].string
+                                print(id)
+                                self.questionId = id!
+                                
+                                Answers.logCustomEventWithName("Question submitted",
+                                    customAttributes: ["channel": self.channelName, "username": myUsername])
+                                NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
+                                
+                        }
                     }
-                } catch {
-                    print("Failed to decode JWT: \(error)")
+                    
                 }
-            } else {
-                self.performSegueWithIdentifier("segueToPickChannel", sender: self)
+            } catch {
+                print("Failed to decode JWT: \(error)")
             }
         }
+        else {
+            
+            let text = self.contentTextView.text
+            
+            // Check if JWT is valid before posting question
+            var token = keychain.get("JWT")
+            
+            do {
+                if token == nil {
+                    var refresh_token = keychain.get("refresh_token")
+                    
+                    if refresh_token == nil {
+                        refresh_token = ""
+                    }
+                    
+                    let url = globalurl + "api/changetoken/"
+                    let parameters = [
+                        "refresh_token": refresh_token! as String
+                    ]
+                    Alamofire.request(.POST, url, parameters: parameters)
+                        .responseJSON { response in
+                            var value = response.result.value
+                            
+                            if value == nil {
+                                value = []
+                            } else {
+                                let json = JSON(value!)
+                                let newtoken = json["token"].string
+                                self.keychain.set(newtoken!, forKey: "JWT")
+                                token = newtoken
+                                
+                                let headers = [
+                                    "Authorization": "\(token!)"
+                                ]
+                                let url = globalurl + "api/questions"
+                                let parameters = [
+                                    "content": text,
+                                    "creatorname": myUsername,
+                                    "creator": userid,
+                                    "answercount": 0,
+                                    "likes": 0,
+                                    "channel_id": schoolID,
+                                    "channel_name": mySchoolName,
+                                    "privateChannel": true
+                                ]
+                                Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                                    .responseJSON { response in
+                                        print(response.response?.statusCode)
+                                        
+                                        var value = response.result.value
+                                        if value == nil {
+                                            value = []
+                                        }
+                                        let json = JSON(value!)
+                                        print("JSON: \(json)")
+                                        let id = json["_id"].string
+                                        print(id)
+                                        self.questionId = id!
+                                        
+                                        
+                                        Answers.logCustomEventWithName("Question submitted",
+                                            customAttributes: ["channel": self.channelName, "username": myUsername])
+                                        // Update feed with new question
+                                        NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                        self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
+                                }
+                            }
+                            
+                            
+                    }
+                } else {
+                    let jwt = try decode(token!)
+                    if jwt.expired == true {
+                        var refresh_token = keychain.get("refresh_token")
+                        
+                        if refresh_token == nil {
+                            refresh_token = ""
+                        }
+                        
+                        let url = globalurl + "api/changetoken/"
+                        let parameters = [
+                            "refresh_token": refresh_token! as String
+                        ]
+                        Alamofire.request(.POST, url, parameters: parameters)
+                            .responseJSON { response in
+                                var value = response.result.value
+                                
+                                if value == nil {
+                                    value = []
+                                } else {
+                                    let json = JSON(value!)
+                                    let newtoken = json["token"].string
+                                    self.keychain.set(newtoken!, forKey: "JWT")
+                                    token = newtoken
+                                    
+                                    let headers = [
+                                        "Authorization": "\(token!)"
+                                    ]
+                                    let url = globalurl + "api/questions"
+                                    let parameters = [
+                                        "content": text,
+                                        "creatorname": myUsername,
+                                        "creator": userid,
+                                        "answercount": 0,
+                                        "likes": 0,
+                                        "channel_id": schoolID,
+                                        "channel_name": mySchoolName,
+                                        "privateChannel": true
+                                    ]
+                                    Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                                        .responseJSON { response in
+                                            print(response.response?.statusCode)
+                                            
+                                            var value = response.result.value
+                                            if value == nil {
+                                                value = []
+                                            }
+                                            let json = JSON(value!)
+                                            print("JSON: \(json)")
+                                            let id = json["_id"].string
+                                            print(id)
+                                            self.questionId = id!
+                                            
+                                            Answers.logCustomEventWithName("Question submitted",
+                                                customAttributes: ["channel": self.channelName, "username": myUsername])
+                                            // Update feed with new question
+                                            NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                            self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
+                                    }
+                                }
+                                
+                                
+                        }
+                    } else {
+                        let headers = [
+                            "Authorization": "\(token!)"
+                        ]
+                        
+                        let url = globalurl + "api/questions"
+                        let parameters = [
+                            "content": text,
+                            "creatorname": myUsername,
+                            "creator": userid,
+                            "answercount": 0,
+                            "likes": 0,
+                            "channel_id": schoolID,
+                            "channel_name": mySchoolName,
+                            "privateChannel": true
+                        ]
+                        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+                            .responseJSON { response in
+                                print(response.request)
+                                print(response.response)
+                                print(response.result)
+                                print(response.response?.statusCode)
+                                
+                                var value = response.result.value
+                                if value == nil {
+                                    value = []
+                                }
+                                let json = JSON(value!)
+                                print("JSON: \(json)")
+                                let id = json["_id"].string
+                                print(id)
+                                self.questionId = id!
+                                
+                                Answers.logCustomEventWithName("Question submitted",
+                                    customAttributes: ["channel": self.channelName, "username": myUsername])
+                                NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+                                self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
+                                
+                        }
+                    }
+                    
+                }
+            } catch {
+                print("Failed to decode JWT: \(error)")
+            }
+        }
+//        else {
+//            if fromSpecificChannel {
+//                self.sendButton.enabled = false
+//                let text = self.contentTextView.text
+//
+//                // Check if JWT is valid before posting question
+//                var token = keychain.get("JWT")
+//
+//                do {
+//                    if token == nil {
+//                        var refresh_token = keychain.get("refresh_token")
+//
+//                        if refresh_token == nil {
+//                            refresh_token = ""
+//                        }
+//
+//                        let url = globalurl + "api/changetoken/"
+//                        let parameters = [
+//                            "refresh_token": refresh_token! as String
+//                        ]
+//                        Alamofire.request(.POST, url, parameters: parameters)
+//                            .responseJSON { response in
+//                                var value = response.result.value
+//                                
+//                                if value == nil {
+//                                    value = []
+//                                } else {
+//                                    let json = JSON(value!)
+//                                    let newtoken = json["token"].string
+//                                    self.keychain.set(newtoken!, forKey: "JWT")
+//                                    token = newtoken
+//                                    
+//                                    let headers = [
+//                                        "Authorization": "\(token!)"
+//                                    ]
+//                                    let url = globalurl + "api/questions"
+//                                    let parameters = [
+//                                        "content": text,
+//                                        "creatorname": myUsername,
+//                                        "creator": userid,
+//                                        "answercount": 0,
+//                                        "likes": 0,
+//                                        "channel_id": self.channelId,
+//                                        "channel_name": self.channelName
+//                                    ]
+//                                    Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+//                                        .responseJSON { response in
+//                                            print(response.response?.statusCode)
+//                                            
+//                                            var value = response.result.value
+//                                            if value == nil {
+//                                                value = []
+//                                            }
+//                                            let json = JSON(value!)
+//                                            print("JSON: \(json)")
+//                                            let id = json["_id"].string
+//                                            print(id)
+//                                            self.questionId = id!
+//                                            
+//                                            
+//                                            Answers.logCustomEventWithName("Question submitted",
+//                                                customAttributes: ["channel": self.channelName, "username": myUsername])
+//                                            // Update feed with new question
+//                                            NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+//                                            self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
+//                                    }
+//                                }
+//                                
+//                                
+//                        }
+//                    } else {
+//                        let jwt = try decode(token!)
+//                        if jwt.expired == true {
+//                            var refresh_token = keychain.get("refresh_token")
+//                            
+//                            if refresh_token == nil {
+//                                refresh_token = ""
+//                            }
+//                            
+//                            let url = globalurl + "api/changetoken/"
+//                            let parameters = [
+//                                "refresh_token": refresh_token! as String
+//                            ]
+//                            Alamofire.request(.POST, url, parameters: parameters)
+//                                .responseJSON { response in
+//                                    var value = response.result.value
+//                                    
+//                                    if value == nil {
+//                                        value = []
+//                                    } else {
+//                                        let json = JSON(value!)
+//                                        let newtoken = json["token"].string
+//                                        self.keychain.set(newtoken!, forKey: "JWT")
+//                                        token = newtoken
+//                                        
+//                                        let headers = [
+//                                            "Authorization": "\(token!)"
+//                                        ]
+//                                        let url = globalurl + "api/questions"
+//                                        let parameters = [
+//                                            "content": text,
+//                                            "creatorname": myUsername,
+//                                            "creator": userid,
+//                                            "answercount": 0,
+//                                            "likes": 0,
+//                                            "channel_id": self.channelId,
+//                                            "channel_name": self.channelName
+//                                        ]
+//                                        Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+//                                            .responseJSON { response in
+//                                                print(response.response?.statusCode)
+//                                                
+//                                                var value = response.result.value
+//                                                if value == nil {
+//                                                    value = []
+//                                                }
+//                                                let json = JSON(value!)
+//                                                print("JSON: \(json)")
+//                                                let id = json["_id"].string
+//                                                print(id)
+//                                                self.questionId = id!
+//                                                
+//                                                Answers.logCustomEventWithName("Question submitted",
+//                                                    customAttributes: ["channel": self.channelName, "username": myUsername])
+//                                                // Update feed with new question
+//                                                NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+//                                                self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
+//                                        }
+//                                    }
+//                                    
+//                                    
+//                            }
+//                        } else {
+//                            let headers = [
+//                                "Authorization": "\(token!)"
+//                            ]
+//                            
+//                            let url = globalurl + "api/questions"
+//                            let parameters = [
+//                                "content": text,
+//                                "creatorname": myUsername,
+//                                "creator": userid,
+//                                "answercount": 0,
+//                                "likes": 0,
+//                                "channel_id": self.channelId,
+//                                "channel_name": self.channelName
+//                            ]
+//                            Alamofire.request(.POST, url, parameters: parameters as? [String : AnyObject], headers: headers)
+//                                .responseJSON { response in
+//                                    print(response.request)
+//                                    print(response.response)
+//                                    print(response.result)
+//                                    print(response.response?.statusCode)
+//                                    
+//                                    var value = response.result.value
+//                                    if value == nil {
+//                                        value = []
+//                                    }
+//                                    let json = JSON(value!)
+//                                    print("JSON: \(json)")
+//                                    let id = json["_id"].string
+//                                    print(id)
+//                                    self.questionId = id!
+//                                    
+//                                    Answers.logCustomEventWithName("Question submitted",
+//                                        customAttributes: ["channel": self.channelName, "username": myUsername])
+//                                    NSNotificationCenter.defaultCenter().postNotificationName("askedQuestion", object: self)
+//                                    self.performSegueWithIdentifier("segueFromAskQuestionToAddTake", sender: self)
+//                                    
+//                            }
+//                        }
+//                        
+//                    }
+//                } catch {
+//                    print("Failed to decode JWT: \(error)")
+//                }
+//            } else {
+//                self.performSegueWithIdentifier("segueToPickChannel", sender: self)
+//            }
+//        }
         
         
     }

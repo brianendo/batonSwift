@@ -42,8 +42,11 @@ class StartViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         // Format text and image on Twitter Button
-        twitterLoginButton.titleEdgeInsets = UIEdgeInsetsMake(0, -twitterLoginButton.imageView!.frame.size.width, 0, twitterLoginButton.imageView!.frame.size.width);
-        twitterLoginButton.imageEdgeInsets = UIEdgeInsetsMake(0, twitterLoginButton.titleLabel!.frame.size.width, 0, -twitterLoginButton.titleLabel!.frame.size.width)
+//        twitterLoginButton.titleEdgeInsets = UIEdgeInsetsMake(0, -twitterLoginButton.imageView!.frame.size.width, 0, twitterLoginButton.imageView!.frame.size.width);
+//        twitterLoginButton.imageEdgeInsets = UIEdgeInsetsMake(0, twitterLoginButton.titleLabel!.frame.size.width, 0, -twitterLoginButton.titleLabel!.frame.size.width)
+        
+        facebookLoginButton.titleEdgeInsets = UIEdgeInsetsMake(0, -facebookLoginButton.imageView!.frame.size.width, 0, facebookLoginButton.imageView!.frame.size.width)
+        facebookLoginButton.imageEdgeInsets = UIEdgeInsetsMake(0, facebookLoginButton.titleLabel!.frame.size.width, 0, -facebookLoginButton.titleLabel!.frame.size.width)
     }
 
     override func didReceiveMemoryWarning() {
@@ -282,7 +285,13 @@ class StartViewController: UIViewController {
                                 let token = json["token"].string
                                 let refresh_token = json["data"]["token"].string
                                 var schoolId = json["data"]["currentSchoolId"].string
+                                var schoolName = json["data"]["currentSchoolName"].string
+                                var shortenedName = json["data"]["currentSchoolShortenedName"].string
                                 print(schoolId)
+                                
+                                if shortenedName == nil {
+                                    shortenedName = schoolName
+                                }
                                 
                                 if schoolId == nil {
                                     schoolId = ""
@@ -316,6 +325,8 @@ class StartViewController: UIViewController {
                                 self.keychain.set("1", forKey: "ISLOGGEDIN")
                                 self.keychain.set(token!, forKey: "JWT")
                                 self.keychain.set(schoolId!, forKey: "schoolID")
+                                self.keychain.set(schoolName!, forKey: "mySchoolName")
+                                self.keychain.set(shortenedName!, forKey: "shortenedName")
                                 
                                 
                                 // Go to main storyboard

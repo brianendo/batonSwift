@@ -41,19 +41,19 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
         tableView.delegate = self
         
         self.navigationItem.title = "Channels"
-        let backButton = UIButton(type: UIButtonType.Custom)
-        backButton.addTarget(self, action: "popToRoot:", forControlEvents: UIControlEvents.TouchUpInside)
-        backButton.setTitle("Back ", forState: UIControlState.Normal)
-        backButton.setImage(UIImage(named: "backButton"), forState: .Normal)
-        backButton.setTitleColor(UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0), forState: .Normal)
-        backButton.sizeToFit()
-        backButton.transform = CGAffineTransformMakeScale(-1.0, 1.0)
-        backButton.titleLabel!.transform = CGAffineTransformMakeScale(-1.0, 1.0)
-        let backButtonItem = UIBarButtonItem(customView: backButton)
-        
-        self.navigationItem.rightBarButtonItem = backButtonItem
-        
-        self.navigationItem.hidesBackButton = true
+//        let backButton = UIButton(type: UIButtonType.Custom)
+//        backButton.addTarget(self, action: "popToRoot:", forControlEvents: UIControlEvents.TouchUpInside)
+//        backButton.setTitle("Back ", forState: UIControlState.Normal)
+//        backButton.setImage(UIImage(named: "backButton"), forState: .Normal)
+//        backButton.setTitleColor(UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0), forState: .Normal)
+//        backButton.sizeToFit()
+//        backButton.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+//        backButton.titleLabel!.transform = CGAffineTransformMakeScale(-1.0, 1.0)
+//        let backButtonItem = UIBarButtonItem(customView: backButton)
+//        
+//        self.navigationItem.rightBarButtonItem = backButtonItem
+//        
+//        self.navigationItem.hidesBackButton = true
         
         self.tableView.dataSource = self
         self.tableView.delegate = self
@@ -61,8 +61,8 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
         self.tableView.scrollsToTop = true
         
         
-        self.loadChannels()
-        
+//        self.loadChannels()
+        self.loadActiveChannels()
     }
     
     override func didReceiveMemoryWarning() {
@@ -72,6 +72,49 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
     
     
     // MARK: - loadFunctions
+    func loadActiveChannels() {
+        let newUrl = globalurl + "admin/activechannels/"
+        
+        Alamofire.request(.GET, newUrl, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                
+                let json = JSON(value!)
+                //                print("JSON: \(json)")
+                if json == [] {
+                    print("No channels")
+                }
+                for (_,subJson):(String, JSON) in json {
+                    //Do something you want
+                    
+                    let id = subJson["_id"].string
+                    let name = subJson["name"].string
+                    
+                    if name == nil  {
+                        
+                    } else {
+                        self.channelIdArray.append(id!)
+                        self.channelNameArray.append(name!)
+                        //                        if self.myChannelIdArray.contains(id!) {
+                        //
+                        //                        } else {
+                        //                            self.channelIdArray.append(id!)
+                        //                            self.channelNameArray.append(name!)
+                        //
+                        //                        }
+                    }
+                    
+                    
+                    
+                }
+                self.tableView.reloadData()
+                
+        }
+    }
     
     func loadChannels() {
         let newUrl = globalurl + "api/channels/"
@@ -240,7 +283,7 @@ class ChannelViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.separatorInset = UIEdgeInsetsZero
             cell.layoutMargins = UIEdgeInsetsZero
             
-            cell.titleLabel.text = "All Posts"
+            cell.titleLabel.text = "Your School"
             cell.toggleChannelButton.hidden = true
             
             return cell

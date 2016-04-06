@@ -30,6 +30,8 @@
 		8E146C7D1C6BE54A00468A1C /* Onboarding2ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C7C1C6BE54900468A1C /* Onboarding2ViewController.swift */; };
 		8E146C8E1C6C043500468A1C /* Onboarding3ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C8D1C6C043500468A1C /* Onboarding3ViewController.swift */; };
 		8E146C901C6C0C2200468A1C /* PushViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E146C8F1C6C0C2100468A1C /* PushViewController.swift */; };
+		8E1977951CB44E58005B05FF /* LockedSchoolViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1977941CB44E58005B05FF /* LockedSchoolViewController.swift */; };
+		8E1977971CB452A2005B05FF /* SuggestSchoolViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E1977961CB452A2005B05FF /* SuggestSchoolViewController.swift */; };
 		8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */; };
 		8E4EB6C21C929245005B078D /* FeaturedPreviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4EB6C11C929245005B078D /* FeaturedPreviewTableViewCell.swift */; };
 		8E4EB6C41C92A04F005B078D /* ProfileLikeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4EB6C31C92A04F005B078D /* ProfileLikeTableViewCell.swift */; };
@@ -126,6 +128,8 @@
 		8E146C7C1C6BE54900468A1C /* Onboarding2ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Onboarding2ViewController.swift; sourceTree = "<group>"; };
 		8E146C8D1C6C043500468A1C /* Onboarding3ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Onboarding3ViewController.swift; sourceTree = "<group>"; };
 		8E146C8F1C6C0C2100468A1C /* PushViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushViewController.swift; sourceTree = "<group>"; };
+		8E1977941CB44E58005B05FF /* LockedSchoolViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LockedSchoolViewController.swift; sourceTree = "<group>"; };
+		8E1977961CB452A2005B05FF /* SuggestSchoolViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuggestSchoolViewController.swift; sourceTree = "<group>"; };
 		8E26344B1C0C3D5D002A65D0 /* TakeVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TakeVideoViewController.swift; sourceTree = "<group>"; };
 		8E4EB6C11C929245005B078D /* FeaturedPreviewTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedPreviewTableViewCell.swift; sourceTree = "<group>"; };
 		8E4EB6C31C92A04F005B078D /* ProfileLikeTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileLikeTableViewCell.swift; sourceTree = "<group>"; };
@@ -409,6 +413,8 @@
 				8EE04B041BE2A77D0040D5A5 /* StartViewController.swift */,
 				8EAA26581CAC6FAC00FE5B86 /* PickSchoolTypeViewController.swift */,
 				8EAA26561CAB5F9E00FE5B86 /* ConfirmSchoolViewController.swift */,
+				8E1977941CB44E58005B05FF /* LockedSchoolViewController.swift */,
+				8E1977961CB452A2005B05FF /* SuggestSchoolViewController.swift */,
 				8EAA265C1CAD9B2200FE5B86 /* CollegeEmailViewController.swift */,
 				8EAA265A1CAC9EF000FE5B86 /* SchoolTableViewCell.swift */,
 				8E146C661C62900F00468A1C /* TwitterSignupViewController.swift */,
@@ -650,6 +656,7 @@
 			files = (
 				8E146C8E1C6C043500468A1C /* Onboarding3ViewController.swift in Sources */,
 				8EB945751C580F6000FA01E2 /* ProfileButtonsTableViewCell.swift in Sources */,
+				8E1977951CB44E58005B05FF /* LockedSchoolViewController.swift in Sources */,
 				8E0F19891C72596900F7BC35 /* ChannelTitleTableViewCell.swift in Sources */,
 				8EE04B051BE2A77D0040D5A5 /* StartViewController.swift in Sources */,
 				8EE04B1C1BE862160040D5A5 /* Question.swift in Sources */,
@@ -684,6 +691,7 @@
 				8EE04B071BE2A7A30040D5A5 /* LogInViewController.swift in Sources */,
 				8E4EB6C41C92A04F005B078D /* ProfileLikeTableViewCell.swift in Sources */,
 				8E26344C1C0C3D5D002A65D0 /* TakeVideoViewController.swift in Sources */,
+				8E1977971CB452A2005B05FF /* SuggestSchoolViewController.swift in Sources */,
 				8EB767741C924CA700FFD127 /* DismissAnimator.swift in Sources */,
 				8EB9456B1C498B3000FA01E2 /* FollowingViewController.swift in Sources */,
 				8EE04B261BE974630040D5A5 /* ProfileQuestionTableViewCell.swift in Sources */,

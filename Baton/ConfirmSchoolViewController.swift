@@ -9,14 +9,18 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import SCLAlertView
 
 class ConfirmSchoolViewController: UIViewController, UISearchBarDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var bottomLayoutConstraint: NSLayoutConstraint!
     
     var searchController : UISearchController!
     var filteredSchoolNames = [String]()
     var filteredSchoolIds = [String]()
+    var filteredLocations = [String]()
+    var filteredLocked = [Bool]()
     var firstName = ""
     var lastName = ""
     var profileImageUrl = ""
@@ -24,14 +28,42 @@ class ConfirmSchoolViewController: UIViewController, UISearchBarDelegate, UISear
     var email = ""
     var schoolName = ""
     var schoolId = ""
+    var type = ""
+    
+    // MARK: - Keyboard
+    func registerForKeyboardNotifications ()-> Void   {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SuggestSchoolViewController.keyboardWillShow(_:)), name: UIKeyboardDidShowNotification, object: nil)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SuggestSchoolViewController.keyboardWillHide(_:)), name: UIKeyboardWillHideNotification, object: nil)
+    }
+    
+    func deregisterFromKeyboardNotifications () -> Void {
+        let center:  NSNotificationCenter = NSNotificationCenter.defaultCenter()
+        center.removeObserver(self, name: UIKeyboardDidHideNotification, object: nil)
+        center.removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+    }
+    
+    func keyboardWillShow(notification: NSNotification) {
+        var info = notification.userInfo!
+        let keyboardFrame: CGRect = (info[UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
+        self.bottomLayoutConstraint.constant = keyboardFrame.size.height
+    }
+    
+    func keyboardWillHide(notification: NSNotification) {
+        self.bottomLayoutConstraint.constant = 0
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        self.registerForKeyboardNotifications()
+    }
     
     override func viewWillDisappear(animated: Bool) {
-        
+        self.deregisterFromKeyboardNotifications()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title:"Back", style:.Plain, target:nil, action:nil)
         tableView.delegate = self
         tableView.dataSource = self
         
@@ -53,11 +85,117 @@ class ConfirmSchoolViewController: UIViewController, UISearchBarDelegate, UISear
         tableView.tableHeaderView = self.searchController.searchBar
         
         tableView.tableFooterView = UIView()
+        
+        if type == "high school" {
+            self.loadHighSchools()
+        } else if type == "college" {
+            self.loadColleges()
+        }
+        
+//        self.loadHighSchools()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func loadHighSchools() {
+        let url = globalurl + "api/recentHighSchools"
+        
+        Alamofire.request(.GET, url, parameters: nil, headers: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                self.filteredSchoolNames.removeAll(keepCapacity: true)
+                self.filteredSchoolIds.removeAll(keepCapacity: true)
+                self.filteredLocations.removeAll(keepCapacity: true)
+                self.filteredLocked.removeAll(keepCapacity: true)
+                print(value)
+                
+                if value == nil {
+                    value = []
+                    self.tableView.reloadData()
+                } else {
+                    let json = JSON(value!)
+                    for (_,subJson):(String, JSON) in json {
+                        let id = subJson["_id"].string
+                        let name = subJson["name"].string
+                        var location = subJson["location"].string
+                        if location == nil {
+                            location = ""
+                        }
+                        var locked = subJson["locked"].bool
+                        if locked == nil {
+                            locked = true
+                        }
+                        print(name)
+                        
+                        if self.filteredSchoolIds.contains(id!) {
+                            
+                        } else {
+                            self.filteredSchoolNames.append(name!)
+                            self.filteredSchoolIds.append(id!)
+                            self.filteredLocations.append(location!)
+                            self.filteredLocked.append(locked!)
+                        }
+                        
+                        self.tableView.reloadData()
+                    }
+                }
+                
+                
+        }
+
+    }
+    
+    func loadColleges() {
+        let url = globalurl + "api/recentColleges"
+        
+        Alamofire.request(.GET, url, parameters: nil, headers: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                self.filteredSchoolNames.removeAll(keepCapacity: true)
+                self.filteredSchoolIds.removeAll(keepCapacity: true)
+                self.filteredLocations.removeAll(keepCapacity: true)
+                self.filteredLocked.removeAll(keepCapacity: true)
+                print(value)
+                
+                if value == nil {
+                    value = []
+                    self.tableView.reloadData()
+                } else {
+                    let json = JSON(value!)
+                    for (_,subJson):(String, JSON) in json {
+                        let id = subJson["_id"].string
+                        let name = subJson["name"].string
+                        var location = subJson["location"].string
+                        if location == nil {
+                            location = ""
+                        }
+                        var locked = subJson["locked"].bool
+                        if locked == nil {
+                            locked = true
+                        }
+                        print(name)
+                        
+                        if self.filteredSchoolIds.contains(id!) {
+                            
+                        } else {
+                            self.filteredSchoolNames.append(name!)
+                            self.filteredSchoolIds.append(id!)
+                            self.filteredLocations.append(location!)
+                            self.filteredLocked.append(locked!)
+                        }
+                        
+                        self.tableView.reloadData()
+                    }
+                }
+                
+                
+        }
+        
     }
     
     func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
@@ -82,42 +220,108 @@ class ConfirmSchoolViewController: UIViewController, UISearchBarDelegate, UISear
         if searchText == "" {
             
         } else {
-            let url = globalurl + "api/channelsearch"
-            let parameters = [
-                "searchText": searchText
-            ]
             
-            Alamofire.request(.POST, url, parameters: parameters, headers: nil)
-                .responseJSON { response in
-                    var value = response.result.value
-                    
-                    self.filteredSchoolNames.removeAll(keepCapacity: true)
-                    self.filteredSchoolIds.removeAll(keepCapacity: true)
-                    print(value)
-                    
-                    if value == nil {
-                        value = []
-                        self.tableView.reloadData()
-                    } else {
-                        let json = JSON(value!)
-                        for (_,subJson):(String, JSON) in json {
-                            let id = subJson["_id"].string
-                            let name = subJson["name"].string
-                            print(name)
-                            
-                            if self.filteredSchoolIds.contains(id!) {
-                                
-                            } else {
-                                self.filteredSchoolNames.append(name!)
-                                self.filteredSchoolIds.append(id!)
-                            }
-                            
+            if type == "high school" {
+                let url = globalurl + "api/highschoolsearch"
+                let parameters = [
+                    "searchText": searchText
+                ]
+                
+                Alamofire.request(.POST, url, parameters: parameters, headers: nil)
+                    .responseJSON { response in
+                        var value = response.result.value
+                        
+                        self.filteredSchoolNames.removeAll(keepCapacity: true)
+                        self.filteredSchoolIds.removeAll(keepCapacity: true)
+                        self.filteredLocations.removeAll(keepCapacity: true)
+                        self.filteredLocked.removeAll(keepCapacity: true)
+                        print(value)
+                        
+                        if value == nil {
+                            value = []
                             self.tableView.reloadData()
+                        } else {
+                            let json = JSON(value!)
+                            for (_,subJson):(String, JSON) in json {
+                                let id = subJson["_id"].string
+                                let name = subJson["name"].string
+                                var location = subJson["location"].string
+                                if location == nil {
+                                    location = ""
+                                }
+                                var locked = subJson["locked"].bool
+                                if locked == nil {
+                                    locked = true
+                                }
+                                print(name)
+                                
+                                if self.filteredSchoolIds.contains(id!) {
+                                    
+                                } else {
+                                    self.filteredSchoolNames.append(name!)
+                                    self.filteredSchoolIds.append(id!)
+                                    self.filteredLocations.append(location!)
+                                    self.filteredLocked.append(locked!)
+                                }
+                                
+                                self.tableView.reloadData()
+                            }
                         }
-                    }
-                    
-                    
+                        
+                        
+                }
+            } else if type == "college" {
+                let url = globalurl + "api/collegesearch"
+                let parameters = [
+                    "searchText": searchText
+                ]
+                
+                Alamofire.request(.POST, url, parameters: parameters, headers: nil)
+                    .responseJSON { response in
+                        var value = response.result.value
+                        
+                        self.filteredSchoolNames.removeAll(keepCapacity: true)
+                        self.filteredSchoolIds.removeAll(keepCapacity: true)
+                        self.filteredLocations.removeAll(keepCapacity: true)
+                        self.filteredLocked.removeAll(keepCapacity: true)
+                        print(value)
+                        
+                        if value == nil {
+                            value = []
+                            self.tableView.reloadData()
+                        } else {
+                            let json = JSON(value!)
+                            for (_,subJson):(String, JSON) in json {
+                                let id = subJson["_id"].string
+                                let name = subJson["name"].string
+                                var location = subJson["location"].string
+                                if location == nil {
+                                    location = ""
+                                }
+                                var locked = subJson["locked"].bool
+                                if locked == nil {
+                                    locked = true
+                                }
+                                print(name)
+                                
+                                if self.filteredSchoolIds.contains(id!) {
+                                    
+                                } else {
+                                    self.filteredSchoolNames.append(name!)
+                                    self.filteredSchoolIds.append(id!)
+                                    self.filteredLocations.append(location!)
+                                    self.filteredLocked.append(locked!)
+                                }
+                                
+                                self.tableView.reloadData()
+                            }
+                        }
+                        
+                        
+                }
             }
+            
+            
  
         }
         
@@ -127,8 +331,25 @@ class ConfirmSchoolViewController: UIViewController, UISearchBarDelegate, UISear
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         schoolName = filteredSchoolNames[indexPath.row]
         schoolId = filteredSchoolIds[indexPath.row]
-        self.performSegueWithIdentifier("segueToUsernameFromPickSchool", sender: self)
+        let locked = filteredLocked[indexPath.row]
+        if locked == true {
+            self.performSegueWithIdentifier("segueToLockedSchool", sender: self)
+        } else {
+            self.performSegueWithIdentifier("segueToUsernameFromPickSchool", sender: self)
+        }
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//        let alertView = SCLAlertView()
+//        alertView.addButton("Yes") {
+//            print("Yes tapped")
+//            self.performSegueWithIdentifier("segueToUsernameFromPickSchool", sender: self)
+//        }
+//        alertView.addButton("No") {
+//            print("No tapped")
+//            alertView.hideView()
+//        }
+//        alertView.showCloseButton = false
+//        alertView.showSuccess("Do you go to American?", subTitle: "This alert view has buttons")
+        
     }
     
     
@@ -146,7 +367,15 @@ class ConfirmSchoolViewController: UIViewController, UISearchBarDelegate, UISear
         let name = filteredSchoolNames[indexPath.row]
         cell.nameLabel.text = name
         
+        let location = filteredLocations[indexPath.row]
+        cell.locationLabel.text = location
+        
         return cell
+    }
+    
+    
+    @IBAction func suggestSchoolButtonPressed(sender: UIButton) {
+        self.performSegueWithIdentifier("segueToSuggestSchool", sender: self)
     }
     
     
@@ -161,7 +390,19 @@ class ConfirmSchoolViewController: UIViewController, UISearchBarDelegate, UISear
             usernameVC.fromFB = true
             usernameVC.schoolName = schoolName
             usernameVC.schoolId = schoolId
-            usernameVC.type = "high school"
+            usernameVC.type = type
+        } else if segue.identifier == "segueToLockedSchool" {
+            let lockedSchoolVC: LockedSchoolViewController = segue.destinationViewController as! LockedSchoolViewController
+            lockedSchoolVC.schoolName = schoolName
+            lockedSchoolVC.fromSuggest = false
+            lockedSchoolVC.channelId = schoolId
+            lockedSchoolVC.userEmail = email
+        } else if segue.identifier == "segueToSuggestSchool" {
+            let suggestSchoolVC: SuggestSchoolViewController = segue.destinationViewController as! SuggestSchoolViewController
+            suggestSchoolVC.firstname = firstName
+            suggestSchoolVC.lastname = lastName
+            suggestSchoolVC.email = email
+            suggestSchoolVC.type = type
         }
     }
     

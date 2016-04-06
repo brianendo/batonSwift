@@ -243,6 +243,17 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         let label = UILabel.init(frame: CGRectMake(0, 0, 100, 30))
         
+        label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, view.frame.origin.y + 20)
+        label.textAlignment = NSTextAlignment.Center
+        label.font = UIFont(name: "HelveticaNeue", size: 22)
+        label.textColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.2
+        label.numberOfLines = 1
+        label.lineBreakMode = .ByClipping
+        label.clipsToBounds = true
+        label.layer.masksToBounds = true
+        self.navigationItem.titleView = label
         
         let isLoggedIn = keychain.get("ISLOGGEDIN")
         if (isLoggedIn != "1") {
@@ -253,22 +264,24 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         } else {
             // Check if the suer ID is available
             let id = keychain.get("ID")
-            let schoolId = keychain.get("schoolID")
-            if id == nil {
+            var schoolId = keychain.get("schoolID")
+            var schoolName = keychain.get("mySchoolName")
+            if id == nil || schoolId == nil || schoolName == nil {
                 // Reauthenticate user in LogIn storyboard
                 let login = UIStoryboard(name: "LogIn", bundle: nil)
                 let loginVC = login.instantiateInitialViewController()
                 self.presentViewController(loginVC!, animated: true, completion: nil)
             } else {
                 // Set the global userid variable with the id in keychain
-                
-                
+                if schoolName == nil {
+                    schoolName = ""
+                }
+                if schoolId == nil {
+                    schoolId = ""
+                }
+                mySchoolName = schoolName!
                 schoolID = schoolId!
                 userid = id!
-
-//                let login = UIStoryboard(name: "Onboarding", bundle: nil)
-//                let loginVC = login.instantiateInitialViewController()
-//                self.presentViewController(loginVC!, animated: true, completion: nil)
                 
                 // Set tableView
                 self.tableView.dataSource = self
@@ -277,39 +290,54 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 self.tableView.scrollsToTop = true
                 
                 if fromSpecificChannel {
-                    label.text = self.channelName
+                    self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem
+                    label.text = channelName
                     self.loadChannelData()
-                    self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem
-                    label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, view.frame.origin.y + 20)
-                    label.textAlignment = NSTextAlignment.Center
-                    label.font = UIFont(name: "HelveticaNeue-Bold", size: 18)
-                    label.textColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
-                    self.navigationItem.titleView = label
-                } else if fromFavorites {
-                    label.text = self.channelName
-                    self.loadFavoritesData()
-                    self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem
-                    label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, view.frame.origin.y + 20)
-                    label.textAlignment = NSTextAlignment.Center
-                    label.font = UIFont(name: "HelveticaNeue-Bold", size: 18)
-                    label.textColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
-                    self.navigationItem.titleView = label
+                    
                 } else {
-                    
-                    let label = UILabel.init(frame: CGRectMake(0, 0, 100, 30))
-                    label.text = "B"
-                    label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, view.frame.origin.y + 20)
-                    label.textAlignment = NSTextAlignment.Center
-                    label.font = UIFont(name: "Futura", size: 34)
-                    label.textColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
-                    
-                    self.navigationItem.titleView = label
-                    
-                    self.loadAnswers()
+                    self.channelButton.hidden = true
+                    label.text = mySchoolName
                     self.loadUserInfo()
-                    self.updateFollow()
-                    self.checkNotifications()
                 }
+                
+                
+//                self.updateFollow()
+//                self.checkNotifications()
+                
+//                if fromSpecificChannel {
+//                    label.text = self.channelName
+//                    self.loadChannelData()
+//                    self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem
+//                    label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, view.frame.origin.y + 20)
+//                    label.textAlignment = NSTextAlignment.Center
+//                    label.font = UIFont(name: "HelveticaNeue-Bold", size: 18)
+//                    label.textColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
+//                    self.navigationItem.titleView = label
+//                } else if fromFavorites {
+//                    label.text = self.channelName
+//                    self.loadFavoritesData()
+//                    self.navigationItem.leftBarButtonItem = self.navigationItem.backBarButtonItem
+//                    label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, view.frame.origin.y + 20)
+//                    label.textAlignment = NSTextAlignment.Center
+//                    label.font = UIFont(name: "HelveticaNeue-Bold", size: 18)
+//                    label.textColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
+//                    self.navigationItem.titleView = label
+//                } else {
+//                    
+//                    let label = UILabel.init(frame: CGRectMake(0, 0, 100, 30))
+//                    label.text = "B"
+//                    label.center = CGPointMake(UIScreen.mainScreen().bounds.size.width/2, view.frame.origin.y + 20)
+//                    label.textAlignment = NSTextAlignment.Center
+//                    label.font = UIFont(name: "Futura", size: 34)
+//                    label.textColor = UIColor(red:0.91, green:0.27, blue:0.27, alpha:1.0)
+//                    
+//                    self.navigationItem.titleView = label
+//                    
+//                    self.loadAnswers()
+//                    self.loadUserInfo()
+//                    self.updateFollow()
+//                    self.checkNotifications()
+//                }
             }
         }
         
@@ -359,15 +387,15 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Increase answercount when user answers question
 //        NSNotificationCenter.defaultCenter().addObserver(self, selector: "changeFeed", name: "submittedAnswer", object: nil)
         // Refresh feed if user asks a question
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "askedQuestion", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "questionEdited", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeedNoCache", name: "postedVideo", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(FeedViewController.refreshFeed), name: "askedQuestion", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(FeedViewController.refreshFeed), name: "questionEdited", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(FeedViewController.refreshFeedNoCache), name: "postedVideo", object: nil)
         // Add function to segmented control
 //        self.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
         
         // Add refreshControl and its own function
         self.refreshControl = UIRefreshControl()
-        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        self.refreshControl.addTarget(self, action: #selector(FeedViewController.refresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
         self.tableView.addSubview(refreshControl)
  
     }
@@ -404,6 +432,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                         
                         if value == nil {
                             value = []
+                            
+                            let login = UIStoryboard(name: "LogIn", bundle: nil)
+                            let loginVC = login.instantiateInitialViewController()
+                            self.presentViewController(loginVC!, animated: true, completion: nil)
                         } else {
                             let json = JSON(value!)
                             //                            print("JSON: \(json)")
@@ -433,6 +465,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                         let lastname = json["lastname"].string
                                         var username = json["username"].string
                                         let email = json["email"].string
+                                        let admin = json["admin"].bool
+                                        if admin == true  {
+                                            self.channelButton.hidden = false
+                                        }
+                                        
                                         
                                         name = firstname! + " " + lastname!
                                         
@@ -491,8 +528,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                         self.tableView.reloadData()
                                         // Load all types of questions
 //                                        self.loadChannels()
-                                        self.loadData()
-                                        self.loadFeaturedData()
+//                                        self.loadData()
+//                                        self.loadFeaturedData()
+                                        self.loadSchoolData()
+                                        self.updateFollow()
+                                        self.checkNotifications()
                                     }
                             }
                         }
@@ -522,6 +562,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             
                             if value == nil {
                                 value = []
+                                
+                                let login = UIStoryboard(name: "LogIn", bundle: nil)
+                                let loginVC = login.instantiateInitialViewController()
+                                self.presentViewController(loginVC!, animated: true, completion: nil)
                             } else {
                                 let json = JSON(value!)
                                 //                            print("JSON: \(json)")
@@ -551,7 +595,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                             let lastname = json["lastname"].string
                                             var username = json["username"].string
                                             let email = json["email"].string
-                                            
+                                            let admin = json["admin"].bool
+                                            if admin == true  {
+                                                self.channelButton.hidden = false
+                                            }
                                             name = firstname! + " " + lastname!
                                             
                                             if username == nil {
@@ -607,8 +654,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                             self.tableView.reloadData()
                                             // Load all types of questions
 //                                            self.loadChannels()
-                                            self.loadData()
-                                            self.loadFeaturedData()
+//                                            self.loadData()
+//                                            self.loadFeaturedData()
+                                            self.loadSchoolData()
+                                            self.updateFollow()
+                                            self.checkNotifications()
                                         }
                                 }
                             }
@@ -629,6 +679,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                             
                             if value == nil {
                                 value = []
+                                
+                                let login = UIStoryboard(name: "LogIn", bundle: nil)
+                                let loginVC = login.instantiateInitialViewController()
+                                self.presentViewController(loginVC!, animated: true, completion: nil)
                             } else {
                                 let json = JSON(value!)
                                 //                            print("JSON: \(json)")
@@ -636,7 +690,10 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                 let lastname = json["lastname"].string
                                 var username = json["username"].string
                                 let email = json["email"].string
-                                
+                                let admin = json["admin"].bool
+                                if admin == true  {
+                                    self.channelButton.hidden = false
+                                }
                                 name = firstname! + " " + lastname!
                                 
                                 if username == nil {
@@ -689,8 +746,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                                 
                                 self.tableView.reloadData()
 //                                self.loadChannels()
-                                self.loadData()
-                                self.loadFeaturedData()
+//                                self.loadData()
+//                                self.loadFeaturedData()
+                                self.loadSchoolData()
+                                self.updateFollow()
+                                self.checkNotifications()
                             }
                     }
                 }
@@ -790,7 +850,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func loadChannelData() {
-        let url = globalurl + "api/channelquestions-ordered/" + channelId
+        let url = globalurl + "api/channelquestionsordered/" + channelId
         
         Alamofire.request(.GET, url, parameters: nil)
             .responseJSON { response in
@@ -808,13 +868,20 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     let content = subJson["content"].string
                     let id = subJson["_id"].string
                     var answercount = subJson["answercount"].number?.integerValue
-                    let creatorname = subJson["creatorname"].string
-                    let creator = subJson["creator"].string
+                    var creatorname = subJson["creatorname"].string
+                    var creator = subJson["creator"].string
                     let createdAt = subJson["created_at"].string
                     var likecount = subJson["likes"].number?.integerValue
                     let featured = subJson["featured"].bool
                     var channelId = subJson["channel_id"].string
                     var channelName = subJson["channel_name"].string
+                    if creatorname == nil {
+                        creatorname = ""
+                    }
+                    if creator == nil {
+                        creator = ""
+                    }
+                    
                     
                     if channelId == nil {
                         channelId = ""
@@ -1008,7 +1075,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func loadTopChannelData() {
-        let url = globalurl + "api/channelquestions-hottest/" + channelId
+        let url = globalurl + "api/channelquestionshottest/" + channelId
         
         Alamofire.request(.GET, url, parameters: nil)
             .responseJSON { response in
@@ -1025,13 +1092,19 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     let content = subJson["content"].string
                     let id = subJson["_id"].string
                     var answercount = subJson["answercount"].number?.integerValue
-                    let creatorname = subJson["creatorname"].string
-                    let creator = subJson["creator"].string
+                    var creatorname = subJson["creatorname"].string
+                    var creator = subJson["creator"].string
                     let createdAt = subJson["created_at"].string
                     var likecount = subJson["likes"].number?.integerValue
                     let featured = subJson["featured"].bool
                     var channelId = subJson["channel_id"].string
                     var channelName = subJson["channel_name"].string
+                    if creatorname == nil {
+                        creatorname = ""
+                    }
+                    if creator == nil {
+                        creator = ""
+                    }
                     
                     if channelId == nil {
                         channelId = ""
@@ -1228,6 +1301,155 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                     // Order by date from most recent to latest
                     self.questionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
 
+                    
+                    self.tableView.reloadData()
+                }
+        }
+    }
+    
+    
+    func loadSchoolData() {
+        let url = globalurl + "api/privatequestions-ordered/" + schoolID
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                self.questionArray.removeAll(keepCapacity: true)
+                let json = JSON(value!)
+                //                print("JSON: \(json)")
+                for (_,subJson):(String, JSON) in json {
+                    //Do something you want
+                    let content = subJson["content"].string
+                    let id = subJson["_id"].string
+                    var answercount = subJson["answercount"].number?.integerValue
+                    var creatorname = subJson["creatorname"].string
+                    var creator = subJson["creator"].string
+                    let createdAt = subJson["created_at"].string
+                    var likecount = subJson["likes"].number?.integerValue
+                    let featured = subJson["featured"].bool
+                    var channelId = subJson["channel_id"].string
+                    var channelName = subJson["channel_name"].string
+                    let updatedAt = subJson["updated_at"].string
+                    if creatorname == nil {
+                        creatorname = ""
+                    }
+                    if creator == nil {
+                        creator = ""
+                    }
+                    
+                    if channelId == nil {
+                        channelId = ""
+                    }
+                    
+                    if channelName == nil {
+                        channelName = ""
+                    }
+                    
+                    if featured == true {
+                        continue
+                    }
+                    
+                    if likecount == nil {
+                        likecount = 0
+                    }
+                    
+                    let dateFor: NSDateFormatter = NSDateFormatter()
+                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+//                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+                    let yourDate: NSDate? = dateFor.dateFromString(updatedAt!)
+                    
+                    if answercount == nil {
+                        answercount = 0
+                    }
+                    
+                    var thumbnail_url = subJson["thumbnail_url"].string
+                    if thumbnail_url == nil {
+                        thumbnail_url = ""
+                    }
+                    
+                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName, thumbnail_url: thumbnail_url)
+                    self.questionArray.append(question)
+                    // Order by date from most recent to latest
+                    self.questionArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
+                    
+                    
+                    self.tableView.reloadData()
+                }
+        }
+    }
+    
+    func loadTopSchoolData() {
+        let url = globalurl + "api/privatequestions-top/" + schoolID
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                
+                if value == nil {
+                    value = []
+                }
+                self.hotQuestionArray.removeAll(keepCapacity: true)
+                let json = JSON(value!)
+                //                print("JSON: \(json)")
+                for (_,subJson):(String, JSON) in json {
+                    //Do something you want
+                    let content = subJson["content"].string
+                    let id = subJson["_id"].string
+                    var answercount = subJson["answercount"].number?.integerValue
+                    var creatorname = subJson["creatorname"].string
+                    var creator = subJson["creator"].string
+                    let createdAt = subJson["created_at"].string
+                    var likecount = subJson["likes"].number?.integerValue
+                    let featured = subJson["featured"].bool
+                    var channelId = subJson["channel_id"].string
+                    var channelName = subJson["channel_name"].string
+                    let updatedAt = subJson["updated_at"].string
+                    if creatorname == nil {
+                        creatorname = ""
+                    }
+                    if creator == nil {
+                        creator = ""
+                    }
+                    
+                    
+                    if channelId == nil {
+                        channelId = ""
+                    }
+                    
+                    if channelName == nil {
+                        channelName = ""
+                    }
+                    
+                    if featured == true {
+                        continue
+                    }
+                    
+                    if likecount == nil {
+                        likecount = 0
+                    }
+                    
+                    let dateFor: NSDateFormatter = NSDateFormatter()
+                    dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+//                    let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+                    let yourDate: NSDate? = dateFor.dateFromString(updatedAt!)
+                    
+                    if answercount == nil {
+                        answercount = 0
+                    }
+                    
+                    var thumbnail_url = subJson["thumbnail_url"].string
+                    if thumbnail_url == nil {
+                        thumbnail_url = ""
+                    }
+                    
+                    let question = Question(content: content, creatorname: creatorname, id: id, answercount: answercount, answered: false, currentuser: false, createdAt: yourDate, creator: creator, likecount: likecount, channel_id: channelId, channel_name: channelName, thumbnail_url: thumbnail_url)
+                    self.hotQuestionArray.append(question)
+                    // Order by likes, from most to least
+                    self.hotQuestionArray.sortInPlace({ $0.likecount > $1.likecount })
                     
                     self.tableView.reloadData()
                 }
@@ -1433,38 +1655,66 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         if sender.selectedSegmentIndex == 0 {
             print("Money")
             counter = 0
+            
             if fromSpecificChannel {
                 if questionArray.count == 0 {
                     self.loadChannelData()
                 }
-            } else if fromFavorites {
-                if questionArray.count == 0 {
-                    self.loadFavoritesData()
-                }
             } else {
                 if questionArray.count == 0 {
-                    self.loadData()
+                    self.loadSchoolData()
                 }
             }
+            
+//            if questionArray.count == 0 {
+//                self.loadSchoolData()
+//            }
+//            if fromSpecificChannel {
+//                if questionArray.count == 0 {
+//                    self.loadChannelData()
+//                }
+//            } else if fromFavorites {
+//                if questionArray.count == 0 {
+//                    self.loadFavoritesData()
+//                }
+//            } else {
+//                if questionArray.count == 0 {
+//                    self.loadData()
+//                }
+//            }
             
             Answers.logCustomEventWithName("Top/New Segmented Control on Channels",
                 customAttributes: ["from": channelName, "bar": "New"])
         } else if sender.selectedSegmentIndex == 1 {
             print("Mayweather")
             counter = 1
+            
             if fromSpecificChannel {
                 if hotQuestionArray.count == 0 {
                     self.loadTopChannelData()
                 }
-            } else if fromFavorites {
-                if hotQuestionArray.count == 0 {
-                    self.loadTopFavoriteData()
-                }
             } else {
                 if hotQuestionArray.count == 0 {
-                    self.loadTopData()
+                    self.loadTopSchoolData()
                 }
             }
+            
+//            if fromSpecificChannel {
+//                if hotQuestionArray.count == 0 {
+//                    self.loadTopChannelData()
+//                }
+//            } else if fromFavorites {
+//                if hotQuestionArray.count == 0 {
+//                    self.loadTopFavoriteData()
+//                }
+//            } else {
+//                if hotQuestionArray.count == 0 {
+//                    self.loadTopData()
+//                }
+//            }
+//            if hotQuestionArray.count == 0 {
+//                self.loadTopSchoolData()
+//            }
             
             Answers.logCustomEventWithName("Top/New Segmented Control on Channels",
                 customAttributes: ["from": channelName, "bar": "Top"])
@@ -1483,60 +1733,89 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func refreshFeedNoCache(){
         imageCache.removeAll()
+        
         if fromSpecificChannel {
-            self.tableView.reloadData()
             self.loadChannelData()
-        } else if fromFavorites {
-            self.tableView.reloadData()
-            self.loadFavoritesData()
         } else {
-            self.loadFeaturedData()
-            self.loadData()
+            self.loadSchoolData()
         }
+        
+//        self.loadSchoolData()
+        
+//        if fromSpecificChannel {
+//            self.tableView.reloadData()
+//            self.loadChannelData()
+//        } else if fromFavorites {
+//            self.tableView.reloadData()
+//            self.loadFavoritesData()
+//        } else {
+//            self.loadFeaturedData()
+//            self.loadData()
+//        }
         
     }
     
     func refreshFeed(){
 //        imageCache.removeAll()
+//        self.counter = 0
+//        self.loadSchoolData()
+        
         if fromSpecificChannel {
             self.counter = 0
-            self.tableView.reloadData()
             self.loadChannelData()
-        } else if fromFavorites {
-            self.counter = 0
-            self.tableView.reloadData()
-            self.loadFavoritesData()
         } else {
             self.counter = 0
-            self.loadFeaturedData()
-            self.loadData()
+            self.loadSchoolData()
         }
+        
+        
+//        if fromSpecificChannel {
+//            self.counter = 0
+//            self.tableView.reloadData()
+//            self.loadChannelData()
+//        } else if fromFavorites {
+//            self.counter = 0
+//            self.tableView.reloadData()
+//            self.loadFavoritesData()
+//        } else {
+//            self.counter = 0
+//            self.loadFeaturedData()
+//            self.loadData()
+//        }
         
     }
     
     // MARK: - refreshControl function
     func refresh(sender:AnyObject){
         if fromSpecificChannel {
-            self.questionArray.removeAll(keepCapacity: true)
-            self.hotQuestionArray.removeAll(keepCapacity: true)
-            self.loadTopChannelData()
             self.loadChannelData()
-            self.tableView.reloadData()
-        } else if fromFavorites {
-            self.questionArray.removeAll(keepCapacity: true)
-            self.hotQuestionArray.removeAll(keepCapacity: true)
-            self.loadFavoritesData()
-            self.loadTopFavoriteData()
-            self.tableView.reloadData()
+            self.loadTopChannelData()
         } else {
-            self.questionArray.removeAll(keepCapacity: true)
-            self.hotQuestionArray.removeAll(keepCapacity: true)
-            self.featuredQuestionArray.removeAll(keepCapacity: true)
-            self.loadFeaturedData()
-            self.loadData()
-            self.loadTopData()
-            self.tableView.reloadData()
+            self.loadSchoolData()
+            self.loadTopSchoolData()
         }
+        
+//        if fromSpecificChannel {
+//            self.questionArray.removeAll(keepCapacity: true)
+//            self.hotQuestionArray.removeAll(keepCapacity: true)
+//            self.loadTopChannelData()
+//            self.loadChannelData()
+//            self.tableView.reloadData()
+//        } else if fromFavorites {
+//            self.questionArray.removeAll(keepCapacity: true)
+//            self.hotQuestionArray.removeAll(keepCapacity: true)
+//            self.loadFavoritesData()
+//            self.loadTopFavoriteData()
+//            self.tableView.reloadData()
+//        } else {
+//            self.questionArray.removeAll(keepCapacity: true)
+//            self.hotQuestionArray.removeAll(keepCapacity: true)
+//            self.featuredQuestionArray.removeAll(keepCapacity: true)
+//            self.loadFeaturedData()
+//            self.loadData()
+//            self.loadTopData()
+//            self.tableView.reloadData()
+//        }
         
         
         let delayInSeconds = 1.0;
@@ -1554,13 +1833,14 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // New tab has a section for Featured questions and the new questions
         // Top tab only has a section for top questions
-        if fromSpecificChannel {
-            return 3
-        } else if fromFavorites {
-            return 3
-        } else {
-            return 5
-        }
+//        if fromSpecificChannel {
+//            return 3
+//        } else if fromFavorites {
+//            return 3
+//        } else {
+//            return 5
+//        }
+        return 3
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -1568,280 +1848,74 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if (fromSpecificChannel || fromFavorites) {
-            if section == 0 {
-                return 1
-            } else if section == 1 {
-                return 1
-            }
-            else {
-                if counter == 0 {
-                    return questionArray.count
-                } else {
-                    return hotQuestionArray.count
-                }
-            }
-        } else {
-            if section == 0 {
-                return 1
-            } else if section == 1 {
-                if counter == 0 {
-                    return 1
-                } else {
-                    return 0
-                }
-            } else if section == 2 {
-                return 1
-            }else if section == 3 {
-                if counter == 0 {
-                    return featuredQuestionArray.count
-                } else {
-                    return 0
-                }
+        if section == 0 {
+            return 1
+        } else if section == 1 {
+            return 1
+        }
+        else {
+            if counter == 0 {
+                return questionArray.count
             } else {
-                if counter == 0 {
-                    return questionArray.count
-                } else {
-                    return hotQuestionArray.count
-                }
+                return hotQuestionArray.count
             }
         }
+        
+//        if (fromSpecificChannel || fromFavorites) {
+//            if section == 0 {
+//                return 1
+//            } else if section == 1 {
+//                return 1
+//            }
+//            else {
+//                if counter == 0 {
+//                    return questionArray.count
+//                } else {
+//                    return hotQuestionArray.count
+//                }
+//            }
+//        } else {
+//            if section == 0 {
+//                return 1
+//            } else if section == 1 {
+//                if counter == 0 {
+//                    return 1
+//                } else {
+//                    return 0
+//                }
+//            } else if section == 2 {
+//                return 1
+//            }else if section == 3 {
+//                if counter == 0 {
+//                    return featuredQuestionArray.count
+//                } else {
+//                    return 0
+//                }
+//            } else {
+//                if counter == 0 {
+//                    return questionArray.count
+//                } else {
+//                    return hotQuestionArray.count
+//                }
+//            }
+//        }
         
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if (fromSpecificChannel || fromFavorites) {
-            if indexPath.section == 0 {
-                let cell: FeedSegmentedTableViewCell = tableView.dequeueReusableCellWithIdentifier("SegmentedCell", forIndexPath: indexPath) as! FeedSegmentedTableViewCell
-                
-                cell.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
-                if counter == 0 {
-                    cell.segmentedControl.selectedSegmentIndex = 0
-                } else {
-                    cell.segmentedControl.selectedSegmentIndex = 1
-                }
-                
-                return cell
+        if indexPath.section == 0 {
+            let cell: FeedSegmentedTableViewCell = tableView.dequeueReusableCellWithIdentifier("SegmentedCell", forIndexPath: indexPath) as! FeedSegmentedTableViewCell
+            
+            cell.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
+            if counter == 0 {
+                cell.segmentedControl.selectedSegmentIndex = 0
             } else {
-                if indexPath.section == 1 {
-                    let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("makeThreadCell", forIndexPath: indexPath) 
-                    
-                    cell.preservesSuperviewLayoutMargins = false
-                    cell.separatorInset = UIEdgeInsetsZero
-                    cell.layoutMargins = UIEdgeInsetsZero
-                    
-                    return cell
-                }
-                if counter == 0 {
-                    let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
-                    
-                    cell.contentView.backgroundColor = UIColor.clearColor()
-                    
-                    if fromSpecificChannel {
-                        cell.channelButton.hidden = true
-                    } else if fromFavorites {
-                        var channelName = questionArray[indexPath.row].channel_name
-                        if channelName == "" {
-                            channelName = "Other"
-                        }
-                        cell.channelButton.setTitle(channelName, forState: .Normal)
-                        cell.channelButton.hidden = false
-                        cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
-                        cell.channelButton.layer.cornerRadius = 5
-                        cell.channelButton.sizeToFit()
-                        cell.channelButton.tag = indexPath.row
-                    }
-                    
-                    
-                    
-                    cell.preservesSuperviewLayoutMargins = false
-                    cell.separatorInset = UIEdgeInsetsZero
-                    cell.layoutMargins = UIEdgeInsetsZero
-                    
-                    cell.questionTextView.text = questionArray[indexPath.row].content
-                    cell.questionTextView.userInteractionEnabled = false
-                    
-                    let answercount = questionArray[indexPath.row].answercount
-                    cell.answercountLabel.text =  "\(answercount)"
-                    
-                    let likecount = questionArray[indexPath.row].likecount
-                    let formattedlikecount = likecount.abbreviateNumberAtThousand()
-                    cell.likecountLabel.text = "\(formattedlikecount)"
-                    
-                    let date = questionArray[indexPath.row].createdAt
-                    let timeAgo = timeAgoSinceDate(date, numericDates: true)
-                    
-                    cell.timeAgoLabel.text = timeAgo
-                    cell.thumbnailImageView.layer.cornerRadius = 5.0
-                    cell.thumbnailImageView.clipsToBounds = true
-                    let thumbnail = questionArray[indexPath.row].thumbnail_url
-                    cell.thumbnailImageView.image = nil
-                    
-                    if thumbnail == "" {
-                        cell.thumbnailImageView.image = nil
-                    } else {
-                        let questionId = questionArray[indexPath.row].id
-                        if let cachedImageResult = imageCache[questionId] {
-                            print("pull from cache")
-                            cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
-                        } else {
-                            // 3
-                            let url = NSURL(string: thumbnail)
-                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                            imageCache[questionId] = data
-                            cell.thumbnailImageView.image = UIImage(data: data!)
-                        }
-                    }
-                    
-                    return cell
-                } else {
-                    let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
-                    
-                    cell.contentView.backgroundColor = UIColor.clearColor()
-                    
-                    if fromSpecificChannel {
-                        cell.channelButton.hidden = true
-                    } else if fromFavorites {
-                        var channelName = hotQuestionArray[indexPath.row].channel_name
-                        if channelName == "" {
-                            channelName = "Other"
-                        }
-                        cell.channelButton.setTitle(channelName, forState: .Normal)
-                        cell.channelButton.hidden = false
-                        cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
-                        cell.channelButton.layer.cornerRadius = 5
-                        cell.channelButton.sizeToFit()
-                        cell.channelButton.tag = indexPath.row
-                    }
-                    
-                    cell.preservesSuperviewLayoutMargins = false
-                    cell.separatorInset = UIEdgeInsetsZero
-                    cell.layoutMargins = UIEdgeInsetsZero
-                    
-                    cell.questionTextView.text = hotQuestionArray[indexPath.row].content
-                    cell.questionTextView.userInteractionEnabled = false
-                    
-                    let answercount = hotQuestionArray[indexPath.row].answercount
-                    cell.answercountLabel.text =  "\(answercount)"
-                    
-                    let likecount = hotQuestionArray[indexPath.row].likecount
-                    let formattedlikecount = likecount.abbreviateNumberAtThousand()
-                    cell.likecountLabel.text = "\(formattedlikecount)"
-                    
-                    let date = hotQuestionArray[indexPath.row].createdAt
-                    let timeAgo = timeAgoSinceDate(date, numericDates: true)
-                    
-                    cell.timeAgoLabel.text = timeAgo
-                    
-                    cell.thumbnailImageView.layer.cornerRadius = 5.0
-                    cell.thumbnailImageView.clipsToBounds = true
-                    let thumbnail = hotQuestionArray[indexPath.row].thumbnail_url
-                    cell.thumbnailImageView.image = nil
-                    if thumbnail == "" {
-                        cell.thumbnailImageView.image = nil
-                    } else {
-                        let questionId = hotQuestionArray[indexPath.row].id
-                        if let cachedImageResult = imageCache[questionId] {
-                            print("pull from cache")
-                            cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
-                        } else {
-                            // 3
-                            let url = NSURL(string: thumbnail)
-                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                            imageCache[questionId] = data
-                            cell.thumbnailImageView.image = UIImage(data: data!)
-                        }
-                    }
-                    
-                    return cell
-                }
-                
+                cell.segmentedControl.selectedSegmentIndex = 1
             }
-        }
-        else {
-            if indexPath.section == 0 {
-                let cell: FeedSegmentedTableViewCell = tableView.dequeueReusableCellWithIdentifier("SegmentedCell", forIndexPath: indexPath) as! FeedSegmentedTableViewCell
-                
-                
-                cell.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
-                if counter == 0 {
-                    cell.segmentedControl.selectedSegmentIndex = 0
-                } else {
-                    cell.segmentedControl.selectedSegmentIndex = 1
-                }
-                
-                return cell
-            } else if indexPath.section == 1 {
-                
-                let cell: FeaturedTableViewCell = tableView.dequeueReusableCellWithIdentifier("featuredCell", forIndexPath: indexPath) as! FeaturedTableViewCell
-                
-                if answerArray.count < 3 {
-//                    let url = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56c657e410d40203003d71c6/56c656e110d40203003d71c5/2016-02-18-15-47-37"
-//                    let newURL = NSURL(string: url)
-//                    let data = NSData(contentsOfURL: newURL!)
-//                    cell.featuredImageView.image  = UIImage(data: data!)
-//                    
-//                    
-//                    let url2 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56c6591a10d40203003d71c9/2016-03-08-17-23-14"
-//                    let newURL2 = NSURL(string: url2)
-//                    let data2 = NSData(contentsOfURL: newURL2!)
-//                    cell.featuredImageView2.image  = UIImage(data: data2!)
-//                    
-//                    let url3 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56cda0ff448f380300a04bcd/2016-03-08-18-27-58"
-//                    let newURL3 = NSURL(string: url3)
-//                    let data3 = NSData(contentsOfURL: newURL3!)
-//                    cell.featuredImageView3.image  = UIImage(data: data3!)
-                } else {
-                    let url = answerArray[0].thumbnail_url
-                    let answerId = answerArray[0].id
-                    if let cachedImageResult = imageCache[answerId] {
-                        print("pull from cache")
-                        cell.featuredImageView.image = UIImage(data: cachedImageResult!)
-                    } else {
-                        // 3
-                        let url = NSURL(string: url)
-                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                        imageCache[answerId] = data
-                        cell.featuredImageView.image = UIImage(data: data!)
-                    }
-                    
-                    
-                    let url2 = answerArray[1].thumbnail_url
-                    let answerId2 = answerArray[1].id
-                    if let cachedImageResult = imageCache[answerId2] {
-                        print("pull from cache")
-                        cell.featuredImageView2.image = UIImage(data: cachedImageResult!)
-                    } else {
-                        // 3
-                        let url = NSURL(string: url2)
-                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                        imageCache[answerId2] = data
-                        cell.featuredImageView2.image = UIImage(data: data!)
-                    }
-                    
-                    let url3 = answerArray[2].thumbnail_url
-                    let answerId3 = answerArray[2].id
-                    if let cachedImageResult = imageCache[answerId3] {
-                        print("pull from cache")
-                        cell.featuredImageView3.image = UIImage(data: cachedImageResult!)
-                    } else {
-                        // 3
-                        let url = NSURL(string: url3)
-                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                        imageCache[answerId3] = data
-                        cell.featuredImageView3.image = UIImage(data: data!)
-                    }
-                }
-                
-                
-                cell.contentView.bringSubviewToFront(cell.featuredLabel)
-                cell.contentView.bringSubviewToFront(cell.disclosureImageView)
-                cell.preservesSuperviewLayoutMargins = false
-                cell.separatorInset = UIEdgeInsetsZero
-                cell.layoutMargins = UIEdgeInsetsZero
-                
-                return cell
-            } else if indexPath.section == 2 {
+            
+            return cell
+        } else {
+            if indexPath.section == 1 {
                 let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("makeThreadCell", forIndexPath: indexPath)
                 
                 cell.preservesSuperviewLayoutMargins = false
@@ -1849,226 +1923,650 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 cell.layoutMargins = UIEdgeInsetsZero
                 
                 return cell
-            }else if indexPath.section == 3 {
+            }
+            if counter == 0 {
                 let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
                 
-                // Makes cell separators go to both ends
+                cell.contentView.backgroundColor = UIColor.clearColor()
+                cell.channelButton.hidden = true
+                
+//                if fromSpecificChannel {
+//                    cell.channelButton.hidden = true
+//                } else if fromFavorites {
+//                    var channelName = questionArray[indexPath.row].channel_name
+//                    if channelName == "" {
+//                        channelName = "Other"
+//                    }
+//                    cell.channelButton.setTitle(channelName, forState: .Normal)
+//                    cell.channelButton.hidden = false
+//                    cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
+//                    cell.channelButton.layer.cornerRadius = 5
+//                    cell.channelButton.sizeToFit()
+//                    cell.channelButton.tag = indexPath.row
+//                }
+                
+                
+                
                 cell.preservesSuperviewLayoutMargins = false
                 cell.separatorInset = UIEdgeInsetsZero
                 cell.layoutMargins = UIEdgeInsetsZero
                 
-                cell.channelButton.hidden = true
-                
-                cell.questionTextView.text = featuredQuestionArray[indexPath.row].content
+                cell.questionTextView.text = questionArray[indexPath.row].content
                 cell.questionTextView.userInteractionEnabled = false
                 
-                let answercount = featuredQuestionArray[indexPath.row].answercount
-                
+                let answercount = questionArray[indexPath.row].answercount
                 cell.answercountLabel.text =  "\(answercount)"
                 
-                let likecount = featuredQuestionArray[indexPath.row].likecount
+                let likecount = questionArray[indexPath.row].likecount
                 let formattedlikecount = likecount.abbreviateNumberAtThousand()
                 cell.likecountLabel.text = "\(formattedlikecount)"
                 
+                let date = questionArray[indexPath.row].createdAt
+                let timeAgo = timeAgoSinceDate(date, numericDates: true)
+                
+                cell.timeAgoLabel.text = timeAgo
                 cell.thumbnailImageView.layer.cornerRadius = 5.0
                 cell.thumbnailImageView.clipsToBounds = true
-                let thumbnail = featuredQuestionArray[indexPath.row].thumbnail_url
                 
                 cell.thumbnailImageView.image = nil
+                let thumbnail = questionArray[indexPath.row].thumbnail_url
+                
                 if thumbnail == "" {
                     cell.thumbnailImageView.image = nil
                 } else {
-                    let questionId = featuredQuestionArray[indexPath.row].id
+                    let questionId = questionArray[indexPath.row].id
                     if let cachedImageResult = imageCache[questionId] {
                         print("pull from cache")
                         cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
                     } else {
                         // 3
+//                        let url = NSURL(string: thumbnail)
+//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                        imageCache[questionId] = data
+//                        cell.thumbnailImageView.image = UIImage(data: data!)
+                        
                         let url = NSURL(string: thumbnail)
-                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                        imageCache[questionId] = data
-                        cell.thumbnailImageView.image = UIImage(data: data!)
+                        let request: NSURLRequest = NSURLRequest(URL: url!)
+                        let mainQueue = NSOperationQueue.mainQueue()
+                        NSURLConnection.sendAsynchronousRequest(request, queue: mainQueue, completionHandler: { (response, data, error) -> Void in
+                            if error == nil {
+                                // Convert the downloaded data in to a UIImage object
+                                let image = UIImage(data: data!)
+                                // Store the image in to our cache
+                                imageCache[questionId] = data
+                                // Update the cell
+                                dispatch_async(dispatch_get_main_queue(), {
+                                    cell.thumbnailImageView.image = image
+                                })
+                            }
+                            else {
+                                print("Error: \(error!.localizedDescription)")
+                            }
+                        })
                     }
                 }
                 
-                cell.timeAgoLabel.text = ""
-                cell.contentView.backgroundColor = UIColor(red:1.0, green:0.97, blue:0.61, alpha:1.0)
-                
                 return cell
-                
             } else {
-                if counter == 0 {
-                    let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
-                    
-                    cell.contentView.backgroundColor = UIColor.clearColor()
-                    
-                    cell.preservesSuperviewLayoutMargins = false
-                    cell.separatorInset = UIEdgeInsetsZero
-                    cell.layoutMargins = UIEdgeInsetsZero
-                    
-                    var channelName = questionArray[indexPath.row].channel_name
-                    if channelName == "" {
-                        channelName = "Other"
-                    }
-                    
-                    cell.channelButton.hidden = false
-                    cell.channelButton.setTitle(channelName, forState: .Normal)
-                    cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
-                    cell.channelButton.layer.cornerRadius = 5
-                    cell.channelButton.sizeToFit()
-                    cell.channelButton.tag = indexPath.row
-                    //            cell.channelButton.addTarget(self, action: "goToChannel:", forControlEvents: .TouchUpInside)
-                    
-                    cell.questionTextView.text = questionArray[indexPath.row].content
-                    cell.questionTextView.userInteractionEnabled = false
-                    
-                    let answercount = questionArray[indexPath.row].answercount
-                    cell.answercountLabel.text =  "\(answercount)"
-                    
-                    let likecount = questionArray[indexPath.row].likecount
-                    let formattedlikecount = likecount.abbreviateNumberAtThousand()
-                    cell.likecountLabel.text = "\(formattedlikecount)"
-                    
-                    let date = questionArray[indexPath.row].createdAt
-                    let timeAgo = timeAgoSinceDate(date, numericDates: true)
-                    
-                    cell.timeAgoLabel.text = timeAgo
-                    
-                    cell.thumbnailImageView.layer.cornerRadius = 5.0
-                    cell.thumbnailImageView.clipsToBounds = true
-                    let thumbnail = questionArray[indexPath.row].thumbnail_url
-                    cell.thumbnailImageView.image = nil
-                    if thumbnail == "" {
-                        cell.thumbnailImageView.image = nil
-                    } else {
-                        let questionId = questionArray[indexPath.row].id
-                        if let cachedImageResult = imageCache[questionId] {
-                            print("pull from cache")
-                            cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
-                        } else {
-                            // 3
-                            let url = NSURL(string: thumbnail)
-                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                            imageCache[questionId] = data
-                            cell.thumbnailImageView.image = UIImage(data: data!)
-                        }
-                    }
-                    
-                    return cell
-                } else {
-                    let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
-                    
-                    cell.contentView.backgroundColor = UIColor.clearColor()
-                    
-                    cell.preservesSuperviewLayoutMargins = false
-                    cell.separatorInset = UIEdgeInsetsZero
-                    cell.layoutMargins = UIEdgeInsetsZero
-                    
+                let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+                
+                cell.contentView.backgroundColor = UIColor.clearColor()
+                
+                if fromSpecificChannel {
+                    cell.channelButton.hidden = true
+                } else if fromFavorites {
                     var channelName = hotQuestionArray[indexPath.row].channel_name
                     if channelName == "" {
                         channelName = "Other"
                     }
-                    
-                    cell.channelButton.hidden = false
                     cell.channelButton.setTitle(channelName, forState: .Normal)
+                    cell.channelButton.hidden = false
                     cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
                     cell.channelButton.layer.cornerRadius = 5
                     cell.channelButton.sizeToFit()
                     cell.channelButton.tag = indexPath.row
-                    //            cell.channelButton.addTarget(self, action: "goToChannel:", forControlEvents: .TouchUpInside)
-                    
-                    cell.questionTextView.text = hotQuestionArray[indexPath.row].content
-                    cell.questionTextView.userInteractionEnabled = false
-                    
-                    let answercount = hotQuestionArray[indexPath.row].answercount
-                    cell.answercountLabel.text =  "\(answercount)"
-                    
-                    let likecount = hotQuestionArray[indexPath.row].likecount
-                    let formattedlikecount = likecount.abbreviateNumberAtThousand()
-                    cell.likecountLabel.text = "\(formattedlikecount)"
-                    
-                    let date = hotQuestionArray[indexPath.row].createdAt
-                    let timeAgo = timeAgoSinceDate(date, numericDates: true)
-                    
-                    cell.timeAgoLabel.text = timeAgo
-                    
-                    cell.thumbnailImageView.layer.cornerRadius = 5.0
-                    cell.thumbnailImageView.clipsToBounds = true
-                    let thumbnail = hotQuestionArray[indexPath.row].thumbnail_url
-                    cell.thumbnailImageView.image = nil
-                    if thumbnail == "" {
-                        cell.thumbnailImageView.image = nil
-                    } else {
-                        let questionId = hotQuestionArray[indexPath.row].id
-                        if let cachedImageResult = imageCache[questionId] {
-                            print("pull from cache")
-                            cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
-                        } else {
-                            // 3
-                            let url = NSURL(string: thumbnail)
-                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
-                            imageCache[questionId] = data
-                            cell.thumbnailImageView.image = UIImage(data: data!)
-                        }
-                    }
-                    
-                    return cell
                 }
+                
+                cell.preservesSuperviewLayoutMargins = false
+                cell.separatorInset = UIEdgeInsetsZero
+                cell.layoutMargins = UIEdgeInsetsZero
+                
+                cell.questionTextView.text = hotQuestionArray[indexPath.row].content
+                cell.questionTextView.userInteractionEnabled = false
+                
+                let answercount = hotQuestionArray[indexPath.row].answercount
+                cell.answercountLabel.text =  "\(answercount)"
+                
+                let likecount = hotQuestionArray[indexPath.row].likecount
+                let formattedlikecount = likecount.abbreviateNumberAtThousand()
+                cell.likecountLabel.text = "\(formattedlikecount)"
+                
+                let date = hotQuestionArray[indexPath.row].createdAt
+                let timeAgo = timeAgoSinceDate(date, numericDates: true)
+                
+                cell.timeAgoLabel.text = timeAgo
+                
+                cell.thumbnailImageView.layer.cornerRadius = 5.0
+                cell.thumbnailImageView.clipsToBounds = true
+                
+                
+                cell.thumbnailImageView.image = nil
+                let thumbnail = hotQuestionArray[indexPath.row].thumbnail_url
+                if thumbnail == "" {
+                    cell.thumbnailImageView.image = nil
+                } else {
+                    let questionId = hotQuestionArray[indexPath.row].id
+                    if let cachedImageResult = imageCache[questionId] {
+                        print("pull from cache")
+                        cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
+                    } else {
+                        // 3
+//                        let url = NSURL(string: thumbnail)
+//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                        imageCache[questionId] = data
+//                        cell.thumbnailImageView.image = UIImage(data: data!)
+                        
+                        
+                        let url = NSURL(string: thumbnail)
+                        let request: NSURLRequest = NSURLRequest(URL: url!)
+                        let mainQueue = NSOperationQueue.mainQueue()
+                        NSURLConnection.sendAsynchronousRequest(request, queue: mainQueue, completionHandler: { (response, data, error) -> Void in
+                            if error == nil {
+                                // Convert the downloaded data in to a UIImage object
+                                let image = UIImage(data: data!)
+                                // Store the image in to our cache
+                                imageCache[questionId] = data
+                                // Update the cell
+                                dispatch_async(dispatch_get_main_queue(), {
+                                    cell.thumbnailImageView.image = image
+                                })
+                            }
+                            else {
+                                print("Error: \(error!.localizedDescription)")
+                            }
+                        })
+                    }
+                }
+                
+                return cell
             }
             
         }
         
+//        
+//        if (fromSpecificChannel || fromFavorites) {
+//            if indexPath.section == 0 {
+//                let cell: FeedSegmentedTableViewCell = tableView.dequeueReusableCellWithIdentifier("SegmentedCell", forIndexPath: indexPath) as! FeedSegmentedTableViewCell
+//                
+//                cell.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
+//                if counter == 0 {
+//                    cell.segmentedControl.selectedSegmentIndex = 0
+//                } else {
+//                    cell.segmentedControl.selectedSegmentIndex = 1
+//                }
+//                
+//                return cell
+//            } else {
+//                if indexPath.section == 1 {
+//                    let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("makeThreadCell", forIndexPath: indexPath) 
+//                    
+//                    cell.preservesSuperviewLayoutMargins = false
+//                    cell.separatorInset = UIEdgeInsetsZero
+//                    cell.layoutMargins = UIEdgeInsetsZero
+//                    
+//                    return cell
+//                }
+//                if counter == 0 {
+//                    let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+//                    
+//                    cell.contentView.backgroundColor = UIColor.clearColor()
+//                    
+//                    if fromSpecificChannel {
+//                        cell.channelButton.hidden = true
+//                    } else if fromFavorites {
+//                        var channelName = questionArray[indexPath.row].channel_name
+//                        if channelName == "" {
+//                            channelName = "Other"
+//                        }
+//                        cell.channelButton.setTitle(channelName, forState: .Normal)
+//                        cell.channelButton.hidden = false
+//                        cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
+//                        cell.channelButton.layer.cornerRadius = 5
+//                        cell.channelButton.sizeToFit()
+//                        cell.channelButton.tag = indexPath.row
+//                    }
+//                    
+//                    
+//                    
+//                    cell.preservesSuperviewLayoutMargins = false
+//                    cell.separatorInset = UIEdgeInsetsZero
+//                    cell.layoutMargins = UIEdgeInsetsZero
+//                    
+//                    cell.questionTextView.text = questionArray[indexPath.row].content
+//                    cell.questionTextView.userInteractionEnabled = false
+//                    
+//                    let answercount = questionArray[indexPath.row].answercount
+//                    cell.answercountLabel.text =  "\(answercount)"
+//                    
+//                    let likecount = questionArray[indexPath.row].likecount
+//                    let formattedlikecount = likecount.abbreviateNumberAtThousand()
+//                    cell.likecountLabel.text = "\(formattedlikecount)"
+//                    
+//                    let date = questionArray[indexPath.row].createdAt
+//                    let timeAgo = timeAgoSinceDate(date, numericDates: true)
+//                    
+//                    cell.timeAgoLabel.text = timeAgo
+//                    cell.thumbnailImageView.layer.cornerRadius = 5.0
+//                    cell.thumbnailImageView.clipsToBounds = true
+//                    let thumbnail = questionArray[indexPath.row].thumbnail_url
+//                    cell.thumbnailImageView.image = nil
+//                    
+//                    if thumbnail == "" {
+//                        cell.thumbnailImageView.image = nil
+//                    } else {
+//                        let questionId = questionArray[indexPath.row].id
+//                        if let cachedImageResult = imageCache[questionId] {
+//                            print("pull from cache")
+//                            cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
+//                        } else {
+//                            // 3
+//                            let url = NSURL(string: thumbnail)
+//                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                            imageCache[questionId] = data
+//                            cell.thumbnailImageView.image = UIImage(data: data!)
+//                        }
+//                    }
+//                    
+//                    return cell
+//                } else {
+//                    let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+//                    
+//                    cell.contentView.backgroundColor = UIColor.clearColor()
+//                    
+//                    if fromSpecificChannel {
+//                        cell.channelButton.hidden = true
+//                    } else if fromFavorites {
+//                        var channelName = hotQuestionArray[indexPath.row].channel_name
+//                        if channelName == "" {
+//                            channelName = "Other"
+//                        }
+//                        cell.channelButton.setTitle(channelName, forState: .Normal)
+//                        cell.channelButton.hidden = false
+//                        cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
+//                        cell.channelButton.layer.cornerRadius = 5
+//                        cell.channelButton.sizeToFit()
+//                        cell.channelButton.tag = indexPath.row
+//                    }
+//                    
+//                    cell.preservesSuperviewLayoutMargins = false
+//                    cell.separatorInset = UIEdgeInsetsZero
+//                    cell.layoutMargins = UIEdgeInsetsZero
+//                    
+//                    cell.questionTextView.text = hotQuestionArray[indexPath.row].content
+//                    cell.questionTextView.userInteractionEnabled = false
+//                    
+//                    let answercount = hotQuestionArray[indexPath.row].answercount
+//                    cell.answercountLabel.text =  "\(answercount)"
+//                    
+//                    let likecount = hotQuestionArray[indexPath.row].likecount
+//                    let formattedlikecount = likecount.abbreviateNumberAtThousand()
+//                    cell.likecountLabel.text = "\(formattedlikecount)"
+//                    
+//                    let date = hotQuestionArray[indexPath.row].createdAt
+//                    let timeAgo = timeAgoSinceDate(date, numericDates: true)
+//                    
+//                    cell.timeAgoLabel.text = timeAgo
+//                    
+//                    cell.thumbnailImageView.layer.cornerRadius = 5.0
+//                    cell.thumbnailImageView.clipsToBounds = true
+//                    let thumbnail = hotQuestionArray[indexPath.row].thumbnail_url
+//                    cell.thumbnailImageView.image = nil
+//                    if thumbnail == "" {
+//                        cell.thumbnailImageView.image = nil
+//                    } else {
+//                        let questionId = hotQuestionArray[indexPath.row].id
+//                        if let cachedImageResult = imageCache[questionId] {
+//                            print("pull from cache")
+//                            cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
+//                        } else {
+//                            // 3
+//                            let url = NSURL(string: thumbnail)
+//                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                            imageCache[questionId] = data
+//                            cell.thumbnailImageView.image = UIImage(data: data!)
+//                        }
+//                    }
+//                    
+//                    return cell
+//                }
+//                
+//            }
+//        }
+//        else {
+//            if indexPath.section == 0 {
+//                let cell: FeedSegmentedTableViewCell = tableView.dequeueReusableCellWithIdentifier("SegmentedCell", forIndexPath: indexPath) as! FeedSegmentedTableViewCell
+//                
+//                
+//                cell.segmentedControl.addTarget(self, action: "profileSegmentedControlChanged:", forControlEvents: .ValueChanged)
+//                if counter == 0 {
+//                    cell.segmentedControl.selectedSegmentIndex = 0
+//                } else {
+//                    cell.segmentedControl.selectedSegmentIndex = 1
+//                }
+//                
+//                return cell
+//            } else if indexPath.section == 1 {
+//                
+//                let cell: FeaturedTableViewCell = tableView.dequeueReusableCellWithIdentifier("featuredCell", forIndexPath: indexPath) as! FeaturedTableViewCell
+//                
+//                if answerArray.count < 3 {
+////                    let url = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56c657e410d40203003d71c6/56c656e110d40203003d71c5/2016-02-18-15-47-37"
+////                    let newURL = NSURL(string: url)
+////                    let data = NSData(contentsOfURL: newURL!)
+////                    cell.featuredImageView.image  = UIImage(data: data!)
+////                    
+////                    
+////                    let url2 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56c6591a10d40203003d71c9/2016-03-08-17-23-14"
+////                    let newURL2 = NSURL(string: url2)
+////                    let data2 = NSData(contentsOfURL: newURL2!)
+////                    cell.featuredImageView2.image  = UIImage(data: data2!)
+////                    
+////                    let url3 = "https://s3-us-west-1.amazonaws.com/batonapp/thumbnails/56df5fb3657ad60300a18243/56cda0ff448f380300a04bcd/2016-03-08-18-27-58"
+////                    let newURL3 = NSURL(string: url3)
+////                    let data3 = NSData(contentsOfURL: newURL3!)
+////                    cell.featuredImageView3.image  = UIImage(data: data3!)
+//                } else {
+//                    let url = answerArray[0].thumbnail_url
+//                    let answerId = answerArray[0].id
+//                    if let cachedImageResult = imageCache[answerId] {
+//                        print("pull from cache")
+//                        cell.featuredImageView.image = UIImage(data: cachedImageResult!)
+//                    } else {
+//                        // 3
+//                        let url = NSURL(string: url)
+//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                        imageCache[answerId] = data
+//                        cell.featuredImageView.image = UIImage(data: data!)
+//                    }
+//                    
+//                    
+//                    let url2 = answerArray[1].thumbnail_url
+//                    let answerId2 = answerArray[1].id
+//                    if let cachedImageResult = imageCache[answerId2] {
+//                        print("pull from cache")
+//                        cell.featuredImageView2.image = UIImage(data: cachedImageResult!)
+//                    } else {
+//                        // 3
+//                        let url = NSURL(string: url2)
+//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                        imageCache[answerId2] = data
+//                        cell.featuredImageView2.image = UIImage(data: data!)
+//                    }
+//                    
+//                    let url3 = answerArray[2].thumbnail_url
+//                    let answerId3 = answerArray[2].id
+//                    if let cachedImageResult = imageCache[answerId3] {
+//                        print("pull from cache")
+//                        cell.featuredImageView3.image = UIImage(data: cachedImageResult!)
+//                    } else {
+//                        // 3
+//                        let url = NSURL(string: url3)
+//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                        imageCache[answerId3] = data
+//                        cell.featuredImageView3.image = UIImage(data: data!)
+//                    }
+//                }
+//                
+//                
+//                cell.contentView.bringSubviewToFront(cell.featuredLabel)
+//                cell.contentView.bringSubviewToFront(cell.disclosureImageView)
+//                cell.preservesSuperviewLayoutMargins = false
+//                cell.separatorInset = UIEdgeInsetsZero
+//                cell.layoutMargins = UIEdgeInsetsZero
+//                
+//                return cell
+//            } else if indexPath.section == 2 {
+//                let cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier("makeThreadCell", forIndexPath: indexPath)
+//                
+//                cell.preservesSuperviewLayoutMargins = false
+//                cell.separatorInset = UIEdgeInsetsZero
+//                cell.layoutMargins = UIEdgeInsetsZero
+//                
+//                return cell
+//            }else if indexPath.section == 3 {
+//                let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+//                
+//                // Makes cell separators go to both ends
+//                cell.preservesSuperviewLayoutMargins = false
+//                cell.separatorInset = UIEdgeInsetsZero
+//                cell.layoutMargins = UIEdgeInsetsZero
+//                
+//                cell.channelButton.hidden = true
+//                
+//                cell.questionTextView.text = featuredQuestionArray[indexPath.row].content
+//                cell.questionTextView.userInteractionEnabled = false
+//                
+//                let answercount = featuredQuestionArray[indexPath.row].answercount
+//                
+//                cell.answercountLabel.text =  "\(answercount)"
+//                
+//                let likecount = featuredQuestionArray[indexPath.row].likecount
+//                let formattedlikecount = likecount.abbreviateNumberAtThousand()
+//                cell.likecountLabel.text = "\(formattedlikecount)"
+//                
+//                cell.thumbnailImageView.layer.cornerRadius = 5.0
+//                cell.thumbnailImageView.clipsToBounds = true
+//                let thumbnail = featuredQuestionArray[indexPath.row].thumbnail_url
+//                
+//                cell.thumbnailImageView.image = nil
+//                if thumbnail == "" {
+//                    cell.thumbnailImageView.image = nil
+//                } else {
+//                    let questionId = featuredQuestionArray[indexPath.row].id
+//                    if let cachedImageResult = imageCache[questionId] {
+//                        print("pull from cache")
+//                        cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
+//                    } else {
+//                        // 3
+//                        let url = NSURL(string: thumbnail)
+//                        let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                        imageCache[questionId] = data
+//                        cell.thumbnailImageView.image = UIImage(data: data!)
+//                    }
+//                }
+//                
+//                cell.timeAgoLabel.text = ""
+//                cell.contentView.backgroundColor = UIColor(red:1.0, green:0.97, blue:0.61, alpha:1.0)
+//                
+//                return cell
+//                
+//            } else {
+//                if counter == 0 {
+//                    let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+//                    
+//                    cell.contentView.backgroundColor = UIColor.clearColor()
+//                    
+//                    cell.preservesSuperviewLayoutMargins = false
+//                    cell.separatorInset = UIEdgeInsetsZero
+//                    cell.layoutMargins = UIEdgeInsetsZero
+//                    
+//                    var channelName = questionArray[indexPath.row].channel_name
+//                    if channelName == "" {
+//                        channelName = "Other"
+//                    }
+//                    
+//                    cell.channelButton.hidden = false
+//                    cell.channelButton.setTitle(channelName, forState: .Normal)
+//                    cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
+//                    cell.channelButton.layer.cornerRadius = 5
+//                    cell.channelButton.sizeToFit()
+//                    cell.channelButton.tag = indexPath.row
+//                    //            cell.channelButton.addTarget(self, action: "goToChannel:", forControlEvents: .TouchUpInside)
+//                    
+//                    cell.questionTextView.text = questionArray[indexPath.row].content
+//                    cell.questionTextView.userInteractionEnabled = false
+//                    
+//                    let answercount = questionArray[indexPath.row].answercount
+//                    cell.answercountLabel.text =  "\(answercount)"
+//                    
+//                    let likecount = questionArray[indexPath.row].likecount
+//                    let formattedlikecount = likecount.abbreviateNumberAtThousand()
+//                    cell.likecountLabel.text = "\(formattedlikecount)"
+//                    
+//                    let date = questionArray[indexPath.row].createdAt
+//                    let timeAgo = timeAgoSinceDate(date, numericDates: true)
+//                    
+//                    cell.timeAgoLabel.text = timeAgo
+//                    
+//                    cell.thumbnailImageView.layer.cornerRadius = 5.0
+//                    cell.thumbnailImageView.clipsToBounds = true
+//                    let thumbnail = questionArray[indexPath.row].thumbnail_url
+//                    cell.thumbnailImageView.image = nil
+//                    if thumbnail == "" {
+//                        cell.thumbnailImageView.image = nil
+//                    } else {
+//                        let questionId = questionArray[indexPath.row].id
+//                        if let cachedImageResult = imageCache[questionId] {
+//                            print("pull from cache")
+//                            cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
+//                        } else {
+//                            // 3
+//                            let url = NSURL(string: thumbnail)
+//                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                            imageCache[questionId] = data
+//                            cell.thumbnailImageView.image = UIImage(data: data!)
+//                        }
+//                    }
+//                    
+//                    return cell
+//                } else {
+//                    let cell: QuestionTableViewCell = tableView.dequeueReusableCellWithIdentifier("QuestionCell", forIndexPath: indexPath) as! QuestionTableViewCell
+//                    
+//                    cell.contentView.backgroundColor = UIColor.clearColor()
+//                    
+//                    cell.preservesSuperviewLayoutMargins = false
+//                    cell.separatorInset = UIEdgeInsetsZero
+//                    cell.layoutMargins = UIEdgeInsetsZero
+//                    
+//                    var channelName = hotQuestionArray[indexPath.row].channel_name
+//                    if channelName == "" {
+//                        channelName = "Other"
+//                    }
+//                    
+//                    cell.channelButton.hidden = false
+//                    cell.channelButton.setTitle(channelName, forState: .Normal)
+//                    cell.channelButton.contentEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
+//                    cell.channelButton.layer.cornerRadius = 5
+//                    cell.channelButton.sizeToFit()
+//                    cell.channelButton.tag = indexPath.row
+//                    //            cell.channelButton.addTarget(self, action: "goToChannel:", forControlEvents: .TouchUpInside)
+//                    
+//                    cell.questionTextView.text = hotQuestionArray[indexPath.row].content
+//                    cell.questionTextView.userInteractionEnabled = false
+//                    
+//                    let answercount = hotQuestionArray[indexPath.row].answercount
+//                    cell.answercountLabel.text =  "\(answercount)"
+//                    
+//                    let likecount = hotQuestionArray[indexPath.row].likecount
+//                    let formattedlikecount = likecount.abbreviateNumberAtThousand()
+//                    cell.likecountLabel.text = "\(formattedlikecount)"
+//                    
+//                    let date = hotQuestionArray[indexPath.row].createdAt
+//                    let timeAgo = timeAgoSinceDate(date, numericDates: true)
+//                    
+//                    cell.timeAgoLabel.text = timeAgo
+//                    
+//                    cell.thumbnailImageView.layer.cornerRadius = 5.0
+//                    cell.thumbnailImageView.clipsToBounds = true
+//                    let thumbnail = hotQuestionArray[indexPath.row].thumbnail_url
+//                    cell.thumbnailImageView.image = nil
+//                    if thumbnail == "" {
+//                        cell.thumbnailImageView.image = nil
+//                    } else {
+//                        let questionId = hotQuestionArray[indexPath.row].id
+//                        if let cachedImageResult = imageCache[questionId] {
+//                            print("pull from cache")
+//                            cell.thumbnailImageView.image = UIImage(data: cachedImageResult!)
+//                        } else {
+//                            // 3
+//                            let url = NSURL(string: thumbnail)
+//                            let data = NSData(contentsOfURL: url!) //make sure your image in this url does exist, otherwise unwrap in a if let check
+//                            imageCache[questionId] = data
+//                            cell.thumbnailImageView.image = UIImage(data: data!)
+//                        }
+//                    }
+//                    
+//                    return cell
+//                }
+//            }
+//            
+//        }
+        
     }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        
     }
     
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if (fromSpecificChannel || fromFavorites) {
-            if indexPath.section == 0 {
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            } else if indexPath.section == 1 {
-                Answers.logCustomEventWithName("Ask Question",
-                    customAttributes: ["from": channelName, "method": "cell"])
-                self.performSegueWithIdentifier("showAskQuestionVC", sender: self)
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }else {
-                selectedRow = 1
-                Answers.logCustomEventWithName("Post Clicked",
-                    customAttributes: ["from": "Feed", "channel": channelName])
-                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }
-        } else {
-            if indexPath.section == 0 {
-                Answers.logCustomEventWithName("Featured",
-                    customAttributes: ["from": "Top Posts"])
-               tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            } else if indexPath.section == 1 {
-                self.performSegueWithIdentifier("segueFromFeedToFeatured", sender: self)
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }else if indexPath.section == 2 {
-                Answers.logCustomEventWithName("Ask Question",
-                    customAttributes: ["from": "Top Posts", "method": "cell"])
-                self.performSegueWithIdentifier("showAskQuestionVC", sender: self)
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }
-            else if indexPath.section == 3 {
-                selectedRow = 0
-                Answers.logCustomEventWithName("Post Clicked",
-                    customAttributes: ["from": "Feed", "channel": "Top Posts"])
-                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            } else {
-                selectedRow = 1
-                Answers.logCustomEventWithName("Post Clicked",
-                    customAttributes: ["from": "Feed", "channel": "Top Posts"])
-                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
-                tableView.deselectRowAtIndexPath(indexPath, animated: true)
-            }
+        if indexPath.section == 0 {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        } else if indexPath.section == 1 {
+            Answers.logCustomEventWithName("Ask Question",
+                customAttributes: ["from": channelName, "method": "cell"])
+            self.performSegueWithIdentifier("showAskQuestionVC", sender: self)
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }else {
+            selectedRow = 1
+            Answers.logCustomEventWithName("Post Clicked",
+                customAttributes: ["from": "Feed", "channel": channelName])
+            self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }
+//        
+//        if (fromSpecificChannel || fromFavorites) {
+//            if indexPath.section == 0 {
+//                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//            } else if indexPath.section == 1 {
+//                Answers.logCustomEventWithName("Ask Question",
+//                    customAttributes: ["from": channelName, "method": "cell"])
+//                self.performSegueWithIdentifier("showAskQuestionVC", sender: self)
+//                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//            }else {
+//                selectedRow = 1
+//                Answers.logCustomEventWithName("Post Clicked",
+//                    customAttributes: ["from": "Feed", "channel": channelName])
+//                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
+//                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//            }
+//        } else {
+//            if indexPath.section == 0 {
+//                Answers.logCustomEventWithName("Featured",
+//                    customAttributes: ["from": "Top Posts"])
+//               tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//            } else if indexPath.section == 1 {
+//                self.performSegueWithIdentifier("segueFromFeedToFeatured", sender: self)
+//                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//            }else if indexPath.section == 2 {
+//                Answers.logCustomEventWithName("Ask Question",
+//                    customAttributes: ["from": "Top Posts", "method": "cell"])
+//                self.performSegueWithIdentifier("showAskQuestionVC", sender: self)
+//                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//            }
+//            else if indexPath.section == 3 {
+//                selectedRow = 0
+//                Answers.logCustomEventWithName("Post Clicked",
+//                    customAttributes: ["from": "Feed", "channel": "Top Posts"])
+//                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
+//                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//            } else {
+//                selectedRow = 1
+//                Answers.logCustomEventWithName("Post Clicked",
+//                    customAttributes: ["from": "Feed", "channel": "Top Posts"])
+//                self.performSegueWithIdentifier("segueToAnswerVC", sender: self)
+//                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+//            }
+//        }
         
     }
     
@@ -2078,11 +2576,11 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        if fromSpecificChannel == false  {
-            if indexPath.section == 2 {
-                return false
-            }
-        }
+//        if fromSpecificChannel == false  {
+//            if indexPath.section == 2 {
+//                return false
+//            }
+//        }
         if indexPath.section == 1 {
             return false
         } else {
@@ -2109,115 +2607,153 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "segueToTakeVideoVC" {
             tableView.setEditing(false, animated: true)
-            if (fromSpecificChannel || fromFavorites) {
-                if counter == 0 {
-                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-                    let content = self.questionArray[selectedIndexPath].content
-                    let id = self.questionArray[selectedIndexPath].id
-                    takeVideoVC.content = content
-                    takeVideoVC.id = id
-                } else {
-                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-                    let content = self.hotQuestionArray[selectedIndexPath].content
-                    let id = self.hotQuestionArray[selectedIndexPath].id
-                    takeVideoVC.content = content
-                    takeVideoVC.id = id
-                }
-                
+            if counter == 0 {
+                let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+                let content = self.questionArray[selectedIndexPath].content
+                let id = self.questionArray[selectedIndexPath].id
+                takeVideoVC.content = content
+                takeVideoVC.id = id
             } else {
-                if recordedRow == 3 {
-                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-                    let content = self.featuredQuestionArray[selectedIndexPath].content
-                    let id = self.featuredQuestionArray[selectedIndexPath].id
-                    takeVideoVC.content = content
-                    takeVideoVC.id = id
-                    takeVideoVC.fromFeatured = true
-                } else if recordedRow == 4 {
-                    if counter == 0 {
-                        let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-                        let content = self.questionArray[selectedIndexPath].content
-                        let id = self.questionArray[selectedIndexPath].id
-                        takeVideoVC.content = content
-                        takeVideoVC.id = id
-                    } else {
-                        let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
-                        let content = self.hotQuestionArray[selectedIndexPath].content
-                        let id = self.hotQuestionArray[selectedIndexPath].id
-                        takeVideoVC.content = content
-                        takeVideoVC.id = id
-                    }
-                }
+                let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+                let content = self.hotQuestionArray[selectedIndexPath].content
+                let id = self.hotQuestionArray[selectedIndexPath].id
+                takeVideoVC.content = content
+                takeVideoVC.id = id
             }
+//            if (fromSpecificChannel || fromFavorites) {
+//                if counter == 0 {
+//                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+//                    let content = self.questionArray[selectedIndexPath].content
+//                    let id = self.questionArray[selectedIndexPath].id
+//                    takeVideoVC.content = content
+//                    takeVideoVC.id = id
+//                } else {
+//                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+//                    let content = self.hotQuestionArray[selectedIndexPath].content
+//                    let id = self.hotQuestionArray[selectedIndexPath].id
+//                    takeVideoVC.content = content
+//                    takeVideoVC.id = id
+//                }
+//                
+//            } else {
+//                if recordedRow == 3 {
+//                    let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+//                    let content = self.featuredQuestionArray[selectedIndexPath].content
+//                    let id = self.featuredQuestionArray[selectedIndexPath].id
+//                    takeVideoVC.content = content
+//                    takeVideoVC.id = id
+//                    takeVideoVC.fromFeatured = true
+//                } else if recordedRow == 4 {
+//                    if counter == 0 {
+//                        let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+//                        let content = self.questionArray[selectedIndexPath].content
+//                        let id = self.questionArray[selectedIndexPath].id
+//                        takeVideoVC.content = content
+//                        takeVideoVC.id = id
+//                    } else {
+//                        let takeVideoVC: TakeVideoViewController = segue.destinationViewController as! TakeVideoViewController
+//                        let content = self.hotQuestionArray[selectedIndexPath].content
+//                        let id = self.hotQuestionArray[selectedIndexPath].id
+//                        takeVideoVC.content = content
+//                        takeVideoVC.id = id
+//                    }
+//                }
+//            }
             
         } else if segue.identifier == "segueToAnswerVC" {
-            if fromSpecificChannel || fromFavorites {
-                if counter == 0 {
-                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-                    let indexPath = self.tableView.indexPathForSelectedRow
-                    let content = self.questionArray[indexPath!.row].content
-                    let id = self.questionArray[indexPath!.row].id
-                    let creatorname = self.questionArray[indexPath!.row].creatorname
-                    let question = self.questionArray[indexPath!.row]
-                    self.selectedIndexPath = indexPath!.row
-                    answerVC.content = content
-                    answerVC.id = id
-                    answerVC.creatorname = creatorname
-                    answerVC.question = question
-                } else {
-                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-                    let indexPath = self.tableView.indexPathForSelectedRow
-                    let content = self.hotQuestionArray[indexPath!.row].content
-                    let id = self.hotQuestionArray[indexPath!.row].id
-                    let creatorname = self.hotQuestionArray[indexPath!.row].creatorname
-                    let question = self.hotQuestionArray[indexPath!.row]
-                    self.selectedIndexPath = indexPath!.row
-                    answerVC.content = content
-                    answerVC.id = id
-                    answerVC.creatorname = creatorname
-                    answerVC.question = question
-                }
+            if counter == 0 {
+                let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+                let indexPath = self.tableView.indexPathForSelectedRow
+                let content = self.questionArray[indexPath!.row].content
+                let id = self.questionArray[indexPath!.row].id
+                let creatorname = self.questionArray[indexPath!.row].creatorname
+                let question = self.questionArray[indexPath!.row]
+                self.selectedIndexPath = indexPath!.row
+                answerVC.content = content
+                answerVC.id = id
+                answerVC.creatorname = creatorname
+                answerVC.question = question
             } else {
-                if selectedRow == 0 {
-                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-                    let indexPath = self.tableView.indexPathForSelectedRow
-                    let content = self.featuredQuestionArray[indexPath!.row].content
-                    let id = self.featuredQuestionArray[indexPath!.row].id
-                    let creatorname = self.featuredQuestionArray[indexPath!.row].creatorname
-                    let question = self.featuredQuestionArray[indexPath!.row]
-                    self.selectedIndexPath = indexPath!.row
-                    answerVC.content = content
-                    answerVC.id = id
-                    answerVC.creatorname = creatorname
-                    answerVC.question = question
-                    answerVC.fromFeatured = true
-                } else if selectedRow == 1 {
-                    if counter == 0 {
-                        let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-                        let indexPath = self.tableView.indexPathForSelectedRow
-                        let content = self.questionArray[indexPath!.row].content
-                        let id = self.questionArray[indexPath!.row].id
-                        let creatorname = self.questionArray[indexPath!.row].creatorname
-                        let question = self.questionArray[indexPath!.row]
-                        self.selectedIndexPath = indexPath!.row
-                        answerVC.content = content
-                        answerVC.id = id
-                        answerVC.creatorname = creatorname
-                        answerVC.question = question
-                    } else {
-                        let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
-                        let indexPath = self.tableView.indexPathForSelectedRow
-                        let content = self.hotQuestionArray[indexPath!.row].content
-                        let id = self.hotQuestionArray[indexPath!.row].id
-                        let creatorname = self.hotQuestionArray[indexPath!.row].creatorname
-                        let question = self.hotQuestionArray[indexPath!.row]
-                        self.selectedIndexPath = indexPath!.row
-                        answerVC.content = content
-                        answerVC.id = id
-                        answerVC.creatorname = creatorname
-                        answerVC.question = question
-                    }
-                }
+                let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+                let indexPath = self.tableView.indexPathForSelectedRow
+                let content = self.hotQuestionArray[indexPath!.row].content
+                let id = self.hotQuestionArray[indexPath!.row].id
+                let creatorname = self.hotQuestionArray[indexPath!.row].creatorname
+                let question = self.hotQuestionArray[indexPath!.row]
+                self.selectedIndexPath = indexPath!.row
+                answerVC.content = content
+                answerVC.id = id
+                answerVC.creatorname = creatorname
+                answerVC.question = question
             }
+//            if fromSpecificChannel || fromFavorites {
+//                if counter == 0 {
+//                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+//                    let indexPath = self.tableView.indexPathForSelectedRow
+//                    let content = self.questionArray[indexPath!.row].content
+//                    let id = self.questionArray[indexPath!.row].id
+//                    let creatorname = self.questionArray[indexPath!.row].creatorname
+//                    let question = self.questionArray[indexPath!.row]
+//                    self.selectedIndexPath = indexPath!.row
+//                    answerVC.content = content
+//                    answerVC.id = id
+//                    answerVC.creatorname = creatorname
+//                    answerVC.question = question
+//                } else {
+//                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+//                    let indexPath = self.tableView.indexPathForSelectedRow
+//                    let content = self.hotQuestionArray[indexPath!.row].content
+//                    let id = self.hotQuestionArray[indexPath!.row].id
+//                    let creatorname = self.hotQuestionArray[indexPath!.row].creatorname
+//                    let question = self.hotQuestionArray[indexPath!.row]
+//                    self.selectedIndexPath = indexPath!.row
+//                    answerVC.content = content
+//                    answerVC.id = id
+//                    answerVC.creatorname = creatorname
+//                    answerVC.question = question
+//                }
+//            } else {
+//                if selectedRow == 0 {
+//                    let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+//                    let indexPath = self.tableView.indexPathForSelectedRow
+//                    let content = self.featuredQuestionArray[indexPath!.row].content
+//                    let id = self.featuredQuestionArray[indexPath!.row].id
+//                    let creatorname = self.featuredQuestionArray[indexPath!.row].creatorname
+//                    let question = self.featuredQuestionArray[indexPath!.row]
+//                    self.selectedIndexPath = indexPath!.row
+//                    answerVC.content = content
+//                    answerVC.id = id
+//                    answerVC.creatorname = creatorname
+//                    answerVC.question = question
+//                    answerVC.fromFeatured = true
+//                } else if selectedRow == 1 {
+//                    if counter == 0 {
+//                        let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+//                        let indexPath = self.tableView.indexPathForSelectedRow
+//                        let content = self.questionArray[indexPath!.row].content
+//                        let id = self.questionArray[indexPath!.row].id
+//                        let creatorname = self.questionArray[indexPath!.row].creatorname
+//                        let question = self.questionArray[indexPath!.row]
+//                        self.selectedIndexPath = indexPath!.row
+//                        answerVC.content = content
+//                        answerVC.id = id
+//                        answerVC.creatorname = creatorname
+//                        answerVC.question = question
+//                    } else {
+//                        let answerVC: AnswersViewController = segue.destinationViewController as! AnswersViewController
+//                        let indexPath = self.tableView.indexPathForSelectedRow
+//                        let content = self.hotQuestionArray[indexPath!.row].content
+//                        let id = self.hotQuestionArray[indexPath!.row].id
+//                        let creatorname = self.hotQuestionArray[indexPath!.row].creatorname
+//                        let question = self.hotQuestionArray[indexPath!.row]
+//                        self.selectedIndexPath = indexPath!.row
+//                        answerVC.content = content
+//                        answerVC.id = id
+//                        answerVC.creatorname = creatorname
+//                        answerVC.question = question
+//                    }
+//                }
+//            }
         } else if segue.identifier == "showAskQuestionVC" {
             if fromSpecificChannel {
                 let nav = segue.destinationViewController as! UINavigationController
@@ -2226,7 +2762,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 askQuestionVC.channelName = channelName
                 askQuestionVC.fromSpecificChannel = true
             }
-            
         } else if segue.identifier == "segueFromFeedToSpecificChannel" {
             if fromFavorites {
                 if counter == 0 {
@@ -2325,8 +2860,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     @IBAction func channelButtonPressed(sender: UIButton) {
-        Answers.logCustomEventWithName("Channel Button",
-            customAttributes: ["from": "Top Posts"])
         self.performSegueWithIdentifier("segueFromFeedToChannel", sender: self)
     }
     

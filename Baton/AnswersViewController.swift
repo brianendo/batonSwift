@@ -98,15 +98,17 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
         self.tableView.addSubview(label)
         label.hidden = true
         
-        if fromFeatured {
-            self.loadFeaturedAnswers()
-        } else {
-            self.loadAnswers()
-        }
+//        if fromFeatured {
+//            self.loadFeaturedAnswers()
+//        } else {
+//            self.loadAnswersOrdered()
+//        }
+        
+        self.loadAnswersOrdered()
         
         // Refresh feed if user asks a question
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshFeed", name: "madeVideo", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshQuestion", name: "questionEdited", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AnswersViewController.refreshFeed), name: "madeVideo", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AnswersViewController.refreshQuestion), name: "questionEdited", object: nil)
         
     }
     
@@ -118,11 +120,12 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
     // MARK: - loadFunctions
     
     func refreshFeed(){
-        if fromFeatured {
-            self.loadFeaturedAnswers()
-        } else {
-            self.loadAnswers()
-        }
+//        if fromFeatured {
+//            self.loadFeaturedAnswers()
+//        } else {
+//            self.loadAnswers()
+//        }
+        self.loadAnswersOrdered()
         
     }
     
@@ -273,6 +276,98 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                             let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked", thumbnail_url: thumbnail_url, vertical_screen: vertical_screen)
                             self.answerArray.append(answer)
                             self.answerArray.sortInPlace({ $0.likeCount > $1.likeCount })
+                        }
+                        
+                    }
+                    dispatch_async(dispatch_get_main_queue(),{
+                        self.tableView.reloadData()
+                    })
+                }
+                
+        }
+        
+    }
+    
+    
+    func loadAnswersOrdered(){
+        let url = globalurl + "api/questions/" + id + "/answersordered/"
+        
+        Alamofire.request(.GET, url, parameters: nil)
+            .responseJSON { response in
+                var value = response.result.value
+                if value == nil {
+                    value = []
+                    print("No answers")
+                    self.label.hidden = false
+                } else {
+                    self.answerArray.removeAll(keepCapacity: true)
+                    let json = JSON(value!)
+                    //                print("JSON: \(json)")
+                    if json == [] {
+                        print("No answers")
+                    }
+                    for (_,subJson):(String, JSON) in json {
+                        //Do something you want
+                        
+                        self.label.hidden = true
+                        
+                        let id = subJson["_id"].string
+                        let creator = subJson["creator"].string
+                        
+                        let creatorname = subJson["creatorname"].string
+                        
+                        let video_url = subJson["video_url"].string
+                        var likeCount = subJson["likes"].int
+                        var frontCamera = subJson["frontCamera"].bool
+                        var views = subJson["views"].number?.integerValue
+                        if views == nil {
+                            views = 0
+                        }
+                        
+                        var featuredQuestion = subJson["featuredQuestion"].bool
+                        
+                        if featuredQuestion == nil {
+                            featuredQuestion = false
+                        }
+                        
+                        if frontCamera == nil {
+                            frontCamera = false
+                        }
+                        
+                        let createdAt = subJson["created_at"].string
+                        let dateFor: NSDateFormatter = NSDateFormatter()
+                        dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+                        let yourDate: NSDate? = dateFor.dateFromString(createdAt!)
+                        
+                        if likeCount == nil {
+                            likeCount = 0
+                        }
+                        
+                        var thumbnail_url = subJson["thumbnail_url"].string
+                        if thumbnail_url == nil {
+                            thumbnail_url = ""
+                        }
+                        
+                        var vertical_screen = subJson["vertical_screen"].bool
+                        if vertical_screen == nil {
+                            vertical_screen = false
+                        }
+                        
+                        var question_id = subJson["question_id"].string
+                        if question_id == nil {
+                            question_id = ""
+                        }
+                        var question_content = subJson["question_content"].string
+                        if question_content == nil {
+                            question_content = ""
+                        }
+                        
+                        if video_url != nil {
+                            print(video_url)
+                            
+                            let answer = Answer(content: "", creator: creator, creatorname: creatorname, id: id, question_id: question_id, question_content: question_content, video_url: video_url, likeCount: likeCount, liked_by_user: "not checked", frontCamera: frontCamera, createdAt: yourDate, views: views, featuredQuestion: featuredQuestion, followingCreator: "not checked", thumbnail_url: thumbnail_url, vertical_screen: vertical_screen)
+                            self.answerArray.append(answer)
+                            self.answerArray.sortInPlace({ $0.createdAt.compare($1.createdAt) == .OrderedDescending })
                         }
                         
                     }
@@ -450,6 +545,8 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                 cell.postedByButton.addTarget(self, action: "postedByTapped:", forControlEvents: .TouchUpInside)
                 cell.contentView.bringSubviewToFront(cell.postedByButton)
                 
+                
+                
                 if fromFeatured {
                     cell.channelButton.hidden = true
                     cell.postedByTextView.hidden = true
@@ -457,6 +554,15 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.contentView.backgroundColor = UIColor(red:1.0, green:0.97, blue:0.61, alpha:1.0)
                 } else {
                     cell.postedByTextView.hidden = false
+                    
+                    if creatorname == "" {
+                        cell.postedByTextView.hidden = true
+                        cell.postedByButton.hidden = true
+                    } else {
+                        cell.postedByTextView.hidden = false
+                        cell.postedByButton.hidden = false
+                    }
+                    
                     cell.timeAgoLabel.hidden = false
                     cell.contentView.backgroundColor = UIColor.clearColor()
                     
@@ -472,6 +578,7 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.channelButton.layer.cornerRadius = 5
                     cell.channelButton.sizeToFit()
                     cell.channelButton.tag = indexPath.row
+//                    cell.channelButton.hidden = true
                 }
             }
             
@@ -531,10 +638,29 @@ class AnswersViewController: UIViewController, UITableViewDataSource, UITableVie
                     cell.previewImageView.image = UIImage(data: cachedImageResult!)
                 } else {
                     let thumbnail_url = answerArray[indexPath.row].thumbnail_url
-                    let newURL = NSURL(string: thumbnail_url)
-                    let data = NSData(contentsOfURL: newURL!)
-                    imageCache[answerId] = data
-                    cell.previewImageView.image  = UIImage(data: data!)
+//                    let newURL = NSURL(string: thumbnail_url)
+//                    let data = NSData(contentsOfURL: newURL!)
+//                    imageCache[answerId] = data
+//                    cell.previewImageView.image  = UIImage(data: data!)
+                    
+                    let url = NSURL(string: thumbnail_url)
+                    let request: NSURLRequest = NSURLRequest(URL: url!)
+                    let mainQueue = NSOperationQueue.mainQueue()
+                    NSURLConnection.sendAsynchronousRequest(request, queue: mainQueue, completionHandler: { (response, data, error) -> Void in
+                        if error == nil {
+                            // Convert the downloaded data in to a UIImage object
+                            let image = UIImage(data: data!)
+                            // Store the image in to our cache
+                            imageCache[answerId] = data
+                            // Update the cell
+                            dispatch_async(dispatch_get_main_queue(), {
+                                cell.previewImageView.image = image
+                            })
+                        }
+                        else {
+                            print("Error: \(error!.localizedDescription)")
+                        }
+                    })
                 }
                 
                 

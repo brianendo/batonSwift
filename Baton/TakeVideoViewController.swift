@@ -575,7 +575,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                                 "video_url": amazonUrl + key,
                                 "thumbnail_url": amazonUrl + key2,
                                 "featuredQuestion": self.fromFeatured,
-                                "vertical_screen": true
+                                "vertical_screen": true,
+                                "privateChannel": true
                             ]
                             let url = globalurl + "api/answers"
                             Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
@@ -641,7 +642,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                                     "video_url": amazonUrl + key,
                                     "thumbnail_url": amazonUrl + key2,
                                     "featuredQuestion": self.fromFeatured,
-                                    "vertical_screen": true
+                                    "vertical_screen": true,
+                                    "privateChannel": true
                                 ]
                                 let url = globalurl + "api/answers"
                                 Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)
@@ -684,7 +686,8 @@ class TakeVideoViewController: UIViewController, AVCaptureFileOutputRecordingDel
                         "video_url": amazonUrl + key,
                         "thumbnail_url": amazonUrl + key2,
                         "featuredQuestion": self.fromFeatured,
-                        "vertical_screen": true
+                        "vertical_screen": true,
+                        "privateChannel": true
                     ]
                     let url = globalurl + "api/answers"
                     Alamofire.request(.POST, url, parameters: parameters as? [String:AnyObject], headers: headers)

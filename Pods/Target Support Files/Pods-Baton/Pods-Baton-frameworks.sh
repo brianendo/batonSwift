@@ -95,6 +95,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "Pods-Baton/FBSDKShareKit.framework"
   install_framework "Pods-Baton/JWTDecode.framework"
   install_framework "Pods-Baton/KeychainSwift.framework"
+  install_framework "Pods-Baton/SCLAlertView.framework"
   install_framework "Pods-Baton/SwiftyJSON.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
@@ -109,5 +110,6 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "Pods-Baton/FBSDKShareKit.framework"
   install_framework "Pods-Baton/JWTDecode.framework"
   install_framework "Pods-Baton/KeychainSwift.framework"
+  install_framework "Pods-Baton/SCLAlertView.framework"
   install_framework "Pods-Baton/SwiftyJSON.framework"
 fi

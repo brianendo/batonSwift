@@ -15,6 +15,7 @@ class PickSchoolTypeViewController: UIViewController {
     var profileImageUrl = ""
     var facebookId = ""
     var email = ""
+    var type = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,11 +30,14 @@ class PickSchoolTypeViewController: UIViewController {
     
     
     @IBAction func highSchoolButtonPressed(sender: UIButton) {
+        type = "high school"
         self.performSegueWithIdentifier("segueToConfirmSchool", sender: self)
     }
     
     @IBAction func collegeButtonPressed(sender: UIButton) {
-        self.performSegueWithIdentifier("segueToCollegeEmail", sender: self)
+        type = "college"
+//        self.performSegueWithIdentifier("segueToCollegeEmail", sender: self)
+        self.performSegueWithIdentifier("segueToConfirmSchool", sender: self)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -44,6 +48,7 @@ class PickSchoolTypeViewController: UIViewController {
             confirmSchoolVC.profileImageUrl = profileImageUrl
             confirmSchoolVC.facebookId = facebookId
             confirmSchoolVC.email = email
+            confirmSchoolVC.type = type
         } else if segue.identifier == "segueToCollegeEmail" {
             let collegeEmailVC: CollegeEmailViewController = segue.destinationViewController as! CollegeEmailViewController
             collegeEmailVC.firstName = firstName

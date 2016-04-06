@@ -83,15 +83,17 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
         if self.usernameTextField.text!.characters.count > 2  {
             
             let username = self.usernameTextField.text!.lowercaseString
-            
             if ((username.rangeOfCharacterFromSet(self.characterSet.invertedSet, options: [], range: nil)) != nil) {
                 self.usernameStatusLabel.text = "Username cannot contain special characters"
                 self.doneButton.hidden = true
             } else {
                 
-                let url = globalurl + "api/usernamecheck/" + username
+                let url = globalurl + "api/usernamecheck"
+                let parameters = [
+                    "searchText": username
+                ]
                 
-                Alamofire.request(.GET, url, parameters: nil)
+                Alamofire.request(.POST, url, parameters: parameters)
                     .responseJSON { response in
                         print(response.request)
                         print(response.response)
@@ -138,6 +140,8 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
     @IBAction func doneButtonTapped(sender: UIButton) {
         
         if fromFB {
+            self.doneButton.enabled = false
+            
             if type == "high school" {
                 let parameters = [
                     "email": email,
@@ -181,6 +185,8 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                                 self.keychain.set(token!, forKey: "JWT")
                                 self.keychain.set(refresh_token!, forKey: "refresh_token")
                                 self.keychain.set(self.schoolId, forKey: "schoolID")
+                                self.keychain.set(self.schoolName, forKey: "mySchoolName")
+                                mySchoolName = self.schoolName
                                 schoolID = self.schoolId
                                 userid = id!
                                 
@@ -219,6 +225,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                                 self.presentViewController(mainVC!, animated: true, completion: nil)
                             } else if statuscode == 404 {
                                 let alertView:UIAlertView = UIAlertView()
+                                self.doneButton.enabled = true
                                 alertView.title = "Sign Up Failed!"
                                 alertView.message = "Username taken"
                                 alertView.delegate = self
@@ -226,6 +233,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                                 alertView.show()
                             } else {
                                 let alertView:UIAlertView = UIAlertView()
+                                self.doneButton.enabled = true
                                 alertView.title = "Sign Up Failed!"
                                 alertView.message = "Connection Failed"
                                 alertView.delegate = self
@@ -234,6 +242,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                             }
                         }  else {
                             let alertView:UIAlertView = UIAlertView()
+                            self.doneButton.enabled = true
                             alertView.title = "Sign up Failed!"
                             alertView.message = "Connection Failure"
                             alertView.delegate = self
@@ -286,6 +295,8 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                                 self.keychain.set(token!, forKey: "JWT")
                                 self.keychain.set(refresh_token!, forKey: "refresh_token")
                                 self.keychain.set(self.schoolId, forKey: "schoolID")
+                                self.keychain.set(self.schoolName, forKey: "mySchoolName")
+                                mySchoolName = self.schoolName
                                 schoolID = self.schoolId
                                 userid = id!
                                 
@@ -323,6 +334,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                                 self.presentViewController(mainVC!, animated: true, completion: nil)
                             } else if statuscode == 404 {
                                 let alertView:UIAlertView = UIAlertView()
+                                self.doneButton.enabled = true
                                 alertView.title = "Sign Up Failed!"
                                 alertView.message = "Username taken"
                                 alertView.delegate = self
@@ -330,6 +342,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                                 alertView.show()
                             } else {
                                 let alertView:UIAlertView = UIAlertView()
+                                self.doneButton.enabled = true
                                 alertView.title = "Sign Up Failed!"
                                 alertView.message = "Connection Failed"
                                 alertView.delegate = self
@@ -338,6 +351,7 @@ class UsernameViewController: UIViewController, UITextFieldDelegate {
                             }
                         }  else {
                             let alertView:UIAlertView = UIAlertView()
+                            self.doneButton.enabled = true
                             alertView.title = "Sign up Failed!"
                             alertView.message = "Connection Failure"
                             alertView.delegate = self

@@ -18,6 +18,7 @@ target 'Baton' do
         pod 'FBSDKLoginKit'
         pod 'COSTouchVisualizer'
         pod 'Crashlytics'
+        pod 'SCLAlertView'
 end
 
 target 'BatonTests' do

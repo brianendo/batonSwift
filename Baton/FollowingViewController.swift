@@ -328,76 +328,13 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         
-        var token = keychain.get("JWT")
-        
-        do {
-            if token == nil {
-                var refresh_token = keychain.get("refresh_token")
-                
-                if refresh_token == nil {
-                    refresh_token = ""
-                }
-                
-                let url = globalurl + "api/changetoken/"
-                let parameters = [
-                    "refresh_token": refresh_token! as String
-                ]
-                Alamofire.request(.POST, url, parameters: parameters)
-                    .responseJSON { response in
-                        var value = response.result.value
-                        
-                        if value == nil {
-                            value = []
-                        } else {
-                            
-                            let json = JSON(value!)
-                            let newtoken = json["token"].string
-                            self.keychain.set(newtoken!, forKey: "JWT")
-                            token = newtoken
-                            
-                            let headers = [
-                                "Authorization": "\(token!)"
-                            ]
-                            
-                            let url = globalurl + "api/usersearch/" + searchText.lowercaseString
-                            
-                            Alamofire.request(.GET, url, parameters: nil, headers: headers)
-                                .responseJSON { response in
-                                    var value = response.result.value
-                                    
-                                    self.filteredUsers.removeAll(keepCapacity: true)
-                                    self.filteredId.removeAll(keepCapacity: true)
-                                    
-                                    if value == nil {
-                                        value = []
-                                        self.tableView.reloadData()
-                                    } else {
-                                        let json = JSON(value!)
-                                        for (_,subJson):(String, JSON) in json {
-                                            let id = subJson["_id"].string
-                                            let name = subJson["username"].string
-                                            
-                                            if self.filteredUsers.contains(name!) {
-                                                
-                                            } else {
-                                                self.filteredUsers.append(name!)
-                                                self.filteredId.append(id!)
-                                            }
-                                            
-                                            self.tableView.reloadData()
-                                        }
-                                    }
-                                    
-                                    
-                            }
-                        }
-                        
-                        
-                }
-
-            } else {
-                let jwt = try decode(token!)
-                if jwt.expired == true {
+        if searchText == "" {
+            
+        } else {
+            var token = keychain.get("JWT")
+            
+            do {
+                if token == nil {
                     var refresh_token = keychain.get("refresh_token")
                     
                     if refresh_token == nil {
@@ -425,9 +362,14 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                                     "Authorization": "\(token!)"
                                 ]
                                 
-                                let url = globalurl + "api/usersearch/" + searchText.lowercaseString
+                                let parameters = [
+                                    "searchText": searchText.lowercaseString,
+                                    "currentSchoolId": schoolID
+                                ]
                                 
-                                Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                                let url = globalurl + "api/privateusersearch"
+                                
+                                Alamofire.request(.POST, url, parameters: parameters, headers: headers)
                                     .responseJSON { response in
                                         var value = response.result.value
                                         
@@ -456,51 +398,231 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                                         
                                         
                                 }
+                                
+                                
+                                //                            let headers = [
+                                //                                "Authorization": "\(token!)"
+                                //                            ]
+                                //
+                                //                            let url = globalurl + "api/usersearch/" + searchText.lowercaseString
+                                //
+                                //                            Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                                //                                .responseJSON { response in
+                                //                                    var value = response.result.value
+                                //
+                                //                                    self.filteredUsers.removeAll(keepCapacity: true)
+                                //                                    self.filteredId.removeAll(keepCapacity: true)
+                                //
+                                //                                    if value == nil {
+                                //                                        value = []
+                                //                                        self.tableView.reloadData()
+                                //                                    } else {
+                                //                                        let json = JSON(value!)
+                                //                                        for (_,subJson):(String, JSON) in json {
+                                //                                            let id = subJson["_id"].string
+                                //                                            let name = subJson["username"].string
+                                //
+                                //                                            if self.filteredUsers.contains(name!) {
+                                //
+                                //                                            } else {
+                                //                                                self.filteredUsers.append(name!)
+                                //                                                self.filteredId.append(id!)
+                                //                                            }
+                                //
+                                //                                            self.tableView.reloadData()
+                                //                                        }
+                                //                                    }
+                                //
+                                //
+                                //                            }
                             }
                             
                             
                     }
+                    
                 } else {
-                    let headers = [
-                        "Authorization": "\(token!)"
-                    ]
-                    
-                    let url = globalurl + "api/usersearch/" + searchText.lowercaseString
-                    
-                    Alamofire.request(.GET, url, parameters: nil, headers: headers)
-                        .responseJSON { response in
-                            var value = response.result.value
-                            
-                            self.filteredUsers.removeAll(keepCapacity: true)
-                            self.filteredId.removeAll(keepCapacity: true)
-                            
-                            if value == nil {
-                                value = []
-                                self.tableView.reloadData()
-                            } else {
-                                let json = JSON(value!)
-                                for (_,subJson):(String, JSON) in json {
-                                    let id = subJson["_id"].string
-                                    let name = subJson["username"].string
+                    let jwt = try decode(token!)
+                    if jwt.expired == true {
+                        var refresh_token = keychain.get("refresh_token")
+                        
+                        if refresh_token == nil {
+                            refresh_token = ""
+                        }
+                        
+                        let url = globalurl + "api/changetoken/"
+                        let parameters = [
+                            "refresh_token": refresh_token! as String
+                        ]
+                        Alamofire.request(.POST, url, parameters: parameters)
+                            .responseJSON { response in
+                                var value = response.result.value
+                                
+                                if value == nil {
+                                    value = []
+                                } else {
                                     
-                                    if self.filteredUsers.contains(name!) {
-                                        
-                                    } else {
-                                        self.filteredUsers.append(name!)
-                                        self.filteredId.append(id!)
+                                    let json = JSON(value!)
+                                    let newtoken = json["token"].string
+                                    self.keychain.set(newtoken!, forKey: "JWT")
+                                    token = newtoken
+                                    
+                                    let headers = [
+                                        "Authorization": "\(token!)"
+                                    ]
+                                    
+                                    let parameters = [
+                                        "searchText": searchText.lowercaseString,
+                                        "currentSchoolId": schoolID
+                                    ]
+                                    
+                                    let url = globalurl + "api/privateusersearch"
+                                    
+                                    Alamofire.request(.POST, url, parameters: parameters, headers: headers)
+                                        .responseJSON { response in
+                                            var value = response.result.value
+                                            
+                                            self.filteredUsers.removeAll(keepCapacity: true)
+                                            self.filteredId.removeAll(keepCapacity: true)
+                                            
+                                            if value == nil {
+                                                value = []
+                                                self.tableView.reloadData()
+                                            } else {
+                                                let json = JSON(value!)
+                                                for (_,subJson):(String, JSON) in json {
+                                                    let id = subJson["_id"].string
+                                                    let name = subJson["username"].string
+                                                    
+                                                    if self.filteredUsers.contains(name!) {
+                                                        
+                                                    } else {
+                                                        self.filteredUsers.append(name!)
+                                                        self.filteredId.append(id!)
+                                                    }
+                                                    
+                                                    self.tableView.reloadData()
+                                                }
+                                            }
+                                            
+                                            
                                     }
                                     
-                                    self.tableView.reloadData()
+                                    //                                let url = globalurl + "api/usersearch/" + searchText.lowercaseString
+                                    //
+                                    //                                Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                                    //                                    .responseJSON { response in
+                                    //                                        var value = response.result.value
+                                    //
+                                    //                                        self.filteredUsers.removeAll(keepCapacity: true)
+                                    //                                        self.filteredId.removeAll(keepCapacity: true)
+                                    //
+                                    //                                        if value == nil {
+                                    //                                            value = []
+                                    //                                            self.tableView.reloadData()
+                                    //                                        } else {
+                                    //                                            let json = JSON(value!)
+                                    //                                            for (_,subJson):(String, JSON) in json {
+                                    //                                                let id = subJson["_id"].string
+                                    //                                                let name = subJson["username"].string
+                                    //
+                                    //                                                if self.filteredUsers.contains(name!) {
+                                    //
+                                    //                                                } else {
+                                    //                                                    self.filteredUsers.append(name!)
+                                    //                                                    self.filteredId.append(id!)
+                                    //                                                }
+                                    //
+                                    //                                                self.tableView.reloadData()
+                                    //                                            }
+                                    //                                        }
+                                    //
+                                    //
+                                    //                                }
                                 }
-                            } 
-                            
+                                
+                                
+                        }
+                    } else {
+                        let headers = [
+                            "Authorization": "\(token!)"
+                        ]
+                        
+                        let parameters = [
+                            "searchText": searchText.lowercaseString,
+                            "currentSchoolId": schoolID
+                        ]
+                        
+                        let url = globalurl + "api/privateusersearch"
+                        
+                        Alamofire.request(.POST, url, parameters: parameters, headers: headers)
+                            .responseJSON { response in
+                                var value = response.result.value
+                                
+                                self.filteredUsers.removeAll(keepCapacity: true)
+                                self.filteredId.removeAll(keepCapacity: true)
+                                
+                                if value == nil {
+                                    value = []
+                                    self.tableView.reloadData()
+                                } else {
+                                    let json = JSON(value!)
+                                    for (_,subJson):(String, JSON) in json {
+                                        let id = subJson["_id"].string
+                                        let name = subJson["username"].string
+                                        
+                                        if self.filteredUsers.contains(name!) {
+                                            
+                                        } else {
+                                            self.filteredUsers.append(name!)
+                                            self.filteredId.append(id!)
+                                        }
+                                        
+                                        self.tableView.reloadData()
+                                    }
+                                }
+                                
+                                
+                        }
+                        
+                        //                    let url = globalurl + "api/usersearch/" + searchText.lowercaseString
+                        //                    
+                        //                    Alamofire.request(.GET, url, parameters: nil, headers: headers)
+                        //                        .responseJSON { response in
+                        //                            var value = response.result.value
+                        //                            
+                        //                            self.filteredUsers.removeAll(keepCapacity: true)
+                        //                            self.filteredId.removeAll(keepCapacity: true)
+                        //                            
+                        //                            if value == nil {
+                        //                                value = []
+                        //                                self.tableView.reloadData()
+                        //                            } else {
+                        //                                let json = JSON(value!)
+                        //                                for (_,subJson):(String, JSON) in json {
+                        //                                    let id = subJson["_id"].string
+                        //                                    let name = subJson["username"].string
+                        //                                    
+                        //                                    if self.filteredUsers.contains(name!) {
+                        //                                        
+                        //                                    } else {
+                        //                                        self.filteredUsers.append(name!)
+                        //                                        self.filteredId.append(id!)
+                        //                                    }
+                        //                                    
+                        //                                    self.tableView.reloadData()
+                        //                                }
+                        //                            } 
+                        //                            
+                        //                    }
                     }
+                    
                 }
-
+            } catch {
+                print("Failed to decode JWT: \(error)")
             }
-        } catch {
-            print("Failed to decode JWT: \(error)")
+
         }
+        
         
         self.tableView.reloadData()
     }
@@ -818,10 +940,29 @@ class FollowingViewController: UIViewController, UITableViewDelegate, UITableVie
                 cell.previewImageView.image = UIImage(data: cachedImageResult!)
             } else {
                 let thumbnail_url = answerArray[indexPath.row].thumbnail_url
-                let newURL = NSURL(string: thumbnail_url)
-                let data = NSData(contentsOfURL: newURL!)
-                imageCache[answerId] = data
-                cell.previewImageView.image  = UIImage(data: data!)
+//                let newURL = NSURL(string: thumbnail_url)
+//                let data = NSData(contentsOfURL: newURL!)
+//                imageCache[answerId] = data
+//                cell.previewImageView.image  = UIImage(data: data!)
+                
+                let url = NSURL(string: thumbnail_url)
+                let request: NSURLRequest = NSURLRequest(URL: url!)
+                let mainQueue = NSOperationQueue.mainQueue()
+                NSURLConnection.sendAsynchronousRequest(request, queue: mainQueue, completionHandler: { (response, data, error) -> Void in
+                    if error == nil {
+                        // Convert the downloaded data in to a UIImage object
+                        let image = UIImage(data: data!)
+                        // Store the image in to our cache
+                        imageCache[answerId] = data
+                        // Update the cell
+                        dispatch_async(dispatch_get_main_queue(), {
+                            cell.previewImageView.image = image
+                        })
+                    }
+                    else {
+                        print("Error: \(error!.localizedDescription)")
+                    }
+                })
             }
             
             let creator = answerArray[indexPath.row].creator

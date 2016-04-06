@@ -23,6 +23,7 @@ PODS:
     - FBSDKCoreKit
   - JWTDecode (1.0.0)
   - KeychainSwift (3.0.11)
+  - SCLAlertView (0.5.1)
   - SwiftyJSON (2.3.2)
   - TwitterCore (1.15.1):
     - Fabric
@@ -42,6 +43,7 @@ DEPENDENCIES:
   - FBSDKShareKit
   - JWTDecode (~> 1.0)
   - KeychainSwift (~> 3.0)
+  - SCLAlertView
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`)
   - TwitterCore
   - TwitterKit
@@ -69,6 +71,7 @@ SPEC CHECKSUMS:
   FBSDKShareKit: b8c8ef0ed173f9fc1b3c8df384a0202ce53008d4
   JWTDecode: d172edcb1607cc15aed85d58eceedcbb675a4534
   KeychainSwift: 0a4214c910423543a42b0f30f25987d46178b6a5
+  SCLAlertView: 3ac39a863d3e10fc165662b1228b03402297aea9
   SwiftyJSON: 04ccea08915aa0109039157c7974cf0298da292a
   TwitterCore: 12983a7464e34afbbf18881347898a9db526ac71
   TwitterKit: b5821570887ec2d77650fa232eaec175665dc443
